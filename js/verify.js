@@ -3,7 +3,11 @@
  * Verifies certificate validity against official registry API and renders status.
  */
 
-const API_BASE_URL = (typeof window !== 'undefined' && window.location.port === '5000') ? '' : 'http://localhost:5000';
+const API_BASE_URL = (typeof window !== 'undefined' && window.API_BASE_URL)
+  ? window.API_BASE_URL
+  : (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '3000'
+      ? 'http://localhost:5000'
+      : '');
 
 document.addEventListener('DOMContentLoaded', () => {
   const loadingState = document.getElementById('loadingState');

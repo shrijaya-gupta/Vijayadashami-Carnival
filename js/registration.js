@@ -23,9 +23,9 @@ const gameFormatState = {
 // Configurable API base URL (Phase 5)
 const API_BASE_URL = (typeof window !== 'undefined' && window.API_BASE_URL)
   ? window.API_BASE_URL
-  : (typeof window !== 'undefined' && window.location.protocol === 'file:'
+  : (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '3000'
       ? 'http://localhost:5000'
-      : (typeof window !== 'undefined' && window.location.port === '5000' ? '' : 'http://localhost:5000'));
+      : '');
 
 // Cached in-memory registration state for Review and Confirmation Preview
 let cachedRegistrationData = null;

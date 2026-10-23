@@ -31,8 +31,9 @@ app.use(cors({
     // Allow requests with no origin (e.g. mobile apps, curl, server-to-server)
     if (!origin) return callback(null, true);
     
-    // Check if origin matches allowed list
-    const isAllowed = allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production';
+    // Check if origin matches allowed list or vercel.app preview domain
+    const isVercelDomain = typeof origin === 'string' && (origin.endsWith('.vercel.app') || origin === 'https://vercel.app');
+    const isAllowed = allowedOrigins.includes(origin) || isVercelDomain || process.env.NODE_ENV !== 'production';
     if (isAllowed) {
       return callback(null, true);
     }
@@ -67,6 +68,21 @@ app.get('/verify-certificate/:token', (req, res) => {
 // 6. Serve static frontend files from workspace root (e.g. index.html, admin/...)
 const frontendPath = path.resolve(__dirname, '../../');
 app.use(express.static(frontendPath));
+
+// Explicit route fallbacks for root and verify if routed through Express
+app.get('/', (req, res, next) => {
+  const indexPath = path.join(frontendPath, 'index.html');
+  res.sendFile(indexPath, (err) => {
+    if (err) next();
+  });
+});
+
+app.get('/verify', (req, res, next) => {
+  const verifyPath = path.join(frontendPath, 'verify.html');
+  res.sendFile(verifyPath, (err) => {
+    if (err) next();
+  });
+});
 
 // 7. 404 & Central Error Handlers
 app.use(notFoundHandler);
