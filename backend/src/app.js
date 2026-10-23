@@ -1,4 +1,5 @@
 const express = require('express');
+const fs = require('fs');
 const path = require('path');
 const helmet = require('helmet');
 const cors = require('cors');
@@ -65,24 +66,52 @@ app.get('/verify-certificate/:token', (req, res) => {
   res.redirect(`/verify.html?token=${encodeURIComponent(token)}`);
 });
 
-// 6. Serve static frontend files from workspace root (e.g. index.html, admin/...)
-const frontendPath = path.resolve(__dirname, '../../');
-app.use(express.static(frontendPath));
+// 6. Serve static frontend files (checks monorepo root, backend/public, or local directory)
+const candidateStaticPaths = [
+  path.resolve(__dirname, '../../'),          // Monorepo / local dev root
+  path.resolve(__dirname, '../public'),       // backend/public directory
+  path.resolve(process.cwd(), 'public'),      // CWD/public
+  path.resolve(process.cwd(), '../'),         // CWD parent
+  process.cwd()                               // CWD
+];
 
-// Explicit route fallbacks for root and verify if routed through Express
-app.get('/', (req, res, next) => {
-  const indexPath = path.join(frontendPath, 'index.html');
-  res.sendFile(indexPath, (err) => {
-    if (err) next();
-  });
+const frontendPath = candidateStaticPaths.find(p => {
+  try {
+    return fs.existsSync(path.join(p, 'index.html'));
+  } catch {
+    return false;
+  }
 });
 
-app.get('/verify', (req, res, next) => {
-  const verifyPath = path.join(frontendPath, 'verify.html');
-  res.sendFile(verifyPath, (err) => {
-    if (err) next();
+if (frontendPath) {
+  app.use(express.static(frontendPath));
+
+  app.get('/', (req, res) => {
+    res.sendFile(path.join(frontendPath, 'index.html'));
   });
-});
+
+  app.get('/verify', (req, res) => {
+    res.sendFile(path.join(frontendPath, 'verify.html'));
+  });
+} else {
+  // If frontend is deployed separately, provide a clean JSON API root status document
+  app.get('/', (req, res) => {
+    res.status(200).json({
+      success: true,
+      service: 'Vijayadashami Carnival REST API',
+      status: 'online',
+      environment: process.env.NODE_ENV || 'production',
+      message: 'Vijayadashami Carnival backend API is running. The frontend is hosted at the repository root or a linked web domain.',
+      endpoints: {
+        health: '/api/health',
+        games: '/api/games',
+        config: '/api/config',
+        registrations: '/api/registrations',
+        admin: '/api/admin'
+      }
+    });
+  });
+}
 
 // 7. 404 & Central Error Handlers
 app.use(notFoundHandler);
