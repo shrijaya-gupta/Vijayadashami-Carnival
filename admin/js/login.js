@@ -3,9 +3,13 @@
  */
 
 const API_BASE_URL = window.API_BASE_URL || (
-  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '3000'
+  window.location.protocol === 'file:'
     ? 'http://localhost:5000'
-    : ''
+    : (
+        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '3000'
+          ? 'http://localhost:5000'
+          : ''
+      )
 );
 
 document.addEventListener('DOMContentLoaded', () => {

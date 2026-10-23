@@ -22,8 +22,10 @@ const registrationLimiter = rateLimit({
 // POST /api/registrations - Register a student
 router.post('/', registrationLimiter, createRegistration);
 
-// POST /api/registrations/:registrationId/payment-reference - Submit payment UTR/reference
+// POST & PATCH /api/registrations/:registrationId/payment-reference - Submit payment UTR/reference
 router.post('/:registrationId/payment-reference', submitPaymentReference);
+router.patch('/:registrationId/payment', submitPaymentReference);
+router.post('/:registrationId/payment', submitPaymentReference);
 
 // GET /api/registrations/:registrationId - Retrieve safe confirmation details
 router.get('/:registrationId', getRegistrationById);

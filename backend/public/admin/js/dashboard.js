@@ -4,9 +4,13 @@
  */
 
 const API_BASE_URL = window.API_BASE_URL || (
-  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '3000'
+  window.location.protocol === 'file:'
     ? 'http://localhost:5000'
-    : ''
+    : (
+        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '3000'
+          ? 'http://localhost:5000'
+          : ''
+      )
 );
 
 // State Management
@@ -23,7 +27,19 @@ let regPageState = {
   search: '',
   game: 'all',
   format: '',
-  status: ''
+  status: '',
+  paymentStatus: ''
+};
+
+// Payment Audit Table State (Phase 5)
+let payPageState = {
+  page: 1,
+  limit: 10,
+  totalPages: 1,
+  total: 0,
+  search: '',
+  paymentStatus: 'payment_verification_pending',
+  game: 'all'
 };
 
 // Certificates Table State (Phase 7)
@@ -48,10 +64,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   initNavigation();
   initOverview();
   initRegistrationsTable();
+  initPaymentsTable();
+  initPaymentQrConfig();
   initCertificatesTable();
   initGamewiseRoster();
   initExportSection();
   initModalActions();
+
+  // Real-Time live auto-refresh every 10s for on-ground festival desk
+  setInterval(() => {
+    if (document.visibilityState === 'visible') {
+      refreshCurrentView();
+    }
+  }, 10000);
 });
 
 // ============================================================================
@@ -170,16 +195,18 @@ function switchView(viewName) {
   const viewMap = {
     overview: 'viewOverview',
     registrations: 'viewRegistrations',
-    certificates: 'viewCertificates',
     gamewise: 'viewGamewise',
+    payments: 'viewPayments',
+    certificates: 'viewCertificates',
     export: 'viewExport'
   };
 
   const titleMap = {
     overview: 'Dashboard Overview',
     registrations: 'All Registrations Management',
-    certificates: 'Participation Certificates & Attendance Verification',
     gamewise: 'Game-wise Participants Roster',
+    payments: 'Payment Management & Desk Verification',
+    certificates: 'Participation Certificates & Attendance Verification',
     export: 'CSV Data Export'
   };
 
@@ -202,6 +229,8 @@ function switchView(viewName) {
     loadOverviewData();
   } else if (viewName === 'registrations') {
     loadRegistrationsData();
+  } else if (viewName === 'payments') {
+    loadPaymentsData();
   } else if (viewName === 'certificates') {
     loadCertificatesData();
   } else if (viewName === 'gamewise') {
@@ -212,6 +241,7 @@ function switchView(viewName) {
 function refreshCurrentView() {
   if (currentView === 'overview') loadOverviewData();
   else if (currentView === 'registrations') loadRegistrationsData();
+  else if (currentView === 'payments') loadPaymentsData();
   else if (currentView === 'certificates') loadCertificatesData();
   else if (currentView === 'gamewise') loadGamewiseData(activeGameId);
 }
@@ -251,6 +281,16 @@ async function loadOverviewData() {
 
     const certIssuedEl = document.getElementById('metricCertificatesIssued');
     if (certIssuedEl) certIssuedEl.textContent = s.certificatesIssuedCount || 0;
+
+    // Payment Summary Metrics (Phase 5)
+    const paidPaymentsEl = document.getElementById('metricPaidPayments');
+    if (paidPaymentsEl) paidPaymentsEl.textContent = s.paidPaymentsCount || 0;
+
+    const pendingVerPaymentsEl = document.getElementById('metricPendingVerPayments');
+    if (pendingVerPaymentsEl) pendingVerPaymentsEl.textContent = s.pendingVerificationCount || 0;
+
+    const pendingPaymentsEl = document.getElementById('metricPendingPayments');
+    if (pendingPaymentsEl) pendingPaymentsEl.textContent = s.pendingPaymentCount || 0;
 
     // 6 Games Breakdown
     renderOverviewGames(data.gameStats || []);
@@ -330,6 +370,7 @@ function initRegistrationsTable() {
   const gameSelect = document.getElementById('filterGame');
   const formatSelect = document.getElementById('filterFormat');
   const statusSelect = document.getElementById('filterStatus');
+  const paymentStatusSelect = document.getElementById('filterPaymentStatus');
   const resetBtn = document.getElementById('btnResetFilters');
   const prevBtn = document.getElementById('btnPrevPage');
   const nextBtn = document.getElementById('btnNextPage');
@@ -363,16 +404,24 @@ function initRegistrationsTable() {
     loadRegistrationsData();
   });
 
+  paymentStatusSelect?.addEventListener('change', () => {
+    regPageState.paymentStatus = paymentStatusSelect.value;
+    regPageState.page = 1;
+    loadRegistrationsData();
+  });
+
   resetBtn?.addEventListener('click', () => {
     if (searchInput) searchInput.value = '';
     if (gameSelect) gameSelect.value = 'all';
     if (formatSelect) formatSelect.value = '';
     if (statusSelect) statusSelect.value = '';
+    if (paymentStatusSelect) paymentStatusSelect.value = '';
 
     regPageState.search = '';
     regPageState.game = 'all';
     regPageState.format = '';
     regPageState.status = '';
+    regPageState.paymentStatus = '';
     regPageState.page = 1;
 
     loadRegistrationsData();
@@ -397,7 +446,7 @@ async function loadRegistrationsData() {
   const tbody = document.getElementById('registrationsTbody');
   if (!tbody) return;
 
-  tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--text-dim); padding: 40px;">Loading records from MongoDB...</td></tr>`;
+  tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; color: var(--text-dim); padding: 40px;">Loading records from MongoDB...</td></tr>`;
 
   try {
     const params = new URLSearchParams({
@@ -408,6 +457,10 @@ async function loadRegistrationsData() {
       format: regPageState.format,
       status: regPageState.status
     });
+
+    if (regPageState.paymentStatus) {
+      params.append('paymentStatus', regPageState.paymentStatus);
+    }
 
     const res = await fetch(`${API_BASE_URL}/api/admin/registrations?${params.toString()}`, {
       credentials: 'include'
@@ -436,7 +489,7 @@ async function loadRegistrationsData() {
 
     // Render Table Rows
     if (!registrations || registrations.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--text-dim); padding: 40px;">No registrations match your search or filter criteria.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; color: var(--text-dim); padding: 40px;">No registrations match your search or filter criteria.</td></tr>`;
       return;
     }
 
@@ -452,14 +505,13 @@ async function loadRegistrationsData() {
         </span>`;
       }).join(' ');
 
-      const hasTeam = (reg.selectedGames || []).some(g => g.participationType === 'team');
-      const formatLabel = hasTeam ? 'Team & Solo' : 'Solo Only';
-
       const fee = reg.feeAmount != null ? reg.feeAmount : (reg.selectedGames ? reg.selectedGames.length * 5 : 0);
       const isPaid = reg.paymentStatus === 'paid';
       const isPendingVer = reg.paymentStatus === 'payment_verification_pending';
-      const paymentLabel = isPaid ? 'Paid' : (isPendingVer ? 'Verifying' : (reg.paymentStatus === 'payment_failed' ? 'Failed' : 'Pending'));
-      const paymentClass = isPaid ? 'status-confirmed' : (isPendingVer ? 'status-pending' : (reg.paymentStatus === 'payment_failed' ? 'status-cancelled' : 'status-pending'));
+      const isFailed = reg.paymentStatus === 'payment_failed';
+      const paymentLabel = isPaid ? 'Verified' : (isPendingVer ? 'Audit Needed' : (isFailed ? 'Failed' : 'Pending'));
+      const paymentClass = isPaid ? 'status-paid' : (isPendingVer ? 'status-payment_verification_pending' : (isFailed ? 'status-payment_failed' : 'status-payment_pending'));
+      const utrBadge = reg.paymentReference ? `<div style="font-size: 0.7rem; font-family: monospace; color: #FCD34D; margin-top: 3px;" title="Submitted UTR: ${escapeHtml(reg.paymentReference)}">Ref: ${escapeHtml(reg.paymentReference)}</div>` : '';
 
       return `
         <tr>
@@ -470,7 +522,10 @@ async function loadRegistrationsData() {
           <td>${escapeHtml(student.academicYear)}</td>
           <td>${gamesChips}</td>
           <td><strong style="color: #F59E0B;">₹${fee}</strong></td>
-          <td><span class="status-pill ${paymentClass}">${escapeHtml(paymentLabel)}</span></td>
+          <td>
+            <span class="status-pill ${paymentClass}">${escapeHtml(paymentLabel)}</span>
+            ${utrBadge}
+          </td>
           <td><span class="status-pill ${statusClass}">${escapeHtml(reg.status || 'confirmed')}</span></td>
           <td>${dateStr}</td>
           <td>
@@ -612,7 +667,403 @@ async function loadGamewiseData(gameId) {
 }
 
 // ============================================================================
-// 6. CSV DATA EXPORT SECTION
+// 6. PAYMENT MANAGEMENT & DESK AUDIT (PHASE 5)
+// ============================================================================
+
+function initPaymentsTable() {
+  const searchInput = document.getElementById('filterPaySearch');
+  const statusSelect = document.getElementById('filterPayStatus');
+  const gameSelect = document.getElementById('filterPayGame');
+  const resetBtn = document.getElementById('btnResetPayFilters');
+  const prevBtn = document.getElementById('btnPayPrevPage');
+  const nextBtn = document.getElementById('btnPayNextPage');
+
+  let debounceTimer;
+  searchInput?.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      payPageState.search = searchInput.value.trim();
+      payPageState.page = 1;
+      loadPaymentsData();
+    }, 300);
+  });
+
+  statusSelect?.addEventListener('change', () => {
+    payPageState.paymentStatus = statusSelect.value;
+    payPageState.page = 1;
+    loadPaymentsData();
+  });
+
+  gameSelect?.addEventListener('change', () => {
+    payPageState.game = gameSelect.value;
+    payPageState.page = 1;
+    loadPaymentsData();
+  });
+
+  resetBtn?.addEventListener('click', () => {
+    if (searchInput) searchInput.value = '';
+    if (statusSelect) statusSelect.value = '';
+    if (gameSelect) gameSelect.value = 'all';
+
+    payPageState.search = '';
+    payPageState.paymentStatus = '';
+    payPageState.game = 'all';
+    payPageState.page = 1;
+
+    loadPaymentsData();
+  });
+
+  prevBtn?.addEventListener('click', () => {
+    if (payPageState.page > 1) {
+      payPageState.page--;
+      loadPaymentsData();
+    }
+  });
+
+  nextBtn?.addEventListener('click', () => {
+    if (payPageState.page < payPageState.totalPages) {
+      payPageState.page++;
+      loadPaymentsData();
+    }
+  });
+}
+
+async function loadPaymentsData() {
+  const tbody = document.getElementById('paymentsTbody');
+  if (!tbody) return;
+
+  tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--text-dim); padding: 30px;">Loading payment audit records...</td></tr>`;
+
+  try {
+    const params = new URLSearchParams({
+      page: payPageState.page,
+      limit: payPageState.limit
+    });
+
+    if (payPageState.search) params.append('search', payPageState.search);
+    if (payPageState.paymentStatus) params.append('paymentStatus', payPageState.paymentStatus);
+    if (payPageState.game && payPageState.game !== 'all') params.append('game', payPageState.game);
+
+    const res = await fetch(`${API_BASE_URL}/api/admin/registrations?${params.toString()}`, {
+      credentials: 'include'
+    });
+
+    if (!res.ok) {
+      if (res.status === 401) checkSession();
+      throw new Error('Failed to load payment records');
+    }
+
+    const { registrations, pagination } = await res.json();
+    payPageState.totalPages = pagination.totalPages || 1;
+    payPageState.total = pagination.total || 0;
+
+    // Update Pagination UI
+    const start = pagination.total === 0 ? 0 : (pagination.page - 1) * pagination.limit + 1;
+    const end = Math.min(pagination.page * pagination.limit, pagination.total);
+
+    const infoEl = document.getElementById('payPaginationInfo');
+    if (infoEl) infoEl.textContent = `Showing ${start}-${end} of ${pagination.total} payment records`;
+
+    const indicatorEl = document.getElementById('payPageIndicator');
+    if (indicatorEl) indicatorEl.textContent = `Page ${pagination.page} of ${pagination.totalPages || 1}`;
+
+    const prevBtn = document.getElementById('btnPayPrevPage');
+    const nextBtn = document.getElementById('btnPayNextPage');
+    if (prevBtn) prevBtn.disabled = pagination.page <= 1;
+    if (nextBtn) nextBtn.disabled = pagination.page >= pagination.totalPages;
+
+    // Also update metric summary from dashboard API if elements exist
+    fetch(`${API_BASE_URL}/api/admin/dashboard`, { credentials: 'include' })
+      .then(r => r.json())
+      .then(d => {
+        if (d?.data?.summary) {
+          const sm = d.data.summary;
+          const pv = document.getElementById('metricPayPendingVer');
+          const ppaid = document.getElementById('metricPayVerified');
+          const ppend = document.getElementById('metricPayPending');
+          const ptot = document.getElementById('metricPayEstimatedTotal');
+          if (pv) pv.textContent = sm.pendingVerificationCount || 0;
+          if (ppaid) ppaid.textContent = sm.paidPaymentsCount || 0;
+          if (ppend) ppend.textContent = sm.pendingPaymentCount || 0;
+          if (ptot) ptot.textContent = `₹${(sm.paidPaymentsCount || 0) * 5}`;
+        }
+      })
+      .catch(() => {});
+
+    renderPaymentsRows(registrations || []);
+
+  } catch (err) {
+    console.error('Failed to load payment records:', err);
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--red-light); padding: 30px;">Error loading payment records: ${escapeHtml(err.message)}</td></tr>`;
+  }
+}
+
+function renderPaymentsRows(registrations) {
+  const tbody = document.getElementById('paymentsTbody');
+  if (!tbody) return;
+
+  if (registrations.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--text-dim); padding: 36px;">No payment records match your search or filter criteria.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = registrations.map(reg => {
+    const student = reg.student || {};
+    const games = reg.selectedGames || [];
+    const fee = reg.feeAmount != null ? reg.feeAmount : (games.length * 5);
+    const dateStr = formatDate(reg.createdAt);
+
+    const isPaid = reg.paymentStatus === 'paid';
+    const isPendingVer = reg.paymentStatus === 'payment_verification_pending';
+    const isFailed = reg.paymentStatus === 'payment_failed';
+
+    let payBadgeClass = 'status-payment_pending';
+    let payLabel = 'Payment Pending';
+
+    if (isPaid) {
+      payBadgeClass = 'status-paid';
+      payLabel = 'Payment Verified';
+    } else if (isPendingVer) {
+      payBadgeClass = 'status-payment_verification_pending';
+      payLabel = 'Verification Pending';
+    } else if (isFailed) {
+      payBadgeClass = 'status-payment_failed';
+      payLabel = 'Payment Failed';
+    }
+
+    const gamesSummary = games.map(g => g.gameName || g.gameId).join(', ');
+    const gamesDisplay = games.length > 0 
+      ? `<span title="${escapeHtml(gamesSummary)}"><strong>${games.length}</strong> game${games.length > 1 ? 's' : ''}</span>`
+      : '0 games';
+
+    let utrDisplay = '<span style="color: var(--text-dim); font-size: 0.78rem;">None submitted</span>';
+    if (reg.paymentReference) {
+      utrDisplay = `
+        <span class="utr-code-badge" title="${escapeHtml(reg.paymentReference)}">
+          <span>${escapeHtml(reg.paymentReference)}</span>
+          <button type="button" class="btn-copy-utr" onclick="copyTextToClipboard('${escapeHtml(reg.paymentReference)}')" title="Copy UTR">
+            📋
+          </button>
+        </span>
+      `;
+    }
+
+    // Actions
+    let actionButtons = `
+      <button type="button" class="btn-table-action" onclick="openRegistrationModal('${escapeHtml(reg.registrationId)}')">
+        Review
+      </button>
+    `;
+
+    if (!isPaid) {
+      actionButtons = `
+        <button type="button" class="btn-table-action btn-verify-pay" onclick="window.markPaymentVerifiedQuick('${escapeHtml(reg.registrationId)}', '${escapeHtml(reg.paymentReference || '')}')" title="Confirm transaction evidence and mark paid">
+          Verify
+        </button>
+        <button type="button" class="btn-table-action" style="color: #34D399; border-color: rgba(52, 211, 153, 0.4);" onclick="window.collectCashAndCheckIn('${escapeHtml(reg.registrationId)}', ${fee})" title="Helpdesk 1-Tap Cash Collection">
+          Cash In
+        </button>
+        <button type="button" class="btn-table-action" onclick="openRegistrationModal('${escapeHtml(reg.registrationId)}')">
+          Details
+        </button>
+      `;
+    }
+
+    return `
+      <tr>
+        <td>
+          <span class="reg-id-badge cursor-pointer" onclick="openRegistrationModal('${escapeHtml(reg.registrationId)}')">
+            ${escapeHtml(reg.registrationId)}
+          </span>
+        </td>
+        <td><strong>${escapeHtml(student.fullName)}</strong></td>
+        <td>${escapeHtml(student.rollNumber || '—')}</td>
+        <td>${gamesDisplay}</td>
+        <td><strong style="color: #FCD34D;">₹${fee}</strong></td>
+        <td><span class="status-pill ${payBadgeClass}">${escapeHtml(payLabel)}</span></td>
+        <td>${utrDisplay}</td>
+        <td>${dateStr}</td>
+        <td>
+          <div class="action-btn-group">
+            ${actionButtons}
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+window.copyTextToClipboard = function(text) {
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    showToast(`✓ Copied '${text}' to clipboard.`);
+  }).catch(() => {
+    prompt('Copy transaction reference:', text);
+  });
+};
+
+window.markPaymentVerifiedQuick = async function(registrationId, utr) {
+  const utrPrompt = utr 
+    ? `Submitted Reference / UTR: ${utr}\n` 
+    : 'No reference submitted online (Helpdesk cash/offline collection)\n';
+
+  const confirmMsg = `CONFIRM PAYMENT VERIFICATION for ${registrationId}?\n\n` +
+    utrPrompt +
+    `Please ensure that transaction proof matches organizer bank statement or cash receipt before confirming.`;
+
+  if (!window.confirm(confirmMsg)) return;
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/admin/registrations/${encodeURIComponent(registrationId)}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken || ''
+      },
+      credentials: 'include',
+      body: JSON.stringify({ paymentStatus: 'paid' })
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || 'Payment verification failed');
+    }
+
+    showToast(`✓ Payment marked VERIFIED for ${registrationId}.`);
+    refreshCurrentView();
+  } catch (err) {
+    showToast(`Error: ${err.message}`);
+  }
+};
+
+window.collectCashAndCheckIn = async function(registrationId, fee) {
+  if (!window.confirm(`COLLECT CASH & CHECK-IN for ${registrationId}?\nRegistration Fee: ₹${fee}\n\nMark payment verified via campus desk cash collection?`)) return;
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/admin/registrations/${encodeURIComponent(registrationId)}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken || ''
+      },
+      credentials: 'include',
+      body: JSON.stringify({ 
+        paymentStatus: 'paid',
+        paymentReference: `CASH-DESK-${Date.now().toString().slice(-6)}`
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || 'Failed to record cash payment');
+    }
+
+    showToast(`✓ Cash collected (₹${fee}) & verified for ${registrationId}!`);
+    refreshCurrentView();
+  } catch (err) {
+    showToast(`Error: ${err.message}`);
+  }
+};
+
+async function initPaymentQrConfig() {
+  const form = document.getElementById('qrConfigForm');
+  const upiIdInput = document.getElementById('inputQrUpiId');
+  const upiNameInput = document.getElementById('inputQrUpiName');
+  const qrUrlInput = document.getElementById('inputQrImageUrl');
+  const badge = document.getElementById('qrStatusBadge');
+
+  if (!form) return;
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/config/payment-qr`);
+    if (res.ok) {
+      const { data } = await res.json();
+      if (data) {
+        if (upiIdInput && data.upi_id) upiIdInput.value = data.upi_id;
+        if (upiNameInput && data.upi_name) upiNameInput.value = data.upi_name;
+        if (qrUrlInput) qrUrlInput.value = data.qr_image_url || '';
+        if (badge) {
+          if (data.qr_image_url) {
+            badge.className = 'status-pill status-paid';
+            badge.textContent = 'Active QR Configured';
+          } else {
+            badge.className = 'status-pill status-unverified';
+            badge.textContent = 'Blank Placeholder Active';
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('Failed to fetch payment QR config:', err);
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const upi_id = upiIdInput ? upiIdInput.value.trim() : 'srmu.carnival@upi';
+    const upi_name = upiNameInput ? upiNameInput.value.trim() : 'SRMU B5 Carnival Desk';
+    const qr_image_url = qrUrlInput ? qrUrlInput.value.trim() : '';
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/config/payment-qr`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken || ''
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          upi_id,
+          upi_name,
+          qr_image_url,
+          is_qr_active: Boolean(qr_image_url)
+        })
+      });
+
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        throw new Error(json.error || json.message || 'Failed to update');
+      }
+
+      showToast('✓ UPI Payment QR configuration saved successfully!');
+      if (badge) {
+        if (qr_image_url) {
+          badge.className = 'status-pill status-paid';
+          badge.textContent = 'Active QR Configured';
+        } else {
+          badge.className = 'status-pill status-unverified';
+          badge.textContent = 'Blank Placeholder Active';
+        }
+      }
+    } catch (err) {
+      showToast(`Error: ${err.message}`);
+    }
+  });
+}
+
+window.updatePaymentStatusDirect = async function(registrationId, paymentStatus) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/admin/registrations/${encodeURIComponent(registrationId)}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken || ''
+      },
+      credentials: 'include',
+      body: JSON.stringify({ paymentStatus })
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Update failed');
+
+    showToast(`✓ Payment status updated to '${paymentStatus}'.`);
+    refreshCurrentView();
+  } catch (err) {
+    showToast(`Error: ${err.message}`);
+  }
+};
+
+// ============================================================================
+// 7. CSV DATA EXPORT SECTION
 // ============================================================================
 
 function initExportSection() {
@@ -634,6 +1085,10 @@ function initExportSection() {
       }
       if (statusScopeSelect && statusScopeSelect.value) {
         params.append('status', statusScopeSelect.value);
+      }
+      const payScopeSelect = document.getElementById('exportPaymentScope');
+      if (payScopeSelect && payScopeSelect.value) {
+        params.append('paymentStatus', payScopeSelect.value);
       }
 
       const res = await fetch(`${API_BASE_URL}/api/admin/registrations/export?${params.toString()}`, {
@@ -712,10 +1167,83 @@ window.openRegistrationModal = async function(registrationId) {
     if (modalPayEl) {
       const isPaid = data.paymentStatus === 'paid';
       const isPendingVer = data.paymentStatus === 'payment_verification_pending';
-      const payClass = isPaid ? 'status-confirmed' : (isPendingVer ? 'status-pending' : (data.paymentStatus === 'payment_failed' ? 'status-cancelled' : 'status-pending'));
+      const payClass = isPaid ? 'status-paid' : (isPendingVer ? 'status-payment_verification_pending' : (data.paymentStatus === 'payment_failed' ? 'status-payment_failed' : 'status-payment_pending'));
       const payLabel = isPaid ? 'Payment Verified' : (isPendingVer ? 'Payment Verification Pending' : (data.paymentStatus === 'payment_failed' ? 'Payment Failed' : 'Payment Pending'));
       const utrInfo = data.paymentReference ? `<div style="font-size: 0.75rem; color: #FCD34D; margin-top: 4px;">UTR/Ref: ${escapeHtml(data.paymentReference)}</div>` : '';
       modalPayEl.innerHTML = `<span class="status-pill ${payClass}">${escapeHtml(payLabel)}</span>${utrInfo}`;
+    }
+
+    // Phase 5: Payment Audit & Verification Workflow Card
+    const payWorkflowDesc = document.getElementById('modalPayWorkflowDesc');
+    const modalUtrCode = document.getElementById('modalUtrCode');
+    const btnCopyModalUtr = document.getElementById('btnCopyModalUtr');
+    const modalPayButtonsGroup = document.getElementById('modalPayButtonsGroup');
+
+    if (modalUtrCode) {
+      modalUtrCode.textContent = data.paymentReference || 'None submitted';
+    }
+
+    if (btnCopyModalUtr) {
+      btnCopyModalUtr.style.display = data.paymentReference ? 'inline-flex' : 'none';
+      btnCopyModalUtr.onclick = () => window.copyTextToClipboard(data.paymentReference);
+    }
+
+    const isPaid = data.paymentStatus === 'paid';
+    const isPendingVer = data.paymentStatus === 'payment_verification_pending';
+    const isFailed = data.paymentStatus === 'payment_failed';
+
+    if (payWorkflowDesc) {
+      if (isPaid) {
+        const verifier = data.paymentVerifiedBy ? `by organizer '${escapeHtml(data.paymentVerifiedBy)}'` : 'by staff';
+        const dateStr = data.paymentVerifiedAt ? ` on ${formatDate(data.paymentVerifiedAt)}` : '';
+        payWorkflowDesc.innerHTML = `<span style="color: var(--emerald-light);">✓ Payment verified ${verifier}${dateStr}. Registration fee settled.</span>`;
+      } else if (isPendingVer) {
+        payWorkflowDesc.innerHTML = `<span style="color: #FCD34D;">Student submitted transaction reference. Compare with official bank statement or desk cash before marking verified.</span>`;
+      } else if (isFailed) {
+        payWorkflowDesc.innerHTML = `<span style="color: var(--red-light);">Payment verification was marked as FAILED/INVALID. Can be reviewed or reset.</span>`;
+      } else {
+        payWorkflowDesc.textContent = 'Awaiting online transaction reference or cash fee payment at Carnival Helpdesk B5.';
+      }
+    }
+
+    if (modalPayButtonsGroup) {
+      modalPayButtonsGroup.innerHTML = '';
+
+      if (!isPaid) {
+        const btnVerifyPay = document.createElement('button');
+        btnVerifyPay.type = 'button';
+        btnVerifyPay.className = 'btn-table-action btn-verify-pay';
+        btnVerifyPay.innerHTML = '<span>Mark Payment Verified</span>';
+        btnVerifyPay.onclick = async () => {
+          await window.markPaymentVerifiedQuick(data.registrationId, data.paymentReference);
+          window.openRegistrationModal(data.registrationId);
+        };
+        modalPayButtonsGroup.appendChild(btnVerifyPay);
+
+        if (isPendingVer) {
+          const btnFailPay = document.createElement('button');
+          btnFailPay.type = 'button';
+          btnFailPay.className = 'btn-table-action btn-fail-pay';
+          btnFailPay.innerHTML = '<span>Mark Failed / Invalid</span>';
+          btnFailPay.onclick = async () => {
+            if (!confirm(`Mark payment as FAILED/INVALID for ${data.registrationId}?\nThis indicates the submitted UTR could not be verified against event collections.`)) return;
+            await window.updatePaymentStatusDirect(data.registrationId, 'payment_failed');
+            window.openRegistrationModal(data.registrationId);
+          };
+          modalPayButtonsGroup.appendChild(btnFailPay);
+        }
+      } else {
+        const btnRevokePay = document.createElement('button');
+        btnRevokePay.type = 'button';
+        btnRevokePay.className = 'btn-table-action btn-revoke';
+        btnRevokePay.innerHTML = '<span>Revoke Payment Verification</span>';
+        btnRevokePay.onclick = async () => {
+          if (!confirm(`REVOKE payment verification for ${data.registrationId}?\nStatus will return to Payment Pending.`)) return;
+          await window.updatePaymentStatusDirect(data.registrationId, 'payment_pending');
+          window.openRegistrationModal(data.registrationId);
+        };
+        modalPayButtonsGroup.appendChild(btnRevokePay);
+      }
     }
 
     // Participation Status & Certificate (Phase 7)

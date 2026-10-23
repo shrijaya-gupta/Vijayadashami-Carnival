@@ -5,12 +5,17 @@ const rateLimit = require('express-rate-limit');
  */
 const adminLoginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // 10 attempts per window
+  max: process.env.NODE_ENV === 'production' ? 30 : 1000,
+  skip: (req) => {
+    if (process.env.NODE_ENV !== 'production') return true;
+    const ip = req.ip || req.connection?.remoteAddress || '';
+    return ip === '127.0.0.1' || ip === '::1' || ip.includes('127.0.0.1');
+  },
   standardHeaders: true,
   legacyHeaders: false,
   message: {
     success: false,
-    error: 'Too many login attempts. Please wait 15 minutes before trying again.'
+    error: 'Too many login attempts. Please wait a few minutes before trying again.'
   }
 });
 

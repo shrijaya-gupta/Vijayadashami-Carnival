@@ -3,6 +3,16 @@ node_modules/
 */node_modules/
 package-lock.json.backup
 
+# Build output & caches
+dist/
+build/
+backend/public/dist/
+.vite/
+
+# Local backups
+legacy_backup/
+*.backup
+
 # Environment variables & secrets (CRITICAL - Never commit secrets)
 .env
 .env.*

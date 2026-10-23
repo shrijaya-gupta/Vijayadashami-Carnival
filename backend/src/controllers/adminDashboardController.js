@@ -42,6 +42,14 @@ async function getDashboardStats(req, res, next) {
     const verifiedParticipantsCount = await Registration.countDocuments({ participationStatus: 'verified' });
     const certificatesIssuedCount = await Registration.countDocuments({ certificateIssued: true });
 
+    // Payment status counts
+    const paidPaymentsCount = await Registration.countDocuments({ paymentStatus: 'paid' });
+    const pendingVerificationCount = await Registration.countDocuments({ paymentStatus: 'payment_verification_pending' });
+    const pendingPaymentCount = await Registration.countDocuments({
+      paymentStatus: { $in: ['pending', 'pending_desk_collection', 'payment_pending'] }
+    });
+    const failedPaymentCount = await Registration.countDocuments({ paymentStatus: 'payment_failed' });
+
     // Fetch all active registrations to aggregate game counts accurately
     const activeRegistrations = await Registration.find({ status: { $ne: 'cancelled' } })
       .select('registrationId selectedGames createdAt')
@@ -124,6 +132,10 @@ async function getDashboardStats(req, res, next) {
           pendingRegistrations: pendingCount,
           verifiedParticipantsCount,
           certificatesIssuedCount,
+          paidPaymentsCount,
+          pendingVerificationCount,
+          pendingPaymentCount,
+          failedPaymentCount,
           totalSelectedGameEntries,
           totalIndividualEntries,
           totalTeamEntries,
@@ -187,6 +199,11 @@ function buildFilterQuery(queryParams) {
     query.status = queryParams.status.trim();
   }
 
+  // Filter by Payment Status
+  if (queryParams.paymentStatus && queryParams.paymentStatus.trim() && queryParams.paymentStatus !== 'all') {
+    query.paymentStatus = queryParams.paymentStatus.trim();
+  }
+
   return query;
 }
 
@@ -230,6 +247,9 @@ async function getRegistrationsList(req, res, next) {
       })),
       feeAmount: doc.feeAmount !== undefined ? doc.feeAmount : ((doc.selectedGames?.length || 0) * 5),
       paymentStatus: doc.paymentStatus || 'pending_desk_collection',
+      paymentReference: doc.paymentReference || null,
+      paymentVerifiedAt: doc.paymentVerifiedAt || null,
+      paymentVerifiedBy: doc.paymentVerifiedBy || null,
       status: doc.status || 'confirmed',
       createdAt: doc.createdAt
     }));

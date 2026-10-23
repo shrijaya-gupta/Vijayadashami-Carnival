@@ -66,10 +66,12 @@ app.get('/verify-certificate/:token', (req, res) => {
   res.redirect(`/verify.html?token=${encodeURIComponent(token)}`);
 });
 
-// 6. Serve static frontend files (checks monorepo root, backend/public, or local directory)
+// 6. Serve static frontend files (checks dist, monorepo root, backend/public, or local directory)
 const candidateStaticPaths = [
+  path.resolve(__dirname, '../../dist'),       // Production Vite build output
   path.resolve(__dirname, '../../'),          // Monorepo / local dev root
   path.resolve(__dirname, '../public'),       // backend/public directory
+  path.resolve(process.cwd(), 'dist'),        // CWD dist
   path.resolve(process.cwd(), 'public'),      // CWD/public
   path.resolve(process.cwd(), '../'),         // CWD parent
   process.cwd()                               // CWD

@@ -1,45 +1,45 @@
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 require('dotenv').config();
 const app = require('./app');
-const { connectDB, disconnectDB } = require('./config/db');
-const AdminUser = require('./models/AdminUser');
+const db = require('./config/supabase');
 
 const PORT = parseInt(process.env.PORT, 10) || 5000;
-
-// Validate required environment configurations before starting
-if (!process.env.MONGODB_URI) {
-  console.error('FATAL: MONGODB_URI is required. Please check your .env configuration.');
-  process.exit(1);
-}
 
 let server;
 
 async function startServer() {
   try {
-    // 1. Establish database connection first
-    console.log('Connecting to MongoDB...');
-    await connectDB();
+    // 1. Initialize Supabase / Database layer
+    console.log('================================================================');
+    console.log('VIJAYADASHAMI CARNIVAL BACKEND (SRMU B5) — POWERED BY SUPABASE');
+    console.log('================================================================');
+    
+    if (db.isSupabaseConfigured) {
+      console.log(`[DATABASE] Connected to Supabase Cloud Database: ${process.env.SUPABASE_URL}`);
+    } else {
+      console.log('[DATABASE] Supabase credentials pending in .env.');
+      console.log('[DATABASE] In-memory persistence active. Set SUPABASE_URL and SUPABASE_ANON_KEY to link live database.');
+    }
 
-    // 2. Ensure initial administrator exists if configured in environment
-    await AdminUser.ensureInitialAdmin();
-
-    // 2. Start HTTP server only after database connection succeeds
+    // 2. Start HTTP server
     server = app.listen(PORT, () => {
-      console.log(`Vijayadashami Carnival backend running on http://localhost:${PORT}`);
-      console.log(`Health endpoint: http://localhost:${PORT}/api/health`);
-      console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`\nServer listening on: http://localhost:${PORT}`);
+      console.log(`Health check: http://localhost:${PORT}/api/health`);
+      console.log(`Payment QR Config: http://localhost:${PORT}/api/config/payment-qr`);
+      console.log(`Live Scoreboard: http://localhost:${PORT}/api/config/scoreboard`);
+      console.log(`Environment: ${process.env.NODE_ENV || 'development'}\n`);
     });
 
     // 3. Graceful shutdown listeners
     const shutdown = async (signal) => {
       console.log(`\nReceived ${signal}. Gracefully shutting down...`);
       if (server) {
-        server.close(async () => {
-          console.log('HTTP server closed.');
-          await disconnectDB();
+        server.close(() => {
+          console.log('HTTP server closed cleanly.');
           process.exit(0);
         });
       } else {
-        await disconnectDB();
         process.exit(0);
       }
     };
@@ -48,7 +48,7 @@ async function startServer() {
     process.on('SIGTERM', () => shutdown('SIGTERM'));
 
   } catch (error) {
-    console.error('Failed to start server due to database connection failure:', error.message);
+    console.error('Failed to start server:', error.message);
     process.exit(1);
   }
 }

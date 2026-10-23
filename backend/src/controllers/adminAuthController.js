@@ -123,7 +123,11 @@ async function logout(req, res, next) {
  */
 async function getMe(req, res, next) {
   try {
-    const user = await AdminUser.findById(req.admin.id).select('username fullName role lastLogin createdAt');
+    const query = AdminUser.findById(req.admin.id);
+    const user = (query && typeof query.select === 'function')
+      ? await query.select('username fullName role lastLogin createdAt')
+      : await query;
+
     if (!user) {
       return res.status(401).json({
         success: false,

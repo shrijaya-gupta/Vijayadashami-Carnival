@@ -2,27 +2,51 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const MIME_TYPES = {
-  '.html': 'text/html',
-  '.css': 'text/css',
-  '.js': 'text/javascript',
-  '.json': 'application/json',
+  '.html': 'text/html; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.js': 'application/javascript; charset=utf-8',
+  '.mjs': 'application/javascript; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
   '.svg': 'image/svg+xml',
-  '.ico': 'image/x-icon'
+  '.ico': 'image/x-icon',
+  '.webp': 'image/webp'
 };
 
 const server = http.createServer((req, res) => {
   let reqPath = req.url.split('?')[0];
   if (reqPath === '/') reqPath = '/index.html';
   
-  const filePath = path.join(__dirname, reqPath);
-  const ext = path.extname(filePath).toLowerCase();
+  // Check if target is inside dist or root
+  let targetPath = path.join(__dirname, reqPath);
+  
+  // Prefer dist/ for frontend assets and index if built
+  if (fs.existsSync(path.join(__dirname, 'dist', 'index.html')) && !reqPath.startsWith('/admin') && !reqPath.startsWith('/backend')) {
+    const distTarget = path.join(__dirname, 'dist', reqPath);
+    if (fs.existsSync(distTarget) && !fs.statSync(distTarget).isDirectory()) {
+      targetPath = distTarget;
+    } else if (reqPath === '/index.html') {
+      targetPath = path.join(__dirname, 'dist', 'index.html');
+    }
+  }
+
+  // Handle SPA fallback for client-side routes
+  if (!fs.existsSync(targetPath) || fs.statSync(targetPath).isDirectory()) {
+    if (fs.existsSync(path.join(__dirname, 'dist', 'index.html'))) {
+      targetPath = path.join(__dirname, 'dist', 'index.html');
+    } else {
+      targetPath = path.join(__dirname, 'index.html');
+    }
+  }
+
+  const ext = path.extname(targetPath).toLowerCase();
   const contentType = MIME_TYPES[ext] || 'application/octet-stream';
 
-  fs.readFile(filePath, (err, content) => {
+  fs.readFile(targetPath, (err, content) => {
     if (err) {
       if (err.code === 'ENOENT') {
         res.writeHead(404, { 'Content-Type': 'text/plain' });
@@ -33,11 +57,11 @@ const server = http.createServer((req, res) => {
       }
     } else {
       res.writeHead(200, { 'Content-Type': contentType });
-      res.end(content, 'utf-8');
+      res.end(content);
     }
   });
 });
 
 server.listen(PORT, () => {
-  console.log(`Vijayadashami Carnival dev server listening on http://localhost:${PORT}`);
+  console.log(`Vijayadashami Carnival web server running at http://localhost:${PORT}`);
 });

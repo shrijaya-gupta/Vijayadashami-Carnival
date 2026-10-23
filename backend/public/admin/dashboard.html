@@ -7,10 +7,10 @@
   <meta name="robots" content="noindex, nofollow">
   <title>Organizer Dashboard | Vijayadashami Carnival</title>
 
-  <!-- Google Fonts: Plus Jakarta Sans -->
+  <!-- Google Fonts: Cinzel, Outfit, JetBrains Mono (Website Theme) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@600;700;800;900&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
   <!-- Admin Stylesheet -->
   <link rel="stylesheet" href="css/admin.css">
@@ -36,8 +36,17 @@
     <aside id="dashboardSidebar" class="dashboard-sidebar" aria-label="Organizer Navigation">
       <div class="sidebar-brand">
         <div class="brand-icon" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="22" height="22" aria-hidden="true">
+            <g transform="rotate(-25 12 12)">
+              <path d="M7 3 C9.5 4.5, 12 7.5, 15.5 12 C12 16.5, 9.5 19.5, 7 21" stroke="#F59E0B" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+              <path d="M15 10.5 C15.6 11.2, 15.8 11.6, 15.8 12 C15.8 12.4, 15.6 12.8, 15 13.5" stroke="#D97706" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="7" cy="3" r="0.9" fill="#FDE047"/>
+              <circle cx="7" cy="21" r="0.9" fill="#FDE047"/>
+              <path d="M7 3 L2.5 12 L7 21" stroke="#FDE047" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="2.5" y1="12" x2="21" y2="12" stroke="#FFFDF9" stroke-width="2" stroke-linecap="round"/>
+              <path d="M16 8 L22.5 12 L16 16 L17.8 12 Z" fill="#FDE047" stroke="#D97706" stroke-width="0.8" stroke-linejoin="round"/>
+              <path d="M4.5 9.5 L2 12 L4.5 14.5" stroke="#FDE047" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </g>
           </svg>
         </div>
         <div class="brand-info">
@@ -69,19 +78,27 @@
           <span>All Registrations</span>
         </button>
 
+        <button type="button" class="sidebar-nav-item" data-view="gamewise" id="navGamewise">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          <span>Game-wise Roster</span>
+        </button>
+
+        <button type="button" class="sidebar-nav-item" data-view="payments" id="navPayments">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+            <line x1="2" y1="10" x2="22" y2="10"></line>
+          </svg>
+          <span>Payment Management</span>
+        </button>
+
         <button type="button" class="sidebar-nav-item" data-view="certificates" id="navCertificates">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="8" r="6"></circle>
             <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path>
           </svg>
           <span>Certificates &amp; Verification</span>
-        </button>
-
-        <button type="button" class="sidebar-nav-item" data-view="gamewise" id="navGamewise">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-          </svg>
-          <span>Game-wise Roster</span>
         </button>
 
         <button type="button" class="sidebar-nav-item" data-view="export" id="navExport">
@@ -271,6 +288,52 @@
                 <span class="metric-sub">With active QR verification</span>
               </div>
             </div>
+
+            <!-- 7. Payments Verification Pending -->
+            <div class="metric-card">
+              <div class="metric-icon-wrap metric-icon-amber" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+              </div>
+              <div class="metric-info">
+                <span class="metric-label">Verification Pending</span>
+                <span id="metricPendingVerPayments" class="metric-value">0</span>
+                <span class="metric-sub">UTR submitted &bull; awaiting audit</span>
+              </div>
+            </div>
+
+            <!-- 8. Payments Verified -->
+            <div class="metric-card">
+              <div class="metric-icon-wrap metric-icon-emerald" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+              </div>
+              <div class="metric-info">
+                <span class="metric-label">Payments Verified</span>
+                <span id="metricPaidPayments" class="metric-value">0</span>
+                <span class="metric-sub">Verified by desk/staff</span>
+              </div>
+            </div>
+
+            <!-- 9. Payments Pending -->
+            <div class="metric-card">
+              <div class="metric-icon-wrap metric-icon-purple" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+              </div>
+              <div class="metric-info">
+                <span class="metric-label">Payment Pending</span>
+                <span id="metricPendingPayments" class="metric-value">0</span>
+                <span class="metric-sub">No UTR submitted yet</span>
+              </div>
+            </div>
           </div>
 
           <!-- Per-Game Counts Section -->
@@ -352,6 +415,17 @@
                   <option value="confirmed">Confirmed</option>
                   <option value="pending">Pending</option>
                   <option value="cancelled">Cancelled</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="filterPaymentStatus" class="form-label">Payment Status</label>
+                <select id="filterPaymentStatus" class="filter-input">
+                  <option value="">All Payments</option>
+                  <option value="paid">Payment Verified</option>
+                  <option value="payment_verification_pending">Verification Pending</option>
+                  <option value="payment_pending">Payment Pending</option>
+                  <option value="payment_failed">Payment Failed</option>
                 </select>
               </div>
 
@@ -522,6 +596,205 @@
         </section>
 
         <!-- ===================================================================
+             VIEW: PAYMENT MANAGEMENT & DESK VERIFICATION
+             =================================================================== -->
+        <section id="viewPayments" class="dashboard-view-section" aria-labelledby="payViewHeading">
+          <!-- Organizer Verification Notice -->
+          <div class="payment-desk-notice-card">
+            <div class="notice-icon-wrap" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+            </div>
+            <div class="notice-content">
+              <h4 class="notice-title">Carnival Helpdesk &amp; UPI Payment Verification</h4>
+              <p class="notice-desc">
+                Registration fee is strictly ₹5 per selected game (authoritative backend calculation). Third-party automated payment gateway credentials are not enabled in this environment.
+                When students submit a UPI UTR transaction reference online or present payment at the B5 registration helpdesk, authorized organizers inspect transaction proof before marking the payment verified.
+              </p>
+            </div>
+          </div>
+
+          <!-- Payment Metrics Cards -->
+          <div class="metrics-grid" style="margin-bottom: 24px;">
+            <div class="metric-card">
+              <div class="metric-icon-wrap metric-icon-amber" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+              </div>
+              <div class="metric-info">
+                <span class="metric-label">Verification Pending</span>
+                <span id="metricPayPendingVer" class="metric-value">0</span>
+                <span class="metric-sub">UTR submitted &bull; awaiting audit</span>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon-wrap metric-icon-emerald" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+              </div>
+              <div class="metric-info">
+                <span class="metric-label">Payments Verified</span>
+                <span id="metricPayVerified" class="metric-value">0</span>
+                <span class="metric-sub">Confirmed by desk organizer</span>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon-wrap metric-icon-purple" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+              </div>
+              <div class="metric-info">
+                <span class="metric-label">Payment Pending</span>
+                <span id="metricPayPending" class="metric-value">0</span>
+                <span class="metric-sub">No UTR submitted yet</span>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon-wrap metric-icon-blue" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                  <line x1="2" y1="10" x2="22" y2="10"></line>
+                </svg>
+              </div>
+              <div class="metric-info">
+                <span class="metric-label">Verified Collections</span>
+                <span id="metricPayEstimatedTotal" class="metric-value">₹0</span>
+                <span class="metric-sub">₹5 per verified entry</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- UPI QR Code Management Card -->
+          <div class="table-card" style="padding: 20px 24px; margin-bottom: 24px; border: 1px solid rgba(212, 175, 55, 0.3); background: linear-gradient(135deg, rgba(30, 7, 16, 0.8), rgba(20, 4, 11, 0.9)); border-radius: var(--radius-md);">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 14px;">
+              <div>
+                <h4 style="font-size: 1.05rem; font-weight: 700; color: #FCD34D; margin: 0 0 4px 0;">
+                  UPI Payment QR Code &amp; Registration Desk Setup
+                </h4>
+                <p style="font-size: 0.82rem; color: var(--text-dim); margin: 0;">
+                  Set or upload your festival desk UPI QR Code image so participants can scan and pay during online registration. Leave blank to show the placeholder space.
+                </p>
+              </div>
+              <span id="qrStatusBadge" class="status-pill status-unverified">Loading QR Status...</span>
+            </div>
+
+            <form id="qrConfigForm" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) 140px; gap: 12px; align-items: flex-end;">
+              <div class="form-group" style="margin: 0;">
+                <label for="inputQrUpiId" class="form-label">UPI ID</label>
+                <input type="text" id="inputQrUpiId" class="filter-input" placeholder="e.g. srmu.carnival@upi" value="srmu.carnival@upi">
+              </div>
+
+              <div class="form-group" style="margin: 0;">
+                <label for="inputQrUpiName" class="form-label">Payee / Account Name</label>
+                <input type="text" id="inputQrUpiName" class="filter-input" placeholder="e.g. SRMU B5 Carnival Desk" value="SRMU B5 Carnival Desk">
+              </div>
+
+              <div class="form-group" style="margin: 0;">
+                <label for="inputQrImageUrl" class="form-label">QR Code Image URL (or Image Link)</label>
+                <input type="text" id="inputQrImageUrl" class="filter-input" placeholder="Paste image URL (blank = placeholder)">
+              </div>
+
+              <div>
+                <button type="submit" id="btnSaveQrConfig" class="btn-primary" style="width: 100%; height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+                  <span>Save QR</span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Payment Filtering Bar -->
+          <div class="filter-card">
+            <div class="filter-grid">
+              <div class="form-group">
+                <label for="filterPaySearch" class="form-label">Search Transaction</label>
+                <input type="text" id="filterPaySearch" class="filter-input" placeholder="Search by name, roll, ID, or UTR...">
+              </div>
+
+              <div class="form-group">
+                <label for="filterPayStatus" class="form-label">Payment Status</label>
+                <select id="filterPayStatus" class="filter-input">
+                  <option value="">All Payment Statuses</option>
+                  <option value="payment_verification_pending" selected>Verification Pending (Action Needed)</option>
+                  <option value="payment_pending">Payment Pending (No UTR)</option>
+                  <option value="paid">Payment Verified (Paid)</option>
+                  <option value="payment_failed">Payment Failed</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="filterPayGame" class="form-label">Game Scope</label>
+                <select id="filterPayGame" class="filter-input">
+                  <option value="all">All Games</option>
+                  <option value="lemon-race">Lemon Race</option>
+                  <option value="target-shooting">Target Shooting</option>
+                  <option value="musical-chairs">Musical Chairs</option>
+                  <option value="human-knot">Human Knot</option>
+                  <option value="cup-balloon-pyramid">Cup and Balloon Pyramid</option>
+                  <option value="balloon-dual-race">Balloon Dual Race</option>
+                </select>
+              </div>
+
+              <div>
+                <button type="button" id="btnResetPayFilters" class="btn-reset-filters">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                  <span>Reset</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payments Table -->
+          <div class="table-card">
+            <div class="table-responsive">
+              <table class="data-table" aria-label="Student registrations payment table">
+                <thead>
+                  <tr>
+                    <th>Registration ID</th>
+                    <th>Student Name</th>
+                    <th>Roll Number</th>
+                    <th>Games Selected</th>
+                    <th>Fee Due</th>
+                    <th>Payment Status</th>
+                    <th>Submitted UTR / Ref</th>
+                    <th>Registered At</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="paymentsTbody">
+                  <!-- Populated via JS -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Pagination Bar -->
+            <div class="pagination-bar">
+              <div id="payPaginationInfo">Showing 0-0 of 0 payment records</div>
+              <div class="pagination-controls">
+                <button type="button" id="btnPayPrevPage" class="btn-page" disabled>&larr; Previous</button>
+                <span id="payPageIndicator" style="font-weight: 700; color: #FFFFFF;">Page 1 of 1</span>
+                <button type="button" id="btnPayNextPage" class="btn-page" disabled>Next &rarr;</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
              VIEW 4: CSV EXPORT
              =================================================================== -->
         <section id="viewExport" class="dashboard-view-section">
@@ -556,6 +829,16 @@
                   <option value="">All Statuses (Confirmed, Pending, Cancelled)</option>
                   <option value="confirmed" selected>Confirmed Only</option>
                   <option value="pending">Pending Only</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="exportPaymentScope" class="form-label">Payment Scope</label>
+                <select id="exportPaymentScope" class="filter-input">
+                  <option value="">All Payment Records</option>
+                  <option value="paid">Payment Verified Only</option>
+                  <option value="payment_verification_pending">Verification Pending Only</option>
+                  <option value="payment_pending">Payment Pending Only</option>
                 </select>
               </div>
             </div>
@@ -642,6 +925,22 @@
       <h4 style="font-size: 0.95rem; font-weight: 800; color: #FFFFFF; margin-bottom: 10px;">Selected Games &amp; Squad Rosters</h4>
       <div id="modalGamesContainer" class="games-list-card">
         <!-- Populated via JS -->
+      </div>
+
+      <!-- Phase 5: Payment Audit & Desk Verification Actions -->
+      <div id="modalPayActionsCard" style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #FCD34D; display: block;">Payment Audit &amp; Verification</span>
+          <span id="modalPayWorkflowDesc" style="font-size: 0.88rem; font-weight: 700; color: #FFFFFF;">Review submitted UPI UTR or desk receipt before verifying</span>
+          <div id="modalPayReferenceDisplay" style="margin-top: 6px; font-size: 0.82rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px;">
+            <span>Transaction UTR / Ref:</span>
+            <code id="modalUtrCode" style="background: rgba(0,0,0,0.3); padding: 2px 8px; border-radius: 4px; color: #FCD34D; font-family: monospace; font-weight: 700;">&mdash;</code>
+            <button type="button" id="btnCopyModalUtr" class="btn-table-action" style="padding: 2px 8px; font-size: 0.7rem;" title="Copy UTR to clipboard">Copy</button>
+          </div>
+        </div>
+        <div id="modalPayButtonsGroup" class="action-btn-group">
+          <!-- Dynamically filled with Verify / Mark Failed / Reset Pending buttons -->
+        </div>
       </div>
 
       <!-- Phase 7: Attendance Verification & Certificate Actions -->
