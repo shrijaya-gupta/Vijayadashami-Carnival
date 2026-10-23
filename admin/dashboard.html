@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Vijayadashami Carnival — Secure Organizer Dashboard">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Organizer Dashboard | Vijayadashami Carnival</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Admin Stylesheet -->
+  <link rel="stylesheet" href="css/admin.css">
+
+  <script>
+    (function() {
+      try {
+        var savedTheme = localStorage.getItem('srmu_theme');
+        var systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+
+  <div class="dashboard-wrapper">
+
+    <!-- =======================================================================
+         SIDEBAR NAVIGATION
+         ======================================================================= -->
+    <aside id="dashboardSidebar" class="dashboard-sidebar" aria-label="Organizer Navigation">
+      <div class="sidebar-brand">
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+        </div>
+        <div class="brand-info">
+          <span class="brand-title">Vijayadashami Carnival</span>
+          <span class="brand-sub">Admin Portal</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <span class="nav-section-label">Management</span>
+        
+        <button type="button" class="sidebar-nav-item active" data-view="overview" id="navOverview">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          <span>Overview</span>
+        </button>
+
+        <button type="button" class="sidebar-nav-item" data-view="registrations" id="navRegistrations">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          <span>All Registrations</span>
+        </button>
+
+        <button type="button" class="sidebar-nav-item" data-view="certificates" id="navCertificates">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="8" r="6"></circle>
+            <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path>
+          </svg>
+          <span>Certificates &amp; Verification</span>
+        </button>
+
+        <button type="button" class="sidebar-nav-item" data-view="gamewise" id="navGamewise">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          <span>Game-wise Roster</span>
+        </button>
+
+        <button type="button" class="sidebar-nav-item" data-view="export" id="navExport">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>CSV Data Export</span>
+        </button>
+
+        <span class="nav-section-label" style="margin-top: 16px;">External</span>
+
+        <a href="../index.html" class="sidebar-nav-item" target="_blank" rel="noopener noreferrer">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+          <span>Public Event Site &nearr;</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="admin-user-info">
+          <div class="admin-avatar" id="sidebarAvatar">A</div>
+          <div class="admin-names">
+            <span class="admin-user-name" id="sidebarAdminName">Administrator</span>
+            <span class="admin-user-role" id="sidebarAdminRole">Organizer</span>
+          </div>
+        </div>
+        <button type="button" id="btnLogoutSidebar" class="btn-sidebar-logout" title="Log Out" aria-label="Sign out of admin dashboard">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- =======================================================================
+         MAIN CONTENT AREA
+         ======================================================================= -->
+    <div class="dashboard-main">
+      <!-- Topbar Header -->
+      <header class="dashboard-topbar">
+        <div class="topbar-left">
+          <button type="button" id="mobileMenuToggle" class="mobile-menu-toggle" aria-label="Toggle mobile menu">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <h2 id="topbarPageTitle" class="topbar-title">Dashboard Overview</h2>
+        </div>
+
+        <div class="topbar-right">
+          <button type="button" id="adminThemeToggle" class="theme-toggle-btn" aria-label="Toggle visual theme" title="Toggle Light/Dark Theme">
+            <svg class="theme-icon-light" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <svg class="theme-icon-dark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </button>
+          <div class="badge-live-db">
+            <span class="pulse-dot" aria-hidden="true"></span>
+            <span>MongoDB Connected</span>
+          </div>
+          <button type="button" id="btnRefreshData" class="btn-table-action" title="Refresh live statistics" aria-label="Refresh data">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+            <span>Refresh</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Content Area Views -->
+      <main class="dashboard-content-area">
+
+        <!-- ===================================================================
+             VIEW 1: DASHBOARD OVERVIEW
+             =================================================================== -->
+        <section id="viewOverview" class="dashboard-view-section active" aria-labelledby="topbarPageTitle">
+          <!-- Overview Metric Cards Grid -->
+          <div class="metrics-grid">
+            <!-- 1. Total Unique Registrations -->
+            <div class="metric-card">
+              <div class="metric-icon-wrap metric-icon-emerald" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              </div>
+              <div class="metric-info">
+                <span class="metric-label">Unique Students</span>
+                <span id="metricTotalRegistrations" class="metric-value">0</span>
+                <span class="metric-sub">Total student registrations</span>
+              </div>
+            </div>
+
+            <!-- 2. Total Selected Game Entries -->
+            <div class="metric-card">
+              <div class="metric-icon-wrap metric-icon-blue" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+              </div>
+              <div class="metric-info">
+                <span class="metric-label">Game Selections</span>
+                <span id="metricTotalGameEntries" class="metric-value">0</span>
+                <span class="metric-sub">Across all 6 event challenges</span>
+              </div>
+            </div>
+
+            <!-- 3. Individual Participation Entries -->
+            <div class="metric-card">
+              <div class="metric-icon-wrap metric-icon-purple" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
+              <div class="metric-info">
+                <span class="metric-label">Solo / Individual</span>
+                <span id="metricIndividualEntries" class="metric-value">0</span>
+                <span class="metric-sub">Solo competitor entries</span>
+              </div>
+            </div>
+
+            <!-- 4. Team Participation Entries -->
+            <div class="metric-card">
+              <div class="metric-icon-wrap metric-icon-amber" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                </svg>
+              </div>
+              <div class="metric-info">
+                <span class="metric-label">Squad / Team</span>
+                <span id="metricTeamEntries" class="metric-value">0</span>
+                <span id="metricTeamMembersSub" class="metric-sub">0 team members listed</span>
+              </div>
+            </div>
+
+            <!-- 5. Verified Event Attendees -->
+            <div class="metric-card">
+              <div class="metric-icon-wrap metric-icon-emerald" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+              </div>
+              <div class="metric-info">
+                <span class="metric-label">Verified Attendees</span>
+                <span id="metricVerifiedAttendees" class="metric-value">0</span>
+                <span class="metric-sub">Participation verified by staff</span>
+              </div>
+            </div>
+
+            <!-- 6. Official Certificates Issued -->
+            <div class="metric-card">
+              <div class="metric-icon-wrap metric-icon-blue" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <circle cx="12" cy="8" r="6"></circle>
+                  <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path>
+                </svg>
+              </div>
+              <div class="metric-info">
+                <span class="metric-label">Certificates Issued</span>
+                <span id="metricCertificatesIssued" class="metric-value">0</span>
+                <span class="metric-sub">With active QR verification</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Per-Game Counts Section -->
+          <div class="section-panel-header">
+            <h3 class="section-panel-title">Participation Across 6 Event Games</h3>
+          </div>
+          <div id="overviewGamesGrid" class="games-breakdown-grid">
+            <!-- Dynamically populated via JS with real MongoDB data -->
+          </div>
+
+          <!-- Recent Registrations Section -->
+          <div class="section-panel-header">
+            <h3 class="section-panel-title">Recent Event Registrations</h3>
+            <button type="button" class="btn-table-action" onclick="document.getElementById('navRegistrations').click();">
+              <span>View All Registrations &rarr;</span>
+            </button>
+          </div>
+          <div class="table-card">
+            <div class="table-responsive">
+              <table class="data-table" aria-label="Recent registrations table">
+                <thead>
+                  <tr>
+                    <th>Registration ID</th>
+                    <th>Student Name</th>
+                    <th>Roll Number</th>
+                    <th>Course</th>
+                    <th>Games Selected</th>
+                    <th>Status</th>
+                    <th>Registered At</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="overviewRecentTbody">
+                  <!-- Populated via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             VIEW 2: ALL REGISTRATIONS (SEARCH, FILTER, PAGINATION)
+             =================================================================== -->
+        <section id="viewRegistrations" class="dashboard-view-section" aria-labelledby="allRegHeading">
+          <div class="filter-card">
+            <div class="filter-grid">
+              <div class="form-group">
+                <label for="filterSearch" class="form-label">Search Participant</label>
+                <input type="text" id="filterSearch" class="filter-input" placeholder="Search by name, roll number, or ID...">
+              </div>
+
+              <div class="form-group">
+                <label for="filterGame" class="form-label">Game Filter</label>
+                <select id="filterGame" class="filter-input">
+                  <option value="all">All Games (6)</option>
+                  <option value="lemon-race">Lemon Race</option>
+                  <option value="target-shooting">Target Shooting</option>
+                  <option value="musical-chairs">Musical Chairs</option>
+                  <option value="human-knot">Human Knot</option>
+                  <option value="cup-balloon-pyramid">Cup and Balloon Pyramid</option>
+                  <option value="balloon-dual-race">Balloon Dual Race</option>
+                  <option value="treasure-hunt">Treasure Hunt (Legacy)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="filterFormat" class="form-label">Participation Format</label>
+                <select id="filterFormat" class="filter-input">
+                  <option value="">All Formats</option>
+                  <option value="individual">Individual</option>
+                  <option value="team">Team Entry</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="filterStatus" class="form-label">Status</label>
+                <select id="filterStatus" class="filter-input">
+                  <option value="">All Statuses</option>
+                  <option value="confirmed">Confirmed</option>
+                  <option value="pending">Pending</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </div>
+
+              <div>
+                <button type="button" id="btnResetFilters" class="btn-reset-filters">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                  <span>Reset</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Registrations Table -->
+          <div class="table-card">
+            <div class="table-responsive">
+              <table class="data-table" aria-label="Student registrations table">
+                <thead>
+                  <tr>
+                    <th>Registration ID</th>
+                    <th>Student Name</th>
+                    <th>Roll Number</th>
+                    <th>Course &amp; Branch</th>
+                    <th>Year</th>
+                    <th>Selected Games</th>
+                    <th>Fee</th>
+                    <th>Payment Status</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="registrationsTbody">
+                  <!-- Populated via JS -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Pagination Bar -->
+            <div class="pagination-bar">
+              <div id="paginationInfo">Showing 0-0 of 0 registrations</div>
+              <div class="pagination-controls">
+                <button type="button" id="btnPrevPage" class="btn-page" disabled>&larr; Previous</button>
+                <span id="pageIndicator" style="font-weight: 700; color: #FFFFFF;">Page 1 of 1</span>
+                <button type="button" id="btnNextPage" class="btn-page" disabled>Next &rarr;</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             VIEW: CERTIFICATES & ATTENDANCE MANAGEMENT (PHASE 7)
+             =================================================================== -->
+        <section id="viewCertificates" class="dashboard-view-section" aria-labelledby="certViewHeading">
+          <div class="filter-card">
+            <div class="filter-grid">
+              <div class="form-group">
+                <label for="filterCertSearch" class="form-label">Search Participant</label>
+                <input type="text" id="filterCertSearch" class="filter-input" placeholder="Search by name, roll number, or ID...">
+              </div>
+
+              <div class="form-group">
+                <label for="filterCertStatus" class="form-label">Attendance Verification</label>
+                <select id="filterCertStatus" class="filter-input">
+                  <option value="">All Verification Statuses</option>
+                  <option value="unverified">Unverified Only</option>
+                  <option value="verified">Verified Only</option>
+                  <option value="absent">Marked Absent</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="filterCertGame" class="form-label">Game Filter</label>
+                <select id="filterCertGame" class="filter-input">
+                  <option value="all">All Games (6)</option>
+                  <option value="lemon-race">Lemon Race</option>
+                  <option value="target-shooting">Target Shooting</option>
+                  <option value="musical-chairs">Musical Chairs</option>
+                  <option value="human-knot">Human Knot</option>
+                  <option value="cup-balloon-pyramid">Cup and Balloon Pyramid</option>
+                  <option value="balloon-dual-race">Balloon Dual Race</option>
+                  <option value="treasure-hunt">Treasure Hunt (Legacy)</option>
+                </select>
+              </div>
+
+              <div>
+                <button type="button" id="btnResetCertFilters" class="btn-reset-filters">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                  <span>Reset</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Certificate Management Table Card -->
+          <div class="table-card">
+            <div class="table-responsive">
+              <table class="data-table" aria-label="Participant certificates and attendance table">
+                <thead>
+                  <tr>
+                    <th>Registration ID</th>
+                    <th>Student Name</th>
+                    <th>Roll Number</th>
+                    <th>Selected Games</th>
+                    <th>Attendance Verification</th>
+                    <th>Certificate Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="certificatesTbody">
+                  <!-- Populated via JS -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Pagination Bar -->
+            <div class="pagination-bar">
+              <div id="certPaginationInfo">Showing 0-0 of 0 participants</div>
+              <div class="pagination-controls">
+                <button type="button" id="btnCertPrevPage" class="btn-page" disabled>&larr; Previous</button>
+                <span id="certPageIndicator" style="font-weight: 700; color: #FFFFFF;">Page 1 of 1</span>
+                <button type="button" id="btnCertNextPage" class="btn-page" disabled>Next &rarr;</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             VIEW 3: GAME-WISE PARTICIPANTS BREAKDOWN
+             =================================================================== -->
+        <section id="viewGamewise" class="dashboard-view-section">
+          <div class="gamewise-tabs-row" id="gamewiseTabsContainer">
+            <!-- Game selector buttons populated via JS -->
+          </div>
+
+          <!-- Selected Game Metrics Card -->
+          <div id="gamewiseGameHeader" class="table-card" style="padding: 24px; margin-bottom: 24px;">
+            <!-- Populated via JS -->
+          </div>
+
+          <!-- Game Participants Roster Table -->
+          <div class="table-card">
+            <div class="table-responsive">
+              <table class="data-table" aria-label="Game participants roster table">
+                <thead>
+                  <tr>
+                    <th>Registration ID</th>
+                    <th>Student Name</th>
+                    <th>Roll Number</th>
+                    <th>Course &amp; Branch</th>
+                    <th>Format</th>
+                    <th>Team Details</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="gamewiseTbody">
+                  <!-- Populated via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             VIEW 4: CSV EXPORT
+             =================================================================== -->
+        <section id="viewExport" class="dashboard-view-section">
+          <div class="export-card">
+            <div class="login-brand-badge" style="margin-bottom: 14px;">
+              <span>Database Data Export</span>
+            </div>
+            <h3 class="export-title">Export Registration Records (CSV)</h3>
+            <p class="export-desc">
+              Download live registration records for the Vijayadashami Carnival. The CSV output includes student profiles, selected games, and team rosters. 
+              All text fields are automatically sanitized against spreadsheet formula injection (CWE-1236).
+            </p>
+
+            <div class="export-options-grid">
+              <div class="form-group">
+                <label for="exportGameScope" class="form-label">Export Scope</label>
+                <select id="exportGameScope" class="filter-input">
+                  <option value="all">All Registrations (Full Event)</option>
+                  <option value="lemon-race">Lemon Race Only</option>
+                  <option value="target-shooting">Target Shooting Only</option>
+                  <option value="musical-chairs">Musical Chairs Only</option>
+                  <option value="human-knot">Human Knot Only</option>
+                  <option value="cup-balloon-pyramid">Cup and Balloon Pyramid Only</option>
+                  <option value="balloon-dual-race">Balloon Dual Race Only</option>
+                  <option value="treasure-hunt">Treasure Hunt (Legacy) Only</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="exportStatusScope" class="form-label">Status Filter</label>
+                <select id="exportStatusScope" class="filter-input">
+                  <option value="">All Statuses (Confirmed, Pending, Cancelled)</option>
+                  <option value="confirmed" selected>Confirmed Only</option>
+                  <option value="pending">Pending Only</option>
+                </select>
+              </div>
+            </div>
+
+            <button type="button" id="btnDownloadCsv" class="btn-export-csv">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span>Download CSV Report</span>
+            </button>
+          </div>
+        </section>
+
+      </main>
+    </div>
+
+  </div>
+
+  <!-- =========================================================================
+       MODAL DIALOG: REGISTRATION DETAILS & EDIT STATUS
+       ========================================================================= -->
+  <div id="registrationDetailsModal" class="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="modalRegTitle">
+    <div class="modal-content-card">
+      <div class="modal-header-flex">
+        <div>
+          <span id="modalRegIdBadge" class="reg-id-badge" style="font-size: 1.1rem; padding: 4px 12px;">SRMU-2026-XXXXXX</span>
+          <h3 id="modalRegTitle" style="font-size: 1.3rem; font-weight: 800; color: #FFFFFF; margin-top: 6px;">Registration Details</h3>
+        </div>
+        <button type="button" id="btnModalClose" class="modal-close-btn" aria-label="Close registration details modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Student Info Grid -->
+      <div class="modal-details-grid">
+        <div class="detail-item">
+          <span class="detail-label">Full Name</span>
+          <span id="modalStudentName" class="detail-val">&mdash;</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Mobile Number (Organizer View)</span>
+          <span id="modalStudentMobile" class="detail-val" style="color: var(--emerald-light);">&mdash;</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">University Roll Number</span>
+          <span id="modalStudentRoll" class="detail-val">&mdash;</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Academic Profile</span>
+          <span id="modalStudentAcademic" class="detail-val">&mdash;</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Registration Date</span>
+          <span id="modalCreatedAt" class="detail-val">&mdash;</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Current Status</span>
+          <span id="modalStatusBadgeWrap">&mdash;</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Registration Fee</span>
+          <span id="modalRegistrationFee" class="detail-val" style="color: #FCD34D; font-weight: 800;">₹0</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Payment Status</span>
+          <span id="modalPaymentStatus" class="detail-val">&mdash;</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Attendance Verification</span>
+          <span id="modalParticipationStatus">&mdash;</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Participation Certificate</span>
+          <span id="modalCertificateId">&mdash;</span>
+        </div>
+      </div>
+
+      <!-- Selected Games & Squad Details -->
+      <h4 style="font-size: 0.95rem; font-weight: 800; color: #FFFFFF; margin-bottom: 10px;">Selected Games &amp; Squad Rosters</h4>
+      <div id="modalGamesContainer" class="games-list-card">
+        <!-- Populated via JS -->
+      </div>
+
+      <!-- Phase 7: Attendance Verification & Certificate Actions -->
+      <div id="modalCertActionsCard" style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--color-border); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-dim); display: block;">Certificate Workflow</span>
+          <span id="modalCertWorkflowDesc" style="font-size: 0.88rem; font-weight: 700; color: #FFFFFF;">Attendance must be verified to issue certificate</span>
+        </div>
+        <div id="modalCertButtonsGroup" class="action-btn-group">
+          <!-- Dynamically filled with Verify / Issue / Download / Revoke buttons -->
+        </div>
+      </div>
+
+      <!-- Actions & Status Modification -->
+      <div class="modal-actions-row">
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <label for="modalStatusSelect" style="font-size: 0.82rem; font-weight: 700; color: var(--text-muted);">Status:</label>
+          <select id="modalStatusSelect" class="filter-input" style="width: auto; padding: 6px 12px; font-size: 0.82rem;">
+            <option value="confirmed">Confirmed</option>
+            <option value="pending">Pending</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+
+          <label for="modalPaymentStatusSelect" style="font-size: 0.82rem; font-weight: 700; color: var(--text-muted); margin-left: 6px;">Payment:</label>
+          <select id="modalPaymentStatusSelect" class="filter-input" style="width: auto; padding: 6px 12px; font-size: 0.82rem;">
+            <option value="payment_pending">Payment Pending</option>
+            <option value="payment_verification_pending">Verification Pending</option>
+            <option value="paid">Payment Verified</option>
+            <option value="payment_failed">Payment Failed</option>
+          </select>
+
+          <button type="button" id="btnSaveStatus" class="btn-update-status">Save Changes</button>
+        </div>
+
+        <div>
+          <button type="button" id="btnDeleteRegistration" class="btn-delete-record" title="Permanently delete test or duplicate record">
+            Delete Record
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="admin-toast-container">
+    <div id="adminToast" class="admin-toast" role="status" aria-live="polite">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--emerald-light);">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+      </svg>
+      <span id="adminToastMessage">Action completed successfully.</span>
+    </div>
+  </div>
+
+  <!-- Dashboard Controller Script -->
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
