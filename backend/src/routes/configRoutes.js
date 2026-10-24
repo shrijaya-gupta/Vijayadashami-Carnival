@@ -41,10 +41,10 @@ router.get('/payment-qr', async (req, res) => {
     res.status(200).json({
       success: true,
       data: {
-        upi_id: 'srmu.carnival@upi',
-        upi_name: 'SRMU B5-408 Carnival Desk',
-        qr_image_url: '',
-        is_qr_active: false
+        upi_id: 'guptashrijaya-1@oksbi',
+        upi_name: 'Shrijaya Gupta (SRMU B5-408 Carnival Desk)',
+        qr_image_url: '/assets/official-upi-qr.jpg',
+        is_qr_active: true
       }
     });
   }
@@ -58,9 +58,9 @@ router.post('/payment-qr', async (req, res) => {
   try {
     const { upi_id, upi_name, qr_image_url, is_qr_active } = req.body || {};
     const updated = await db.updateEventConfig({
-      upi_id: upi_id ? String(upi_id).trim() : 'srmu.carnival@upi',
-      upi_name: upi_name ? String(upi_name).trim() : 'SRMU B5-408 Carnival Desk',
-      qr_image_url: qr_image_url ? String(qr_image_url).trim() : '',
+      upi_id: upi_id ? String(upi_id).trim() : 'guptashrijaya-1@oksbi',
+      upi_name: upi_name ? String(upi_name).trim() : 'Shrijaya Gupta (SRMU B5-408 Carnival Desk)',
+      qr_image_url: qr_image_url ? String(qr_image_url).trim() : '/assets/official-upi-qr.jpg',
       is_qr_active: is_qr_active !== undefined ? Boolean(is_qr_active) : true
     });
 

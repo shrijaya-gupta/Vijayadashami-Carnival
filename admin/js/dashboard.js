@@ -1238,9 +1238,9 @@ async function initPaymentQrConfig() {
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const upi_id = upiIdInput ? upiIdInput.value.trim() : 'srmu.carnival@upi';
-    const upi_name = upiNameInput ? upiNameInput.value.trim() : 'SRMU B5-408 Carnival Desk';
-    const qr_image_url = qrUrlInput ? qrUrlInput.value.trim() : '';
+    const upi_id = upiIdInput ? upiIdInput.value.trim() : 'guptashrijaya-1@oksbi';
+    const upi_name = upiNameInput ? upiNameInput.value.trim() : 'Shrijaya Gupta (SRMU B5-408 Carnival Desk)';
+    const qr_image_url = qrUrlInput ? qrUrlInput.value.trim() : '/assets/official-upi-qr.jpg';
 
     try {
       const res = await fetch(`${API_BASE_URL}/api/config/payment-qr`, {

@@ -52,6 +52,15 @@ export const Step6Confirmation: React.FC = () => {
       .then((url: string) => setQrDataUrl(url))
       .catch(() => {});
     }
+
+    // Direct student to official Carnival WhatsApp Group after registration
+    const waTimer = setTimeout(() => {
+      try {
+        window.open('https://chat.whatsapp.com/Ev1kiwPGzrDFvopit0B12l', '_blank');
+      } catch (_) {}
+    }, 1200);
+
+    return () => clearTimeout(waTimer);
   }, [regId]);
 
   if (!submissionResult) return null;
@@ -106,6 +115,30 @@ export const Step6Confirmation: React.FC = () => {
         <p className="text-xs sm:text-sm text-stone-300 mt-1">
           Thank you, <strong className="text-amber-300 font-bold">{submissionResult.studentName}</strong>. Your entry for the Vijayadashami Carnival has been recorded.
         </p>
+      </div>
+
+      {/* Official Carnival WhatsApp Group VIP Call-to-Action */}
+      <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-[#075E54] via-[#128C7E] to-[#25D366] text-white border-2 border-emerald-300 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 text-left animate-in fade-in-50">
+        <div className="space-y-1">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/30 text-emerald-200 text-[10px] font-bold uppercase tracking-wider">
+            <span>Official Carnival Community</span>
+          </div>
+          <h4 className="text-base sm:text-lg font-black text-white">
+            Join Official Carnival WhatsApp Group
+          </h4>
+          <p className="text-xs text-emerald-50 max-w-md leading-relaxed">
+            Get instant match schedules, live heats call-ups, team pairings, and winner announcements!
+          </p>
+        </div>
+        <a
+          href="https://chat.whatsapp.com/Ev1kiwPGzrDFvopit0B12l"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full sm:w-auto px-5 py-2.5 rounded-full font-black text-xs sm:text-sm bg-white text-emerald-900 hover:bg-emerald-50 shadow-lg hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 shrink-0 border border-emerald-200 cursor-pointer whitespace-nowrap"
+        >
+          <Share2 className="w-4 h-4 text-emerald-700" />
+          <span>Join WhatsApp Group &rarr;</span>
+        </a>
       </div>
 
       {/* Confirmed Registration Digital Pass Card */}

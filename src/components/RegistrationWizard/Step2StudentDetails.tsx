@@ -17,9 +17,9 @@ import {
 } from 'lucide-react';
 import { GAMES_DATA } from '../../data/games';
 
-const COURSES = ['B.Tech', 'BCA', 'BBA'];
+const COURSES = ['B.Tech', 'BCA', 'MCA', 'BBA', 'MBA', 'Diploma', 'B.Sc', 'M.Sc', 'Other'];
 const BRANCHES = ['CSE', 'IT', 'ECE', 'ME', 'Civil', 'Other'];
-const YEARS = ['3rd Year', '4th Year'];
+const YEARS = ['1st Year', '2nd Year', '3rd Year', '4th Year', '5th Year'];
 
 export const Step2StudentDetails: React.FC = () => {
   const { student, updateStudent, nextStep, prevStep, goToStep, selectedGameIds, gameConfigs, submitError } = useRegistration();
@@ -76,7 +76,7 @@ export const Step2StudentDetails: React.FC = () => {
           <input
             type="text"
             required
-            placeholder="e.g., Aarav Sharma"
+            placeholder="Name"
             value={student.fullName}
             onChange={(e) => updateStudent({ fullName: e.target.value })}
             className="w-full px-4 py-3 rounded-xl border border-[#D4AF37]/35 bg-black/50 text-white placeholder-stone-500 text-sm focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] focus:outline-hidden transition-all shadow-inner"

@@ -51,7 +51,8 @@ export const Step5Payment: React.FC = () => {
       .catch(() => {});
   }, []);
 
-  const receiverUpi = qrConfig?.upi_id || 'srmu.carnival@upi';
+  // Official active receiver UPI ID requested: guptashrijaya-1@oksbi (formerly srmu.carnival@upi)
+  const receiverUpi = qrConfig?.upi_id || 'guptashrijaya-1@oksbi';
 
   const handleCopyUpi = () => {
     navigator.clipboard.writeText(receiverUpi);
@@ -166,30 +167,19 @@ export const Step5Payment: React.FC = () => {
             Official UPI Payment QR
           </span>
 
-          {/* QR Container: Displays custom uploaded image, or elegant blank placeholder for admin upload */}
-          {qrConfig?.qr_image_url && qrConfig.is_qr_active ? (
-            <div className="w-44 h-44 sm:w-48 sm:h-48 rounded-2xl p-2.5 bg-white border-2 border-[#D4AF37] shadow-xl flex items-center justify-center overflow-hidden">
-              <img 
-                src={qrConfig.qr_image_url} 
-                alt="Official UPI Payment QR" 
-                className="w-full h-full object-contain rounded-xl"
-              />
-            </div>
-          ) : (
-            <div className="w-44 h-44 sm:w-48 sm:h-48 rounded-2xl p-4 bg-black/40 border-2 border-dashed border-[#D4AF37]/50 shadow-inner flex flex-col items-center justify-center text-center">
-              <QrCode className="w-10 h-10 text-amber-400/60 mb-2 stroke-[1.5]" />
-              <span className="text-xs font-bold text-amber-200">QR Code Space</span>
-              <span className="text-[10px] text-stone-400 mt-1 leading-tight">Official Carnival QR will be uploaded by Desk Admin</span>
-              <span className="text-[9px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 font-semibold mt-2 border border-amber-500/30">
-                Pay via UPI ID below or Cash at B5-408
-              </span>
-            </div>
-          )}
+          {/* QR Container: Displays official Google Pay / SBI UPI QR */}
+          <div className="w-48 h-48 sm:w-56 sm:h-56 rounded-2xl p-2 bg-white border-2 border-[#D4AF37] shadow-xl flex items-center justify-center overflow-hidden">
+            <img 
+              src={qrConfig?.qr_image_url || '/assets/official-upi-qr.jpg'} 
+              alt="Official UPI Payment QR (guptashrijaya-1@oksbi)" 
+              className="w-full h-full object-contain rounded-xl"
+            />
+          </div>
 
           <div className="w-full space-y-2.5 text-xs">
             {/* 1-Click Mobile UPI App Launch (GPay, PhonePe, Paytm, BHIM) */}
             <a
-              href={`upi://pay?pa=${encodeURIComponent(receiverUpi)}&pn=SRMU%20Carnival%20B5-408&am=${totalFee}&cu=INR&tn=Vijayadashami%20Carnival%20Entry`}
+              href={`upi://pay?pa=${encodeURIComponent(receiverUpi)}&pn=Shrijaya%20Gupta&am=${totalFee}&cu=INR&tn=Vijayadashami%20Carnival%20Pass`}
               className="w-full py-2.5 px-3 rounded-xl font-bold text-xs bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white flex items-center justify-center gap-2 border border-emerald-400 shadow-md shadow-emerald-950/40 active:scale-95 transition-all text-center"
             >
               <Smartphone className="w-3.5 h-3.5" />

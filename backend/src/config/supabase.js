@@ -45,10 +45,10 @@ const memoryStore = {
   certificates: [],
   eventConfig: {
     id: 'payment_config',
-    upi_id: 'srmu.carnival@upi',
-    upi_name: 'SRMU B5-408 Carnival Desk',
-    qr_image_url: '',
-    is_qr_active: false,
+    upi_id: 'guptashrijaya-1@oksbi',
+    upi_name: 'Shrijaya Gupta (SRMU B5-408 Carnival Desk)',
+    qr_image_url: '/assets/official-upi-qr.jpg',
+    is_qr_active: true,
     announcement: 'Registrations are open! ₹10 flat fee for all carnival activities.'
   },
   gameScores: []
