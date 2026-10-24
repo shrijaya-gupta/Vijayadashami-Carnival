@@ -110,14 +110,14 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenS
 
   return (
     <header className="sticky top-2 sm:top-3 z-50 w-full px-3 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-1 transition-all pointer-events-auto">
-      <div className="max-w-7xl mx-auto rounded-2xl bg-[#14020A]/92 backdrop-blur-2xl border border-[#D4AF37]/50 ring-1 ring-white/10 text-stone-200 shadow-[0_14px_40px_rgba(0,0,0,0.85),0_0_20px_rgba(212,175,55,0.1)] h-16 sm:h-[4.25rem] px-4 sm:px-6 flex items-center justify-between gap-3 sm:gap-4 transition-all">
+      <div className="max-w-7xl mx-auto rounded-full bg-[#14020A]/92 backdrop-blur-2xl border border-[#D4AF37]/50 ring-1 ring-white/10 text-stone-200 shadow-[0_14px_40px_rgba(0,0,0,0.85),0_0_20px_rgba(212,175,55,0.1)] h-16 sm:h-[4.25rem] px-5 sm:px-7 lg:px-8 flex items-center justify-between gap-2 sm:gap-3 lg:gap-4 transition-all">
         
         {/* Brand / Logo with authentic Vijayadashami Dhanush-Baan icon */}
         <button 
           onClick={() => handleNavClick('home')}
           className="flex items-center gap-2.5 sm:gap-3 text-left group focus:outline-hidden shrink-0 cursor-pointer"
         >
-          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#9F1239] via-[#630B22] to-[#2E040E] text-[#E5C158] flex items-center justify-center shadow-[0_0_20px_rgba(212,175,55,0.35)] group-hover:scale-105 transition-all border border-[#D4AF37]/60 shrink-0">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-[#9F1239] via-[#630B22] to-[#2E040E] text-[#E5C158] flex items-center justify-center shadow-[0_0_20px_rgba(212,175,55,0.35)] group-hover:scale-105 transition-all border border-[#D4AF37]/60 shrink-0">
             <VijayadashamiBowIcon className="w-5 h-5 sm:w-6 sm:h-6 text-amber-300 drop-shadow-md" />
           </div>
           <div className="shrink-0">
@@ -140,7 +140,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenS
         <nav className="hidden md:flex items-center gap-1 lg:gap-1.5">
           <button
             onClick={() => handleNavClick('home')}
-            className={`px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 whitespace-nowrap transition-all ${
+            className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold flex items-center gap-1.5 whitespace-nowrap transition-all ${
               activeTab === 'home'
                 ? 'bg-gradient-to-r from-[#881337] via-[#9F1239] to-[#881337] text-white shadow-md border border-[#E5C158]/60'
                 : 'text-stone-300 hover:bg-white/10 hover:text-white'
@@ -152,7 +152,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenS
 
           <button
             onClick={() => handleNavClick('games')}
-            className={`px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 whitespace-nowrap transition-all ${
+            className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold flex items-center gap-1.5 whitespace-nowrap transition-all ${
               activeTab === 'games'
                 ? 'bg-[#881337] text-white shadow-xs border border-[#E5C158]/40'
                 : 'text-stone-300 hover:bg-white/10 hover:text-white'
@@ -164,7 +164,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenS
 
           <button
             onClick={() => handleNavClick('register')}
-            className={`px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 whitespace-nowrap transition-all ${
+            className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold flex items-center gap-1.5 whitespace-nowrap transition-all ${
               activeTab === 'register'
                 ? 'bg-[#881337] text-white shadow-xs border border-[#E5C158]/40'
                 : 'text-stone-300 hover:bg-white/10 hover:text-white'
@@ -181,7 +181,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenS
 
           <button
             onClick={() => handleNavClick('verify')}
-            className={`px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 whitespace-nowrap transition-all ${
+            className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold flex items-center gap-1.5 whitespace-nowrap transition-all ${
               activeTab === 'verify'
                 ? 'bg-[#881337] text-white shadow-xs border border-[#E5C158]/40'
                 : 'text-stone-300 hover:bg-white/10 hover:text-white'
@@ -193,7 +193,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenS
 
           <button
             onClick={onOpenScoreboard}
-            className="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 whitespace-nowrap transition-all text-amber-300 hover:bg-amber-400/10 border border-[#D4AF37]/30 hover:border-[#D4AF37]/70 cursor-pointer"
+            className="px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold flex items-center gap-1.5 whitespace-nowrap transition-all text-amber-300 hover:bg-amber-400/10 border border-[#D4AF37]/30 hover:border-[#D4AF37]/70 cursor-pointer"
             title="Live Campus Scores & Heat Rankings"
           >
             <Trophy className="w-3.5 h-3.5 text-[#E5C158] shrink-0" />
@@ -203,25 +203,16 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenS
 
         {/* Action Controls */}
         <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
-          {/* Quick Register Pass CTA */}
-          <button
-            onClick={handleProceedToRegister}
-            className="hidden lg:flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r from-[#881337] via-[#B91C1C] to-[#881337] hover:from-[#9F1239] hover:to-[#DC2626] text-white border border-[#E5C158]/70 shadow-md shadow-rose-950/50 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
-          >
-            <Flame className="w-3.5 h-3.5 text-amber-300" />
-            <span>Pass (₹10)</span>
-          </button>
-
           {/* Admin Desk link (Desktop/Laptop only; on mobile it is inside the 3-line menu) */}
           <a
             href="/admin/login.html"
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#2E0B16] hover:bg-[#3D0A17] text-amber-200 border border-[#D4AF37]/30 transition-colors whitespace-nowrap"
+            className="hidden md:flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#2E0B16] hover:bg-[#3D0A17] text-amber-200 border border-[#D4AF37]/35 hover:border-[#D4AF37]/70 transition-all whitespace-nowrap shadow-xs shrink-0"
             title="Organizer Admin Desk"
           >
             <ShieldCheck className="w-3.5 h-3.5 text-[#E5C158] shrink-0" />
-            <span className="hidden sm:inline">Admin Desk</span>
+            <span>Admin Desk</span>
             <ExternalLink className="w-3 h-3 text-stone-400 shrink-0" />
           </a>
 
@@ -229,7 +220,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenS
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Open navigation menu"
-            className="md:hidden w-9 h-9 rounded-xl bg-[#2E0B16] border border-[#D4AF37]/40 text-stone-200 flex items-center justify-center hover:bg-[#3D0A17] active:scale-95 transition-all shadow-xs"
+            className="md:hidden w-9 h-9 rounded-full bg-[#2E0B16] border border-[#D4AF37]/40 text-stone-200 flex items-center justify-center hover:bg-[#3D0A17] active:scale-95 transition-all shadow-xs"
           >
             {mobileMenuOpen ? <X className="w-4 h-4 text-amber-300" /> : <Menu className="w-4 h-4 text-amber-300" />}
           </button>
