@@ -111,125 +111,116 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenS
 
   return (
     <header className="sticky top-0 z-50 w-full bg-[#18040C]/90 backdrop-blur-md border-b border-[#3D0A17] text-stone-200 shadow-md transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-18 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-18 flex items-center justify-between gap-3 sm:gap-4">
         
         {/* Brand / Logo with authentic Vijayadashami Dhanush-Baan icon */}
         <button 
           onClick={() => handleNavClick('home')}
-          className="flex items-center gap-2.5 sm:gap-3 text-left group focus:outline-hidden min-w-0"
+          className="flex items-center gap-2.5 sm:gap-3 text-left group focus:outline-hidden shrink-0"
         >
-          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#881337] to-[#4C0519] text-[#E5C158] flex items-center justify-center shadow-md group-hover:scale-105 transition-transform border border-[#D4AF37]/40 shrink-0">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#881337] to-[#4C0519] text-[#E5C158] flex items-center justify-center shadow-md group-hover:scale-105 transition-transform border border-[#D4AF37]/40 shrink-0">
             <VijayadashamiBowIcon className="w-5 h-5 sm:w-6 sm:h-6 text-amber-300" />
           </div>
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <span className="font-heading font-black text-base sm:text-lg tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-[#FFFDF9] via-[#FCE7B0] to-[#E5C158] truncate">
+          <div className="shrink-0">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <span className="font-heading font-black text-base sm:text-lg tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-[#FFFDF9] via-[#FCE7B0] to-[#E5C158] whitespace-nowrap">
                 VIJAYADASHAMI
               </span>
-              <span className="hidden sm:inline-block text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold bg-[#E5C158]/20 text-[#E5C158] border border-[#E5C158]/40 shrink-0">
+              <span className="text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold bg-[#E5C158]/20 text-[#E5C158] border border-[#E5C158]/40 whitespace-nowrap">
                 SRMU B5
               </span>
             </div>
-            <p className="text-[10px] sm:text-[11px] text-amber-200/80 font-medium truncate">
-              <span className="sm:hidden font-bold text-amber-400">SRMU B5 • </span>Campus Carnival 2026
+            <p className="text-[10px] sm:text-[11px] text-amber-200/80 font-medium whitespace-nowrap">
+              Campus Carnival 2026
             </p>
           </div>
         </button>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-1.5">
+        <nav className="hidden md:flex items-center gap-1 lg:gap-1.5">
           <button
             onClick={() => handleNavClick('home')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-all ${
+            className={`px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 whitespace-nowrap transition-all ${
               activeTab === 'home'
                 ? 'bg-[#881337] text-white shadow-xs border border-[#E5C158]/40'
                 : 'text-stone-300 hover:bg-white/10 hover:text-white'
             }`}
           >
-            <Flame className="w-3.5 h-3.5 text-[#E5C158]" />
+            <Flame className="w-3.5 h-3.5 text-[#E5C158] shrink-0" />
             <span>Overview</span>
           </button>
 
           <button
             onClick={() => handleNavClick('games')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-all ${
+            className={`px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 whitespace-nowrap transition-all ${
               activeTab === 'games'
                 ? 'bg-[#881337] text-white shadow-xs border border-[#E5C158]/40'
                 : 'text-stone-300 hover:bg-white/10 hover:text-white'
             }`}
           >
-            <Gamepad2 className="w-3.5 h-3.5 text-[#E5C158]" />
-            <span>Games Catalogue</span>
+            <Gamepad2 className="w-3.5 h-3.5 text-[#E5C158] shrink-0" />
+            <span>Games<span className="hidden xl:inline"> Catalogue</span></span>
           </button>
 
           <button
             onClick={() => handleNavClick('register')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-all ${
+            className={`px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 whitespace-nowrap transition-all ${
               activeTab === 'register'
                 ? 'bg-[#881337] text-white shadow-xs border border-[#E5C158]/40'
                 : 'text-stone-300 hover:bg-white/10 hover:text-white'
             }`}
           >
-            <UserPlus className="w-3.5 h-3.5 text-[#E5C158]" />
+            <UserPlus className="w-3.5 h-3.5 text-[#E5C158] shrink-0" />
             <span>Registration</span>
+            {selectedGameIds.length > 0 && (
+              <span className="w-4 h-4 rounded-full bg-[#E5C158] text-[#881337] font-black text-[9px] flex items-center justify-center shrink-0 ml-0.5 shadow-xs">
+                {selectedGameIds.length}
+              </span>
+            )}
           </button>
 
           <button
             onClick={() => handleNavClick('verify')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-all ${
+            className={`px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 whitespace-nowrap transition-all ${
               activeTab === 'verify'
                 ? 'bg-[#881337] text-white shadow-xs border border-[#E5C158]/40'
                 : 'text-stone-300 hover:bg-white/10 hover:text-white'
             }`}
           >
-            <Award className="w-3.5 h-3.5 text-[#E5C158]" />
-            <span>Verify Certificate</span>
+            <Award className="w-3.5 h-3.5 text-[#E5C158] shrink-0" />
+            <span>Verify<span className="hidden xl:inline"> Certificate</span></span>
           </button>
 
           <button
             onClick={onOpenScoreboard}
-            className="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-all text-amber-300 hover:bg-amber-400/10 border border-[#D4AF37]/30 hover:border-[#D4AF37]/70 cursor-pointer"
+            className="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 whitespace-nowrap transition-all text-amber-300 hover:bg-amber-400/10 border border-[#D4AF37]/30 hover:border-[#D4AF37]/70 cursor-pointer"
             title="Live Campus Scores & Heat Rankings"
           >
-            <Trophy className="w-3.5 h-3.5 text-[#E5C158]" />
+            <Trophy className="w-3.5 h-3.5 text-[#E5C158] shrink-0" />
             <span>Leaderboard</span>
           </button>
         </nav>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          {/* Live Game Selection Badge & Fast Proceed */}
-          {selectedGameIds.length > 0 && (
-            <button
-              onClick={handleProceedToRegister}
-              className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r from-[#881337] via-[#B91C1C] to-[#881337] hover:from-[#9F1239] hover:to-[#B91C1C] text-white border border-[#E5C158]/70 shadow-md shadow-rose-950/60 hover:scale-105 active:scale-95 transition-all cursor-pointer"
-              title="Proceed to Registration with selected games"
-            >
-              <span className="w-5 h-5 rounded-full bg-[#E5C158] text-[#881337] font-black text-[10px] flex items-center justify-center shrink-0">
-                {selectedGameIds.length}
-              </span>
-              <span className="font-extrabold text-amber-300">₹{selectedGameIds.length * 5}</span>
-              <span className="hidden sm:inline font-semibold">Proceed →</span>
-            </button>
-          )}
-
-          {/* Admin link */}
+        <div className="flex items-center gap-2 shrink-0">
+          {/* Admin Desk link */}
           <a
             href="/admin/login.html"
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#2E0B16] hover:bg-[#3D0A17] text-amber-200 border border-[#D4AF37]/30 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#2E0B16] hover:bg-[#3D0A17] text-amber-200 border border-[#D4AF37]/30 transition-colors whitespace-nowrap"
+            title="Organizer Admin Desk"
           >
-            <ShieldCheck className="w-3.5 h-3.5 text-[#E5C158]" />
-            <span>Admin Desk</span>
-            <ExternalLink className="w-3 h-3 text-stone-400" />
+            <ShieldCheck className="w-3.5 h-3.5 text-[#E5C158] shrink-0" />
+            <span className="hidden sm:inline">Admin Desk</span>
+            <ExternalLink className="w-3 h-3 text-stone-400 shrink-0" />
           </a>
 
           {/* Mobile menu trigger */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Open navigation menu"
-            className="md:hidden w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-[#2E0B16] border border-[#D4AF37]/30 text-stone-200 flex items-center justify-center hover:bg-[#3D0A17]"
+            className="md:hidden w-9 h-9 rounded-xl bg-[#2E0B16] border border-[#D4AF37]/30 text-stone-200 flex items-center justify-center hover:bg-[#3D0A17]"
           >
             {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
           </button>
