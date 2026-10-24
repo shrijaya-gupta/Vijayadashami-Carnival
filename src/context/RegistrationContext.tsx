@@ -46,7 +46,7 @@ const initialStudent: StudentDetails = {
   courseOther: '',
   branch: 'CSE',
   branchOther: '',
-  academicYear: '1st Year',
+  academicYear: '3rd Year',
   whatsAppConsent: true,
 };
 
@@ -54,7 +54,7 @@ const RegistrationContext = createContext<RegistrationContextType | undefined>(u
 
 export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [activeStep, setActiveStep] = useState<number>(1);
-  const [selectedGameIds, setSelectedGameIds] = useState<string[]>(['lemon-race']);
+  const [selectedGameIds, setSelectedGameIds] = useState<string[]>([]);
   
   // Initialize game configs
   const [gameConfigs, setGameConfigs] = useState<Record<string, SelectedGameConfig>>(() => {
@@ -113,11 +113,6 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setSubmitError(null);
     setSelectedGameIds(prev => {
       if (prev.includes(gameId)) {
-        if (prev.length <= 1) {
-          setSubmitError('You must choose at least 1 game to participate in the carnival.');
-          setTimeout(() => setSubmitError(null), 4000);
-          return prev;
-        }
         return prev.filter(id => id !== gameId);
       } else {
         if (prev.length >= 6) {
@@ -240,10 +235,6 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         setSubmitError('Please provide a valid 10-digit Indian mobile number (e.g., 9876543210).');
         return false;
       }
-      if (!student.rollNumber.trim()) {
-        setSubmitError('Please enter your university roll number.');
-        return false;
-      }
       if (student.course === 'Other' && !student.courseOther.trim()) {
         setSubmitError('Please specify your course name.');
         return false;
@@ -252,7 +243,14 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         setSubmitError('Please specify your branch/specialization.');
         return false;
       }
-      setActiveStep(3);
+
+      // Check if any selected game has format set to team
+      const hasTeam = selectedGameIds.some(id => gameConfigs[id]?.participationType === 'team');
+      if (hasTeam) {
+        setActiveStep(3); // Team Setup
+      } else {
+        setActiveStep(5); // Direct to Payment! (Review summary eliminated as requested)
+      }
       scrollToWizard();
       return true;
     }
@@ -268,7 +266,7 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
           }
         }
       }
-      setActiveStep(4);
+      setActiveStep(5); // Direct to Payment! (Review summary eliminated as requested)
       scrollToWizard();
       return true;
     }
@@ -284,6 +282,17 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const prevStep = () => {
     setSubmitError(null);
+    if (activeStep === 5) {
+      const hasTeam = selectedGameIds.some(id => gameConfigs[id]?.participationType === 'team');
+      setActiveStep(hasTeam ? 3 : 2);
+      scrollToWizard();
+      return;
+    }
+    if (activeStep === 3) {
+      setActiveStep(2);
+      scrollToWizard();
+      return;
+    }
     if (activeStep > 1) {
       setActiveStep(prev => prev - 1);
       scrollToWizard();
@@ -291,16 +300,18 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   };
 
   const goToStep = (stepNumber: number) => {
-    if (stepNumber < activeStep || stepNumber === 1) {
+    let target = stepNumber;
+    if (target === 4) target = 5; // Fast-track review step to payment
+    if (target < activeStep || target === 1) {
       setSubmitError(null);
-      setActiveStep(stepNumber);
+      setActiveStep(target);
       scrollToWizard();
     }
   };
 
   const resetRegistration = () => {
     setActiveStep(1);
-    setSelectedGameIds(['lemon-race']);
+    setSelectedGameIds([]);
     setStudent(initialStudent);
     setSubmissionResult(null);
     setSubmitError(null);

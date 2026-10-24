@@ -91,9 +91,9 @@ const studentSchema = new mongoose.Schema({
   },
   rollNumber: {
     type: String,
-    required: [true, 'University roll number is required'],
+    required: false,
+    default: 'N/A',
     trim: true,
-    minlength: [1, 'Roll number cannot be empty'],
     maxlength: [50, 'Roll number cannot exceed 50 characters']
   },
   course: {

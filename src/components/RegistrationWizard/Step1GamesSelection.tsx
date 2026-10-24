@@ -3,7 +3,7 @@ import { useRegistration } from '../../context/RegistrationContext';
 import { GAMES_DATA } from '../../data/games';
 import { Game } from '../../types';
 import { GameGuidelinesModal } from '../GameGuidelinesModal';
-import { Check, Info, ArrowRight, AlertCircle, Sparkles, Zap } from 'lucide-react';
+import { Check, Info, ArrowRight, AlertCircle, Trophy, Zap } from 'lucide-react';
 
 export const Step1GamesSelection: React.FC = () => {
   const { selectedGameIds, toggleGameSelection, nextStep, submitError } = useRegistration();
@@ -87,7 +87,7 @@ export const Step1GamesSelection: React.FC = () => {
 
               <div className="pt-3.5 mt-3 border-t border-white/10 flex items-center justify-between">
                 <span className="text-xs font-bold text-amber-300 flex items-center gap-1">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                  <Trophy className="w-3.5 h-3.5 text-amber-400" />
                   ₹5 Online Entry
                 </span>
 

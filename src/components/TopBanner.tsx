@@ -32,34 +32,34 @@ export const TopBanner: React.FC<TopBannerProps> = ({ onProceedClick }) => {
   }, []);
 
   return (
-    <div className="w-full relative z-40 bg-gradient-to-r from-[#1A030A] via-[#2D0613] to-[#1A030A] border-b border-[#D4AF37]/30 text-white shadow-lg backdrop-blur-md">
+    <div className="w-full bg-gradient-to-r from-[#1A030A] via-[#2D0613] to-[#1A030A] border-b border-[#D4AF37]/35 text-white shadow-md relative z-40">
       {/* Decorative Traditional Indian Bunting / Toran Banner */}
-      <div className="w-full h-2.5 sm:h-3 overflow-hidden flex items-center">
-        <svg 
-          viewBox="0 0 1200 16" 
-          preserveAspectRatio="none" 
-          className="w-full h-full"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          {Array.from({ length: 48 }).map((_, i) => {
-            const colors = ['#881337', '#D4AF37', '#15803D', '#EA580C', '#78350F', '#B91C1C'];
-            const color = colors[i % colors.length];
-            const x = i * 25;
-            return (
-              <polygon 
-                key={i} 
-                points={`${x},0 ${x + 25},0 ${x + 12.5},16`} 
-                fill={color} 
-                stroke="#1A0409" 
-                strokeWidth="0.5" 
-              />
-            );
-          })}
-        </svg>
-      </div>
+        <div className="w-full h-2 sm:h-2.5 overflow-hidden flex items-center">
+          <svg 
+            viewBox="0 0 1200 16" 
+            preserveAspectRatio="none" 
+            className="w-full h-full"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            {Array.from({ length: 48 }).map((_, i) => {
+              const colors = ['#881337', '#D4AF37', '#15803D', '#EA580C', '#78350F', '#B91C1C'];
+              const color = colors[i % colors.length];
+              const x = i * 25;
+              return (
+                <polygon 
+                  key={i} 
+                  points={`${x},0 ${x + 25},0 ${x + 12.5},16`} 
+                  fill={color} 
+                  stroke="#1A0409" 
+                  strokeWidth="0.5" 
+                />
+              );
+            })}
+          </svg>
+        </div>
 
-      {/* Content Ribbon */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-1.5 sm:py-2">
+        {/* Content Ribbon */}
+        <div className="px-3 sm:px-6 py-1.5 sm:py-2">
         
         {/* ================= MOBILE COMPACT VIEW (< 640px) ================= */}
         {/* Single clean row: high contrast, zero clutter, fully readable */}
@@ -152,7 +152,6 @@ export const TopBanner: React.FC<TopBannerProps> = ({ onProceedClick }) => {
           </div>
 
         </div>
-
       </div>
     </div>
   );

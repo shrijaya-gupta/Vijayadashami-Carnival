@@ -9,8 +9,7 @@ import {
   ExternalLink,
   Award,
   Flame,
-  Trophy,
-  Sparkles
+  Trophy
 } from 'lucide-react';
 
 {/* Sacred Vijayadashami Bow & Arrow (Teer Dhanush pe chadha hua - Drawn Bow with Nocked Arrow) */}
@@ -110,13 +109,13 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenS
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-[#120208]/90 backdrop-blur-xl border-b border-[#D4AF37]/30 text-stone-200 shadow-[0_10px_35px_rgba(0,0,0,0.7)] transition-all">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-18 flex items-center justify-between gap-3 sm:gap-4">
+    <header className="sticky top-2 z-50 w-full px-3 sm:px-6 lg:px-8 transition-all pointer-events-auto">
+      <div className="max-w-7xl mx-auto rounded-2xl bg-[#120208]/95 backdrop-blur-2xl border border-[#D4AF37]/45 text-stone-200 shadow-[0_12px_36px_rgba(0,0,0,0.75)] h-16 sm:h-18 px-4 sm:px-6 flex items-center justify-between gap-3 sm:gap-4 transition-all">
         
         {/* Brand / Logo with authentic Vijayadashami Dhanush-Baan icon */}
         <button 
           onClick={() => handleNavClick('home')}
-          className="flex items-center gap-2.5 sm:gap-3 text-left group focus:outline-hidden shrink-0"
+          className="flex items-center gap-2.5 sm:gap-3 text-left group focus:outline-hidden shrink-0 cursor-pointer"
         >
           <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#9F1239] via-[#630B22] to-[#2E040E] text-[#E5C158] flex items-center justify-center shadow-[0_0_20px_rgba(212,175,55,0.35)] group-hover:scale-105 transition-all border border-[#D4AF37]/60 shrink-0">
             <VijayadashamiBowIcon className="w-5 h-5 sm:w-6 sm:h-6 text-amber-300 drop-shadow-md" />
@@ -131,7 +130,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenS
               </span>
             </div>
             <p className="text-[10px] sm:text-[11px] text-amber-200/90 font-medium whitespace-nowrap flex items-center gap-1">
-              <Sparkles className="w-2.5 h-2.5 text-amber-400" />
+              <Flame className="w-2.5 h-2.5 text-amber-400" />
               <span>Campus Carnival 2026</span>
             </p>
           </div>
@@ -230,7 +229,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenS
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden px-4 pt-2 pb-6 border-t border-[#3D0A17] bg-[#14030A] shadow-xl space-y-2">
+        <div className="md:hidden max-w-7xl mx-auto mt-2 p-4 rounded-2xl border border-[#D4AF37]/40 bg-[#14030A]/95 backdrop-blur-xl shadow-2xl space-y-2">
           {selectedGameIds.length > 0 && (
             <button
               onClick={handleProceedToRegister}

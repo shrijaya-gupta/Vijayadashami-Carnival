@@ -9,7 +9,6 @@ import {
   Info, 
   Users, 
   User, 
-  Sparkles,
   ArrowRight,
   Trophy,
   Target,
@@ -250,7 +249,7 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
 
                 {/* Highlights / Safety Badge */}
                 <div className="mt-3.5 flex items-center gap-2 text-[11px] text-amber-200/80">
-                  <Sparkles className="w-3 h-3 text-amber-400 shrink-0" />
+                  <Trophy className="w-3 h-3 text-amber-400 shrink-0" />
                   <span className="truncate">SRMU Campus B5-408 • Official Rulebook</span>
                 </div>
 
@@ -340,7 +339,7 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
             onClick={onProceedToRegister}
             className="w-full sm:w-auto px-6 py-2.5 rounded-full font-bold text-xs sm:text-sm bg-gradient-to-r from-[#881337] via-[#B91C1C] to-[#881337] hover:from-[#9F1239] hover:to-[#B91C1C] text-white flex items-center justify-center gap-2 shadow-lg shadow-rose-950/70 hover:scale-[1.02] active:scale-[0.98] transition-all border border-[#E5C158]/70 cursor-pointer whitespace-nowrap"
           >
-            <Sparkles className="w-4 h-4 text-amber-300" />
+            <Flame className="w-4 h-4 text-amber-300" />
             <span>Proceed to Registration</span>
             <ArrowRight className="w-4 h-4 text-amber-300" />
           </button>

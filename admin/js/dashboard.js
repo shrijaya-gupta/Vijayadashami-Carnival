@@ -1765,6 +1765,150 @@ function renderCertificatesRows(participants) {
   }).join('');
 }
 
+window.handleInstantQrLookup = async function(e) {
+  if (e) e.preventDefault();
+  const inputEl = document.getElementById('instantQrInput');
+  const resultEl = document.getElementById('instantQrResult');
+  if (!inputEl || !resultEl) return;
+
+  const rawQuery = inputEl.value.trim();
+  if (!rawQuery) {
+    showToast('Please enter or scan a Registration ID');
+    return;
+  }
+
+  resultEl.style.display = 'block';
+  resultEl.innerHTML = `
+    <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; color: #E5C158; padding: 0.75rem; font-size: 0.88rem;">
+      <div style="width: 14px; height: 14px; border: 2px solid #E5C158; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+      <span>Verifying registration pass...</span>
+    </div>
+  `;
+
+  try {
+    let reg = null;
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/admin/registrations/${encodeURIComponent(rawQuery)}`, {
+        credentials: 'include'
+      });
+      if (res.ok) {
+        const json = await res.json();
+        reg = json.data || json;
+      }
+    } catch (_) {}
+
+    if (!reg) {
+      const certRes = await fetch(`${API_BASE_URL}/api/admin/certificates/participants?search=${encodeURIComponent(rawQuery)}`, {
+        credentials: 'include'
+      });
+      if (certRes.ok) {
+        const certData = await certRes.json();
+        if (certData.success && certData.data && certData.data.length > 0) {
+          reg = certData.data.find(p => 
+            (p.registrationId && p.registrationId.toUpperCase() === rawQuery.toUpperCase()) ||
+            (p.registrationReference && p.registrationReference.toUpperCase() === rawQuery.toUpperCase())
+          ) || certData.data[0];
+        }
+      }
+    }
+
+    if (!reg) {
+      throw new Error(`Registration ID "${rawQuery}" not found in carnival records. Please check the ID or QR scan.`);
+    }
+
+    renderInstantCard(reg);
+  } catch (err) {
+    resultEl.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 0.6rem; color: #FCA5A5; font-size: 0.88rem; padding: 0.25rem;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        <span>${escapeHtml(err.message)}</span>
+      </div>
+    `;
+  }
+
+  function renderInstantCard(item) {
+    const regId = item.registrationId || item.registrationReference || item._id;
+    const name = item.studentName || (item.student && item.student.fullName) || 'Participant';
+    const mobile = item.studentMobile || (item.student && item.student.mobileNumber) || 'N/A';
+    const course = item.course || (item.student && item.student.course) || 'N/A';
+    const branch = item.branch || (item.student && item.student.branch) || '';
+    const year = item.academicYear || (item.student && item.student.academicYear) || '';
+    const games = Array.isArray(item.selectedGames) ? item.selectedGames : [];
+    const isAttended = item.attendanceStatus === 'verified' || item.participationStatus === 'verified';
+    const payStatus = item.paymentStatus || 'pending';
+    const totalFee = item.feeAmount != null ? item.feeAmount : (games.length * 5);
+
+    const gamesSummary = games.map(g => {
+      if (typeof g === 'string') return g;
+      return g.gameTitle || g.gameId;
+    }).join(', ') || 'None';
+
+    resultEl.innerHTML = `
+      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem; padding-bottom: 0.6rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span style="font-family: monospace; font-weight: 800; color: #FFE28A; font-size: 1.05rem;">${escapeHtml(regId)}</span>
+            <span class="status-pill ${isAttended ? 'status-confirmed' : 'status-payment_verification_pending'}" style="font-size: 0.75rem;">
+              ${isAttended ? '✓ Attendance Verified' : 'Attendance Unverified'}
+            </span>
+          </div>
+          <div style="font-size: 0.82rem; color: #E5C158; font-weight: 700;">
+            Fee: ₹${totalFee}.00 &bull; Payment: <span style="text-transform: capitalize; color: ${payStatus === 'paid' ? '#34D399' : '#FBBF24'}">${escapeHtml(payStatus.replace(/_/g, ' '))}</span>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.6rem; font-size: 0.84rem; color: #E7E5E4;">
+          <div><span style="color: #A8A29E;">Student Name:</span> <strong>${escapeHtml(name)}</strong></div>
+          <div><span style="color: #A8A29E;">Mobile:</span> <strong>${escapeHtml(mobile)}</strong></div>
+          <div><span style="color: #A8A29E;">Course / Year:</span> <strong>${escapeHtml(course)} ${year ? '(' + escapeHtml(year) + ')' : ''} ${branch ? '&bull; ' + escapeHtml(branch) : ''}</strong></div>
+          <div><span style="color: #A8A29E;">Selected Games (${games.length}):</span> <strong>${escapeHtml(gamesSummary)}</strong></div>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; justify-content: flex-end; margin-top: 0.25rem; padding-top: 0.6rem; border-top: 1px solid rgba(255,255,255,0.1);">
+          ${!isAttended ? `
+            <button type="button" class="btn-primary" onclick="window.markInstantAttendance('${escapeHtml(regId)}')" style="padding: 0.5rem 1.1rem; font-weight: 700; background: linear-gradient(135deg, #059669, #10B981); border: 1px solid #34D399; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.82rem;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Verify & Check-In Attendee</span>
+            </button>
+          ` : `
+            <span style="color: #34D399; font-weight: 700; font-size: 0.84rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+              Attendee Verified for Challenges &amp; Certificate
+            </span>
+          `}
+          <button type="button" class="btn-table-action" onclick="window.openRegistrationModal('${escapeHtml(regId)}')" style="padding: 0.45rem 0.85rem; font-size: 0.8rem; cursor: pointer;">
+            View Profile
+          </button>
+        </div>
+      </div>
+    `;
+  }
+};
+
+window.markInstantAttendance = async function(registrationId) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/admin/certificates/verify-participation/${encodeURIComponent(registrationId)}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken || ''
+      },
+      credentials: 'include'
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.message || 'Verification failed');
+    }
+
+    showToast(`✓ Attendance verified for ${registrationId}! Student check-in confirmed.`);
+    refreshCurrentView();
+    window.handleInstantQrLookup();
+  } catch (err) {
+    showToast(`Error: ${err.message}`);
+  }
+};
+
 window.verifyParticipantAttendance = async function(registrationId) {
   if (!confirm(`Mark participation attendance as VERIFIED for registration ${registrationId}?\nThis indicates the student actually attended and participated in the event challenges.`)) {
     return;

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { GAMES_DATA } from '../data/games';
-import { ArrowRight, Trophy, X, Sparkles, ChevronUp, ChevronDown } from 'lucide-react';
+import { ArrowRight, Trophy, X, Flame, ChevronUp, ChevronDown } from 'lucide-react';
 
 interface SelectionBarProps {
   selectedGameIds: string[];
@@ -22,7 +22,7 @@ export const SelectionBar: React.FC<SelectionBarProps> = ({
   return (
     <aside 
       aria-label="Selected Games Summary"
-      className="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-40 max-w-[calc(100vw-2rem)] sm:max-w-md transition-all animate-in fade-in slide-in-from-bottom-3 duration-300 pointer-events-auto"
+      className="fixed bottom-4 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:bottom-6 sm:right-6 z-40 max-w-[calc(100vw-1.5rem)] sm:max-w-md transition-all animate-in fade-in slide-in-from-bottom-3 duration-300 pointer-events-auto w-auto"
     >
       {/* Expandable Chips Tray */}
       {isExpanded && (
@@ -99,7 +99,7 @@ export const SelectionBar: React.FC<SelectionBarProps> = ({
           onClick={onProceed}
           className="shine-effect px-4 py-2 rounded-full font-bold text-xs bg-gradient-to-r from-[#881337] via-[#BE123C] to-[#881337] hover:from-[#9F1239] hover:to-[#BE123C] text-white flex items-center gap-1.5 shadow-md shadow-rose-950/70 hover:scale-105 active:scale-95 transition-all border border-[#FFE28A]/80 cursor-pointer whitespace-nowrap"
         >
-          <Sparkles className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+          <Flame className="w-3.5 h-3.5 text-amber-300 shrink-0" />
           <span>Proceed to Registration</span>
           <ArrowRight className="w-3.5 h-3.5 text-amber-300 shrink-0" />
         </button>

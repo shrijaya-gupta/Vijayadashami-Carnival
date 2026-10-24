@@ -10,7 +10,7 @@ import {
   Users, 
   Gift, 
   Star,
-  Sparkles,
+  Flame,
   X
 } from 'lucide-react';
 
@@ -29,11 +29,20 @@ export const Hero: React.FC<HeroProps> = ({
   const mobileVideoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    if (mobileVideoRef.current) {
-      mobileVideoRef.current.muted = true;
-      mobileVideoRef.current.play().catch(() => {
-        // Handled silently if power saver or browser policy defers autoplay
-      });
+    const vid = mobileVideoRef.current;
+    if (!vid) return;
+
+    vid.muted = true;
+    // Low-bandwidth adaptation (3G/4G / Data Saver)
+    const nav = navigator as any;
+    const conn = nav.connection || nav.mozConnection || nav.webkitConnection;
+    const isSlowConn = conn && (conn.saveData || conn.effectiveType === '2g' || conn.effectiveType === '3g');
+
+    if (isSlowConn) {
+      // In 2G/3G or Data-Saver, keep high-resolution poster to prevent video buffering freeze
+      vid.pause();
+    } else {
+      vid.play().catch(() => {});
     }
   }, []);
 
@@ -72,8 +81,8 @@ export const Hero: React.FC<HeroProps> = ({
         <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-[#100308]/70 to-transparent pointer-events-none" />
       </div>
 
-      {/* Ambient Floating Embers / Sparks */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
+      {/* Ambient Floating Embers / Sparks (Hidden on mobile to avoid overlapping text) */}
+      <div className="hidden lg:block absolute inset-0 z-0 pointer-events-none">
         <div className="absolute top-1/4 left-10 w-2 h-2 rounded-full bg-amber-400 blur-xs animate-ping" style={{ animationDuration: '3s' }} />
         <div className="absolute top-1/3 left-1/3 w-1.5 h-1.5 rounded-full bg-orange-400 blur-xs animate-pulse" style={{ animationDuration: '4s' }} />
         <div className="absolute top-1/2 left-20 w-1 h-1 rounded-full bg-yellow-300 blur-xs animate-ping" style={{ animationDuration: '5s' }} />
@@ -82,7 +91,7 @@ export const Hero: React.FC<HeroProps> = ({
 
       {/* =========================================================================
           MOBILE VIEW (< 1024px): CONTINUOUS AMBIENT VIDEO AT THE TOP
-          Displays the continuous festive Dussehra video seamlessly melting into #100308
+          Optimized with preload="metadata" and fast decoding poster for 3G/4G speeds
           ========================================================================= */}
       <div className="block lg:hidden relative w-full aspect-[4/3] xs:aspect-[16/10] sm:aspect-[16/9] overflow-hidden bg-[#100308]">
         <video 
@@ -91,16 +100,17 @@ export const Hero: React.FC<HeroProps> = ({
           loop 
           muted 
           playsInline 
-          preload="auto"
+          preload="metadata"
           poster="/assets/hero-mobile.jpg" 
           className="w-full h-full object-cover object-center pointer-events-none"
         >
           <source src="/assets/hero-mobile.mp4" type="video/mp4" />
-          {/* Fallback image if video is not supported or low power mode is active */}
+          {/* Fallback image if video is deferred or network is slow */}
           <img 
             src="/assets/hero-mobile.jpg" 
             alt="Vijayadashami Dussehra Carnival at SRMU B5-408" 
             className="w-full h-full object-cover object-top"
+            decoding="async"
           />
         </video>
 
@@ -212,7 +222,7 @@ export const Hero: React.FC<HeroProps> = ({
                 onClick={onRegisterClick}
                 className="shine-effect w-full py-4 px-6 rounded-full text-xs xl:text-sm font-bold bg-gradient-to-r from-[#881337] via-[#BE123C] to-[#881337] hover:from-[#9F1239] hover:to-[#BE123C] text-white flex items-center justify-center gap-2.5 border-2 border-[#FFE28A]/80 shadow-[0_12px_35px_rgba(159,18,57,0.65)] hover:scale-[1.02] active:scale-95 transition-all whitespace-nowrap cursor-pointer"
               >
-                <Sparkles className="w-4 h-4 text-amber-300 animate-pulse shrink-0" />
+                <Flame className="w-4 h-4 text-amber-300 animate-pulse shrink-0" />
                 <span className="tracking-wide">Proceed to Registration</span>
                 <ArrowRight className="w-4 h-4 text-amber-300 shrink-0" />
               </button>
@@ -250,28 +260,25 @@ export const Hero: React.FC<HeroProps> = ({
         {/* Visual artwork is positioned at the top of the section; content flows cleanly below */}
         <div className="block lg:hidden text-center space-y-4">
           
-          {/* Grand Hero Title */}
-          <div className="space-y-2 relative">
-            <h1 className="text-3xl xs:text-4xl sm:text-5xl font-black font-cinzel tracking-[0.04em] uppercase leading-[1.08]">
-              <span className="block text-[#FFFDF9] drop-shadow-[0_4px_20px_rgba(0,0,0,0.95)]">
-                VIJAYADASHAMI
+          {/* Grand Hero Title (Mobile / Tablet) - Stylish Readable Cursive Centered Layout */}
+          <div className="relative max-w-sm sm:max-w-md mx-auto pt-1 pb-1 text-center">
+            <h1 className="flex flex-col items-center justify-center select-none space-y-0.5">
+              {/* Vijayadashami */}
+              <span 
+                className="block text-center text-3xl xs:text-4xl sm:text-5xl font-bold tracking-tight text-[#FFFDF9] drop-shadow-[0_4px_18px_rgba(0,0,0,0.95)]"
+                style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic" }}
+              >
+                Vijayadashami
               </span>
-              <span className="block gold-gradient-text drop-shadow-[0_6px_24px_rgba(212,175,55,0.45)]">
-                CARNIVAL
+              
+              {/* Carnival */}
+              <span 
+                className="block text-center text-3xl xs:text-4xl sm:text-5xl font-black gold-gradient-text drop-shadow-[0_4px_24px_rgba(212,175,55,0.45)]"
+                style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic" }}
+              >
+                Carnival
               </span>
             </h1>
-
-            {/* Traditional Golden Lotus Ornament */}
-            <div className="pt-1 flex items-center justify-center gap-2.5">
-              <span className="h-[1px] w-8 bg-gradient-to-r from-transparent to-[#D4AF37]/80" />
-              <svg width="36" height="16" viewBox="0 0 36 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#D4AF37] drop-shadow-xs">
-                <path d="M18 1C15 6 9 9 3 9C6 11 12 11 16 7L18 15L20 7C24 11 30 11 33 9C27 9 21 6 18 1Z" fill="#D4AF37" opacity="0.9"/>
-                <circle cx="18" cy="4" r="1.5" fill="#FFE28A" />
-                <circle cx="12" cy="8" r="1" fill="#D4AF37" />
-                <circle cx="24" cy="8" r="1" fill="#D4AF37" />
-              </svg>
-              <span className="h-[1px] w-8 bg-gradient-to-l from-transparent to-[#D4AF37]/80" />
-            </div>
           </div>
 
           {/* Subtitle */}
@@ -333,7 +340,7 @@ export const Hero: React.FC<HeroProps> = ({
               onClick={onRegisterClick}
               className="shine-effect w-full py-3.5 px-6 rounded-full text-xs sm:text-sm font-bold bg-gradient-to-r from-[#881337] via-[#BE123C] to-[#881337] text-white flex items-center justify-center gap-2 border-2 border-[#FFE28A]/80 shadow-[0_8px_25px_rgba(159,18,57,0.6)] active:scale-95 transition-all"
             >
-              <Sparkles className="w-4 h-4 text-amber-300" />
+              <Flame className="w-4 h-4 text-amber-300" />
               <span>Proceed to Registration</span>
               <ArrowRight className="w-4 h-4 text-amber-300" />
             </button>

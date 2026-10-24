@@ -7,7 +7,6 @@ import {
   XCircle, 
   Loader2, 
   ShieldCheck, 
-  Sparkles,
   ExternalLink,
   Download
 } from 'lucide-react';
@@ -191,7 +190,7 @@ export const CertificateVerification: React.FC = () => {
 
               <div className="pt-3 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-white/10">
                 <div className="text-xs text-stone-300 flex items-center gap-1.5 text-center sm:text-left">
-                  <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
+                  <Award className="w-4 h-4 text-amber-400 shrink-0" />
                   <span>Official credential issued under Shri Ramswaroop Memorial University Student Affairs Division.</span>
                 </div>
 

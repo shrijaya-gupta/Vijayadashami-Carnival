@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRegistration } from '../../context/RegistrationContext';
-import { Check, Trophy, Sparkles } from 'lucide-react';
+import { Check, Trophy, Flame } from 'lucide-react';
 
 const STEP_LABELS = [
   'Select Games',
@@ -23,7 +23,7 @@ export const WizardProgress: React.FC = () => {
         <div>
           <div className="flex items-center gap-2">
             <span className="text-[11px] font-bold uppercase tracking-wider text-[#E5C158] flex items-center gap-1">
-              <Sparkles className="w-3 h-3 text-amber-300" />
+              <Flame className="w-3 h-3 text-amber-300" />
               Step {activeStep} of 6
             </span>
             <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-semibold">

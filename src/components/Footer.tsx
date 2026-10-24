@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Calendar, ShieldCheck, Heart, Sparkles } from 'lucide-react';
+import { MapPin, Calendar, ShieldCheck, Heart, Trophy } from 'lucide-react';
 
 // Authentic Vijayadashami Bow with Nocked Arrow Brand Icon matching Navbar
 const VijayadashamiBowIcon: React.FC<{ className?: string }> = ({ className = "w-6 h-6" }) => (
@@ -92,7 +92,7 @@ export const Footer: React.FC = () => {
           {/* 6 Carnival Games */}
           <div>
             <h4 className="text-xs font-bold uppercase tracking-wider text-amber-300 mb-4 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <Trophy className="w-3.5 h-3.5 text-amber-400" />
               Carnival Games (₹5 / Entry)
             </h4>
             <ul className="space-y-2 text-xs text-stone-300">

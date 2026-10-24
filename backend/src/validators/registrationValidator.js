@@ -48,10 +48,8 @@ function validateRegistrationPayload(body) {
       errors.push('Please provide a valid 10-digit Indian mobile number (e.g. 9876543210 or +919876543210).');
     }
 
-    // Roll Number
-    if (!student.rollNumber || typeof student.rollNumber !== 'string' || !student.rollNumber.trim()) {
-      errors.push('University roll number is required.');
-    } else if (student.rollNumber.trim().length > 50) {
+    // Roll Number (Optional)
+    if (student.rollNumber && typeof student.rollNumber === 'string' && student.rollNumber.trim().length > 50) {
       errors.push('Roll number cannot exceed 50 characters.');
     }
 
@@ -147,7 +145,7 @@ function validateRegistrationPayload(body) {
       student: {
         fullName: student.fullName.trim(),
         mobileNumber: mobileNorm,
-        rollNumber: student.rollNumber.trim(),
+        rollNumber: (student.rollNumber && typeof student.rollNumber === 'string' && student.rollNumber.trim()) ? student.rollNumber.trim() : 'N/A',
         course: student.course.trim(),
         branch: student.branch.trim(),
         academicYear: student.academicYear.trim(),

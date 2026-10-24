@@ -9,8 +9,7 @@ import {
   Gamepad2, 
   Trophy, 
   ShieldCheck,
-  CreditCard,
-  Sparkles
+  CreditCard
 } from 'lucide-react';
 
 export const Step4ReviewSummary: React.FC = () => {
@@ -156,7 +155,7 @@ export const Step4ReviewSummary: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <span className="text-[11px] font-bold uppercase tracking-wider text-amber-300 flex items-center gap-1">
-              <Sparkles className="w-3 h-3 text-amber-400" />
+              <Trophy className="w-3 h-3 text-amber-400" />
               Authoritative Fee Breakdown
             </span>
             <h4 className="text-base sm:text-lg font-bold text-white mt-0.5">

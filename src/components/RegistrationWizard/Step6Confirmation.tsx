@@ -13,7 +13,7 @@ import {
   Award,
   AlertCircle,
   Loader2,
-  Sparkles,
+  Trophy,
   Printer
 } from 'lucide-react';
 
@@ -113,7 +113,7 @@ export const Step6Confirmation: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/10">
           <div>
             <span className="text-[11px] font-bold text-amber-300 uppercase tracking-wider block flex items-center gap-1">
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <Trophy className="w-3.5 h-3.5 text-amber-400" />
               Official Registration Reference
             </span>
             <div className="flex items-center gap-2 mt-1">

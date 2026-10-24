@@ -24,16 +24,30 @@ const CarnivalApp: React.FC = () => {
   }, []);
 
   const handleRegisterClick = () => {
-    setActiveTab('register');
-    setTimeout(() => {
-      const el = document.getElementById('wizard-form-card') || document.getElementById('register');
-      if (el) {
-        const y = Math.max(0, el.getBoundingClientRect().top + window.pageYOffset - 80);
-        window.scrollTo({ top: y, behavior: 'smooth' });
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    }, 50);
+    if (selectedGameIds.length > 0) {
+      setActiveTab('register');
+      goToStep(2);
+      setTimeout(() => {
+        const el = document.getElementById('wizard-form-card') || document.getElementById('register');
+        if (el) {
+          const y = Math.max(0, el.getBoundingClientRect().top + window.pageYOffset - 80);
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        } else {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }, 50);
+    } else {
+      setActiveTab('home');
+      setTimeout(() => {
+        const el = document.getElementById('games');
+        if (el) {
+          const y = Math.max(0, el.getBoundingClientRect().top + window.pageYOffset - 80);
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        } else {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }, 50);
+    }
   };
 
   const handleExploreGamesClick = () => {
@@ -47,6 +61,13 @@ const CarnivalApp: React.FC = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     }, 50);
+  };
+
+  const handleToggleGame = (gameId: string) => {
+    toggleGameSelection(gameId);
+    if (activeStep === 1) {
+      goToStep(2);
+    }
   };
 
   const handleProceedFromSelectionBar = () => {
@@ -89,7 +110,7 @@ const CarnivalApp: React.FC = () => {
             />
             <GamesCatalogue
               selectedGameIds={selectedGameIds}
-              onToggleGame={toggleGameSelection}
+              onToggleGame={handleToggleGame}
               onProceedToRegister={handleProceedFromSelectionBar}
             />
             <RegistrationWizard />
@@ -100,7 +121,7 @@ const CarnivalApp: React.FC = () => {
           <div className="pt-6">
             <GamesCatalogue
               selectedGameIds={selectedGameIds}
-              onToggleGame={toggleGameSelection}
+              onToggleGame={handleToggleGame}
               onProceedToRegister={handleProceedFromSelectionBar}
             />
           </div>
@@ -123,7 +144,7 @@ const CarnivalApp: React.FC = () => {
       {activeStep < 5 && (
         <SelectionBar
           selectedGameIds={selectedGameIds}
-          onRemoveGame={toggleGameSelection}
+          onRemoveGame={handleToggleGame}
           onProceed={handleProceedFromSelectionBar}
         />
       )}

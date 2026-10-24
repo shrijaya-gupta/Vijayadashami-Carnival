@@ -154,10 +154,6 @@
         </div>
 
         <div class="topbar-right">
-          <div class="badge-live-db">
-            <span class="pulse-dot" aria-hidden="true"></span>
-            <span>MongoDB Connected</span>
-          </div>
           <button type="button" id="btnRefreshData" class="btn-table-action" title="Refresh live statistics" aria-label="Refresh data">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <polyline points="23 4 23 10 17 10"></polyline>
@@ -458,6 +454,41 @@
              VIEW: CERTIFICATES & ATTENDANCE MANAGEMENT (PHASE 7)
              =================================================================== -->
         <section id="viewCertificates" class="dashboard-view-section" aria-labelledby="certViewHeading">
+          
+          <!-- Instant QR Pass & Attendance Verification Tool -->
+          <div class="qr-verify-card" style="margin-bottom: 1.25rem; padding: 1.25rem; border-radius: 1rem; background: linear-gradient(135deg, rgba(32, 5, 14, 0.95), rgba(18, 2, 7, 0.98)); border: 1px solid rgba(212, 175, 55, 0.45); box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
+            <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.85rem;">
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <div style="width: 2.5rem; height: 2.5rem; border-radius: 0.75rem; background: rgba(212, 175, 55, 0.15); border: 1px solid rgba(212, 175, 55, 0.4); display: flex; align-items: center; justify-content: center; color: #E5C158;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                </div>
+                <div>
+                  <h3 style="font-size: 1.05rem; font-weight: 700; color: #FFFFFF; margin: 0;">Scan QR Pass / Participant Check-In</h3>
+                  <p style="font-size: 0.8rem; color: #A8A29E; margin: 0.2rem 0 0 0;">Scan attendee QR pass or enter Registration ID to instantly verify and check-in participant at B5-408.</p>
+                </div>
+              </div>
+            </div>
+
+            <form id="instantQrVerifyForm" onsubmit="window.handleInstantQrLookup(event)" style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+              <input 
+                type="text" 
+                id="instantQrInput" 
+                placeholder="Scan QR or enter ID (e.g. SRMU-VJ-0001)..." 
+                class="filter-input" 
+                style="flex: 1; min-width: 240px; font-family: monospace; font-size: 0.95rem; font-weight: 600; text-transform: uppercase;"
+                autocomplete="off"
+              />
+              <button type="submit" id="btnInstantLookup" class="btn-primary" style="padding: 0.65rem 1.25rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <span>Verify Pass</span>
+              </button>
+            </form>
+
+            <div id="instantQrResult" style="display: none; margin-top: 1rem; border-radius: 0.75rem; background: rgba(0,0,0,0.5); border: 1px solid rgba(212,175,55,0.3); padding: 1rem;">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+
           <div class="filter-card">
             <div class="filter-grid">
               <div class="form-group">

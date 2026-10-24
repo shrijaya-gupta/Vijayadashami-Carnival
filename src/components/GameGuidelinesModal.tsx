@@ -9,7 +9,7 @@ import {
   FileText, 
   Package, 
   AlertTriangle,
-  Sparkles,
+  Target,
   Users,
   Clock
 } from 'lucide-react';
@@ -113,7 +113,7 @@ export const GameGuidelinesModal: React.FC<GameGuidelinesModalProps> = ({
             <div className="space-y-4">
               <div>
                 <h4 className="text-xs uppercase font-bold text-amber-300/80 tracking-wider mb-1.5 flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                  <Target className="w-3.5 h-3.5 text-amber-400" />
                   <span>Objective</span>
                 </h4>
                 <p className="p-3.5 rounded-xl bg-[#24060F]/90 border border-[#D4AF37]/30 font-medium text-stone-200 leading-relaxed">

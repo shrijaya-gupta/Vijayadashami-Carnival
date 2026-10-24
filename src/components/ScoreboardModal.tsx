@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Trophy, Medal, X, Sparkles, Flame, User, Users, RefreshCw } from 'lucide-react';
+import { Trophy, Medal, X, Award, Flame, User, Users, RefreshCw } from 'lucide-react';
 
 interface ScoreItem {
   id: string;
@@ -203,7 +203,7 @@ export const ScoreboardModal: React.FC<ScoreboardModalProps> = ({ isOpen, onClos
         {/* Footer */}
         <div className="p-4 border-t border-[#3D0A17] bg-[#120208] flex items-center justify-between text-xs text-stone-400">
           <div className="flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+            <Trophy className="w-3.5 h-3.5 text-amber-400" />
             <span>Scores updated dynamically during carnival heats</span>
           </div>
 

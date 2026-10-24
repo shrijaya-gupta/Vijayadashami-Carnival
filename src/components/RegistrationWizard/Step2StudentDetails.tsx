@@ -10,17 +10,19 @@ import {
   GraduationCap, 
   Building2, 
   Calendar, 
-  Sparkles,
   Zap,
-  Check
+  Check,
+  Gamepad2
 } from 'lucide-react';
+import { GAMES_DATA } from '../../data/games';
 
-const COURSES = ['B.Tech', 'BCA', 'MCA', 'BBA', 'MBA', 'Other'];
+const COURSES = ['B.Tech', 'BCA', 'BBA'];
 const BRANCHES = ['CSE', 'IT', 'ECE', 'ME', 'Civil', 'Other'];
-const YEARS = ['1st Year', '2nd Year', '3rd Year', '4th Year', '5th Year'];
+const YEARS = ['3rd Year', '4th Year'];
 
 export const Step2StudentDetails: React.FC = () => {
-  const { student, updateStudent, nextStep, prevStep, goToStep, selectedGameIds, submitError } = useRegistration();
+  const { student, updateStudent, nextStep, prevStep, goToStep, selectedGameIds, gameConfigs, submitError } = useRegistration();
+  const hasTeamGame = selectedGameIds.some(id => gameConfigs[id]?.participationType === 'team');
 
   const isMobileValid = /^(?:\+91|0)?[6-9]\d{9}$/.test(student.mobileNumber.replace(/[\s\-\(\)]/g, ''));
 
@@ -46,6 +48,46 @@ export const Step2StudentDetails: React.FC = () => {
           <span>{submitError}</span>
         </div>
       )}
+
+      {/* Selected Games Summary Banner */}
+      {selectedGameIds.length > 0 && (
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-[#2B0813] via-[#3D0A1B] to-[#2B0813] border border-[#D4AF37]/45 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#881337] to-[#B91C1C] border border-[#D4AF37]/50 text-amber-300 flex items-center justify-center shrink-0">
+              <Gamepad2 className="w-4 h-4 text-[#FFE28A]" />
+            </div>
+            <div className="min-w-0">
+              <span className="text-[11px] font-bold text-amber-300 uppercase tracking-wider block">
+                Selected Entries ({selectedGameIds.length} {selectedGameIds.length === 1 ? 'Game' : 'Games'} • ₹{selectedGameIds.length * 5})
+              </span>
+              <div className="flex flex-wrap gap-1.5 mt-1">
+                {selectedGameIds.map(id => {
+                  const g = GAMES_DATA.find(x => x.id === id);
+                  return (
+                    <span key={id} className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-black/50 border border-white/10 text-stone-200">
+                      {g?.name || id}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              const el = document.getElementById('games');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="self-start sm:self-auto px-3 py-1.5 rounded-lg text-xs font-bold text-amber-300 bg-black/40 hover:bg-black/60 border border-[#D4AF37]/40 hover:border-[#D4AF37] transition-all whitespace-nowrap cursor-pointer shrink-0"
+          >
+            Change Games
+          </button>
+        </div>
+      )}
+
+      {/* Hidden rollNumber fallback to maintain model compatibility without user input */}
+      <input type="hidden" value={student.rollNumber || ''} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         
@@ -110,22 +152,6 @@ export const Step2StudentDetails: React.FC = () => {
           <p className="text-[11px] text-stone-400 mt-1">
             Indian mobile numbers starting with 6–9.
           </p>
-        </div>
-
-        {/* University Roll Number */}
-        <div>
-          <label className="block text-xs font-bold text-amber-200 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-            <Hash className="w-3.5 h-3.5 text-amber-400" />
-            University Roll Number <span className="text-rose-400">*</span>
-          </label>
-          <input
-            type="text"
-            required
-            placeholder="e.g., 2023101011001"
-            value={student.rollNumber}
-            onChange={(e) => updateStudent({ rollNumber: e.target.value })}
-            className="w-full px-4 py-3 rounded-xl border border-[#D4AF37]/35 bg-black/50 text-white placeholder-stone-500 text-sm focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] focus:outline-hidden transition-all shadow-inner"
-          />
         </div>
 
         {/* Course Selection */}
@@ -228,7 +254,7 @@ export const Step2StudentDetails: React.FC = () => {
             type="submit"
             className="w-full sm:w-auto px-7 py-3 rounded-full font-bold text-sm bg-gradient-to-r from-[#881337] via-[#B91C1C] to-[#881337] hover:from-[#9F1239] hover:to-[#B91C1C] text-white flex items-center justify-center gap-2 shadow-lg shadow-rose-950/60 hover:scale-[1.02] active:scale-[0.98] transition-all border border-[#E5C158]/70 cursor-pointer"
           >
-            <span>Continue to Team Setup</span>
+            <span>{hasTeamGame ? 'Continue to Team Setup' : 'Proceed to Payment & Verification'}</span>
             <ArrowRight className="w-4 h-4 text-amber-300" />
           </button>
         </div>
