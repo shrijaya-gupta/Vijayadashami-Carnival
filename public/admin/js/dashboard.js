@@ -704,10 +704,170 @@ async function loadGamewiseData(gameId) {
       }).join('');
     }
 
+    // Also load live heat scores for this game
+    loadGamewiseScores(gameId);
+
   } catch (err) {
     console.error('Failed to load game participants:', err);
   }
 }
+
+async function loadGamewiseScores(gameId) {
+  const tbody = document.getElementById('gamewiseScoresTbody');
+  if (!tbody) return;
+
+  tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-dim); padding: 20px;">Loading live heat scores...</td></tr>`;
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/config/scoreboard?gameId=${encodeURIComponent(gameId)}`);
+    if (!res.ok) throw new Error('Failed to fetch game scores');
+    const json = await res.json();
+    const scores = Array.isArray(json.data) ? json.data : [];
+
+    if (scores.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-dim); padding: 24px;">No live heat scores recorded yet for this challenge. Click "Record Heat Score" above to add verified times or points.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = scores.map(s => {
+      const rankNum = Number(s.rank) || 1;
+      let medalBadge = `<span style="display: inline-block; width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,0.1); color: #fff; text-align: center; line-height: 24px; font-weight: 800; font-size: 0.75rem;">${rankNum}</span>`;
+      if (rankNum === 1) {
+        medalBadge = `<span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, #F59E0B, #D97706); color: #fff; font-weight: 800; font-size: 0.8rem; box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);">🥇</span>`;
+      } else if (rankNum === 2) {
+        medalBadge = `<span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, #94A3B8, #64748B); color: #fff; font-weight: 800; font-size: 0.8rem;">🥈</span>`;
+      } else if (rankNum === 3) {
+        medalBadge = `<span style="display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, #B45309, #78350F); color: #fff; font-weight: 800; font-size: 0.8rem;">🥉</span>`;
+      }
+
+      return `
+        <tr>
+          <td data-label="Rank">${medalBadge}</td>
+          <td data-label="Participant">
+            <div style="font-weight: 700; color: #FFFFFF;">${escapeHtml(s.participant_name)}</div>
+          </td>
+          <td data-label="Roll No">
+            <span style="font-family: monospace; color: var(--text-muted);">${escapeHtml(s.roll_number || '—')}</span>
+          </td>
+          <td data-label="Score">
+            <strong style="color: #FCD34D; font-size: 0.95rem;">${escapeHtml(s.score)}</strong>
+          </td>
+          <td data-label="Category">
+            <span class="status-pill status-confirmed">${escapeHtml(s.category || 'Solo')}</span>
+          </td>
+          <td data-label="Recorded At">
+            <span style="font-size: 0.8rem; color: var(--text-dim);">${formatDate(s.created_at)}</span>
+          </td>
+          <td data-label="Action">
+            <button type="button" class="btn-table-action btn-revoke" onclick="window.deleteHeatScore('${escapeHtml(s.id)}')" title="Remove score from leaderboard">
+              Delete
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  } catch (err) {
+    console.error('Failed to load scoreboard:', err);
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--red-light); padding: 20px;">Could not load leaderboard scores.</td></tr>`;
+  }
+}
+
+window.openRecordScoreModal = function(gameId) {
+  const modal = document.getElementById('recordScoreModal');
+  if (!modal) return;
+  const select = document.getElementById('scoreGameSelect');
+  if (select) select.value = gameId || activeGameId || 'lemon-race';
+  modal.classList.add('is-open');
+  modal.setAttribute('aria-hidden', 'false');
+};
+
+window.closeRecordScoreModal = function() {
+  const modal = document.getElementById('recordScoreModal');
+  if (!modal) return;
+  modal.classList.remove('is-open');
+  modal.setAttribute('aria-hidden', 'true');
+  const form = document.getElementById('recordScoreForm');
+  if (form) form.reset();
+};
+
+window.handleRecordScoreSubmit = async function(e) {
+  if (e) e.preventDefault();
+  const gameSelect = document.getElementById('scoreGameSelect');
+  const nameInput = document.getElementById('scoreParticipantName');
+  const rollInput = document.getElementById('scoreRollNumber');
+  const rankSelect = document.getElementById('scoreRank');
+  const scoreInput = document.getElementById('scoreValue');
+  const catSelect = document.getElementById('scoreCategory');
+  const btn = document.getElementById('btnSubmitScore');
+
+  const game_id = gameSelect?.value || activeGameId;
+  const participant_name = nameInput?.value?.trim();
+  const roll_number = rollInput?.value?.trim() || '';
+  const rank = parseInt(rankSelect?.value || '1', 10);
+  const score = scoreInput?.value?.trim();
+  const category = catSelect?.value || 'Solo';
+
+  if (!participant_name || !score) {
+    showToast('Participant name and score value are required.');
+    return;
+  }
+
+  const selectedGameObj = EVENT_GAMES.find(g => g.id === game_id);
+  const game_name = selectedGameObj?.name || game_id;
+
+  try {
+    if (btn) btn.disabled = true;
+    const res = await fetch(`${API_BASE_URL}/api/config/scoreboard`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        game_id,
+        game_name,
+        participant_name,
+        roll_number,
+        rank,
+        score,
+        category
+      })
+    });
+
+    const json = await res.json();
+    if (!res.ok || !json.success) {
+      throw new Error(json.error || 'Failed to record heat score');
+    }
+
+    showToast(`✓ Heat score for ${participant_name} recorded on live leaderboard!`);
+    window.closeRecordScoreModal();
+    loadGamewiseScores(activeGameId);
+  } catch (err) {
+    showToast(`Error: ${err.message}`);
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+};
+
+window.deleteHeatScore = async function(scoreId) {
+  if (!confirm('Are you sure you want to remove this score record from the public leaderboard?')) {
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/config/scoreboard/${encodeURIComponent(scoreId)}`, {
+      method: 'DELETE'
+    });
+    const json = await res.json();
+    if (!res.ok || !json.success) {
+      throw new Error(json.error || 'Failed to delete score');
+    }
+
+    showToast('✓ Heat score removed from leaderboard.');
+    loadGamewiseScores(activeGameId);
+  } catch (err) {
+    showToast(`Error: ${err.message}`);
+  }
+};
 
 // ============================================================================
 // 6. PAYMENT MANAGEMENT & DESK AUDIT (PHASE 5)

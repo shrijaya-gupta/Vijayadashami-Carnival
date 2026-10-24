@@ -84,15 +84,81 @@ router.post('/payment-qr', async (req, res) => {
 router.get('/scoreboard', async (req, res) => {
   try {
     const gameId = req.query.gameId;
-    const scores = await db.getGameScores(gameId);
+    const result = await db.getGameScores(gameId);
     res.status(200).json({
       success: true,
-      data: scores
+      data: result.scores,
+      participantCounts: result.participantCounts,
+      totalRegistered: result.totalRegisteredStudents
     });
   } catch (err) {
     res.status(500).json({
       success: false,
       error: 'Failed to fetch scoreboard: ' + err.message
+    });
+  }
+});
+
+/**
+ * POST /api/config/scoreboard
+ * Records or updates a verified carnival heat score
+ */
+router.post('/scoreboard', async (req, res) => {
+  try {
+    const { game_id, game_name, participant_name, score, rank, category, roll_number } = req.body || {};
+    if (!game_id || !participant_name || !score) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required score fields: game_id, participant_name, and score are mandatory.'
+      });
+    }
+
+    const created = await db.addGameScore({
+      game_id,
+      game_name: game_name || game_id,
+      participant_name,
+      score,
+      rank: rank ? parseInt(rank, 10) : 1,
+      category: category || 'Solo',
+      roll_number: roll_number || ''
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Game score recorded successfully!',
+      data: created
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      error: 'Failed to record score: ' + err.message
+    });
+  }
+});
+
+/**
+ * DELETE /api/config/scoreboard/:id
+ * Removes a recorded heat score
+ */
+router.delete('/scoreboard/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await db.deleteGameScore(id);
+    if (!deleted) {
+      return res.status(404).json({
+        success: false,
+        error: 'Score record not found.'
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: 'Score deleted successfully.',
+      data: deleted
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      error: 'Failed to delete score: ' + err.message
     });
   }
 });

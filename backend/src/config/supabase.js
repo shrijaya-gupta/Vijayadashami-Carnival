@@ -49,16 +49,9 @@ const memoryStore = {
     upi_name: 'SRMU B5-408 Carnival Desk',
     qr_image_url: '',
     is_qr_active: false,
-    announcement: 'Registrations are open! ₹5 entry fee per game.'
+    announcement: 'Registrations are open! ₹10 flat fee for all carnival activities.'
   },
-  gameScores: [
-    { id: '1', game_id: 'lemon-race', game_name: 'Lemon and Spoon Race', participant_name: 'Aarav Sharma', roll_number: '2023101011001', score: '14.2s (Fastest Lap)', rank: 1, category: 'Solo' },
-    { id: '2', game_id: 'lemon-race', game_name: 'Lemon and Spoon Race', participant_name: 'Priya Verma', roll_number: '2023101011045', score: '15.8s', rank: 2, category: 'Solo' },
-    { id: '3', game_id: 'target-shooting', game_name: 'Target Shooting Challenge', participant_name: 'Vikramaditya Singh', roll_number: '2022101012014', score: '95 Points', rank: 1, category: 'Solo' },
-    { id: '4', game_id: 'musical-chairs', game_name: 'Musical Chairs', participant_name: 'Ananya Gupta', roll_number: '2024101013009', score: 'Winner (Round 4)', rank: 1, category: 'Solo' },
-    { id: '5', game_id: 'cup-balloon-pyramid', game_name: 'Cup & Balloon Pyramid', participant_name: 'Rohan & Team', roll_number: '2023101011088', score: '1 min 12s', rank: 1, category: 'Team' },
-    { id: '6', game_id: 'balloon-dual-race', game_name: 'Balloon Dual Race', participant_name: 'Kabir & Sanya', roll_number: '2024101014022', score: '18.4s', rank: 1, category: 'Pairs' }
-  ]
+  gameScores: []
 };
 
 // -----------------------------------------------------------------------------
@@ -235,18 +228,86 @@ module.exports = {
 
   // Game Scores / Leaderboard
   async getGameScores(gameId) {
+    let scores = [];
     if (supabase) {
       let query = supabase.from('game_scores').select('*').order('rank', { ascending: true });
       if (gameId && gameId !== 'all') {
         query = query.eq('game_id', gameId);
       }
       const { data, error } = await query;
+      if (!error && Array.isArray(data)) scores = data;
+    } else {
+      if (gameId && gameId !== 'all') {
+        scores = memoryStore.gameScores.filter(s => s.game_id === gameId);
+      } else {
+        scores = [...memoryStore.gameScores];
+      }
+    }
+
+    // Sort by rank ascending
+    scores.sort((a, b) => (Number(a.rank) || 999) - (Number(b.rank) || 999));
+
+    // Aggregate registered participant counts per game
+    const regs = await this.getAllRegistrations().catch(() => memoryStore.registrations);
+    const gameCounts = {};
+    (regs || []).forEach(r => {
+      const selected = Array.isArray(r.selected_games) ? r.selected_games : (Array.isArray(r.selectedGames) ? r.selectedGames : []);
+      selected.forEach(g => {
+        const id = typeof g === 'string' ? g : g.gameId;
+        if (id) gameCounts[id] = (gameCounts[id] || 0) + 1;
+      });
+    });
+
+    return {
+      scores,
+      participantCounts: gameCounts,
+      totalRegisteredStudents: (regs || []).length
+    };
+  },
+
+  async addGameScore(scoreData) {
+    const crypto = require('crypto');
+    const newId = crypto.randomUUID();
+    const payload = {
+      id: newId,
+      game_id: scoreData.game_id || scoreData.gameId,
+      game_name: scoreData.game_name || scoreData.gameName,
+      participant_name: scoreData.participant_name || scoreData.participantName,
+      roll_number: scoreData.roll_number || scoreData.rollNumber || '',
+      score: String(scoreData.score || '').trim(),
+      rank: parseInt(scoreData.rank, 10) || 1,
+      category: scoreData.category || 'Solo',
+      created_at: new Date().toISOString()
+    };
+
+    if (supabase) {
+      const { data, error } = await supabase
+        .from('game_scores')
+        .insert([payload])
+        .select()
+        .single();
       if (!error && data) return data;
+      if (error) console.warn('Supabase add score warning:', error.message);
     }
-    if (gameId && gameId !== 'all') {
-      return memoryStore.gameScores.filter(s => s.game_id === gameId);
+
+    memoryStore.gameScores.push(payload);
+    memoryStore.gameScores.sort((a, b) => a.rank - b.rank);
+    return payload;
+  },
+
+  async deleteGameScore(id) {
+    const cleanId = String(id).trim();
+    if (supabase) {
+      const { data, error } = await supabase.from('game_scores').delete().eq('id', cleanId).select();
+      if (!error && data && data.length > 0) return data[0];
+      if (!error) return { id: cleanId, deleted: true };
+      if (error) console.warn('Supabase delete score warning:', error.message);
     }
-    return memoryStore.gameScores;
+    const idx = memoryStore.gameScores.findIndex(s => s.id === cleanId);
+    if (idx !== -1) {
+      return memoryStore.gameScores.splice(idx, 1)[0];
+    }
+    return null;
   },
 
   // Certificates
