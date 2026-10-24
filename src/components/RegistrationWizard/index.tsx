@@ -27,8 +27,8 @@ export const RegistrationWizard: React.FC = () => {
         </div>
 
         {/* Heading */}
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold font-decorative tracking-[0.02em] leading-tight text-white">
-          <span className="block text-[#FFFDF9] drop-shadow-md">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-cinzel tracking-wider uppercase leading-tight text-white">
+          <span className="block text-[#FFFDF9] drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)]">
             Student Registration Portal
           </span>
         </h2>

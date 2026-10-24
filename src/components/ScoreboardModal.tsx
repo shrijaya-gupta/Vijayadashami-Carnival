@@ -77,7 +77,7 @@ export const ScoreboardModal: React.FC<ScoreboardModalProps> = ({ isOpen, onClos
               </span>
             </div>
 
-            <h3 id="scoreboardModalTitle" className="text-xl sm:text-2xl font-bold font-decorative text-white">
+            <h3 id="scoreboardModalTitle" className="text-xl sm:text-2xl font-extrabold font-cinzel tracking-wider uppercase text-white">
               Official Carnival Rankings
             </h3>
             <p className="text-xs sm:text-sm text-stone-300 mt-1">

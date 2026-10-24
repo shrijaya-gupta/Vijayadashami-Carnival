@@ -65,7 +65,7 @@ export const Hero: React.FC<HeroProps> = ({
         style={{ backgroundImage: "url('/assets/hero-desktop.jpg')" }}
       >
         {/* Left-to-right atmospheric dark gradient overlay so text on left is 100% crisp and readable without covering Rama */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#100308] via-[#100308]/85 via-32% to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#100308]/92 via-[#100308]/65 via-38% to-transparent pointer-events-none" />
         {/* Soft bottom edge blend into the section divider */}
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#100308] via-[#100308]/80 to-transparent pointer-events-none" />
         {/* Soft top edge blend into the header/navbar */}
@@ -116,7 +116,7 @@ export const Hero: React.FC<HeroProps> = ({
 
       {/* =========================================================================
           HERO MAIN CONTENT CONTAINER
-          Desktop: Text is on Left 6 cols, Right 6 cols is open to let background artwork shine
+          Desktop: Text is on Left 5 cols, Right 7 cols is open to let background artwork shine
           Mobile: Content sits below the top image, seamlessly flowing
           ========================================================================= */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 sm:-mt-8 lg:mt-0 pt-0 lg:pt-14 pb-14 sm:pb-22">
@@ -128,13 +128,15 @@ export const Hero: React.FC<HeroProps> = ({
           <div className="lg:col-span-5 xl:col-span-5 text-left space-y-5">
             
             {/* Grand Hero Title */}
-            <div className="space-y-1.5">
-              <h1 className="text-4xl xl:text-5xl 2xl:text-6xl font-black font-decorative tracking-[0.02em] leading-[1.08]">
-                <span className="block text-[#FFFDF9] drop-shadow-[0_4px_18px_rgba(0,0,0,0.9)]">
-                  Vijayadashami
+            <div className="space-y-2 relative">
+              {/* Subtle ambient golden backglow for title depth */}
+              <div className="absolute -top-10 -left-10 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+              <h1 className="relative text-4xl xl:text-5xl 2xl:text-6xl font-black font-cinzel tracking-[0.04em] uppercase leading-[1.06]">
+                <span className="block text-[#FFFDF9] drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)]">
+                  VIJAYADASHAMI
                 </span>
-                <span className="block gold-gradient-text drop-shadow-[0_6px_28px_rgba(212,175,55,0.5)]">
-                  Carnival
+                <span className="block gold-gradient-text drop-shadow-[0_6px_32px_rgba(212,175,55,0.45)]">
+                  CARNIVAL
                 </span>
               </h1>
 
@@ -249,13 +251,13 @@ export const Hero: React.FC<HeroProps> = ({
         <div className="block lg:hidden text-center space-y-4">
           
           {/* Grand Hero Title */}
-          <div className="space-y-1.5">
-            <h1 className="text-3xl xs:text-4xl sm:text-5xl font-black font-decorative tracking-[0.02em] leading-[1.12]">
-              <span className="block text-[#FFFDF9] drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
-                Vijayadashami
+          <div className="space-y-2 relative">
+            <h1 className="text-3xl xs:text-4xl sm:text-5xl font-black font-cinzel tracking-[0.04em] uppercase leading-[1.08]">
+              <span className="block text-[#FFFDF9] drop-shadow-[0_4px_20px_rgba(0,0,0,0.95)]">
+                VIJAYADASHAMI
               </span>
-              <span className="block gold-gradient-text drop-shadow-[0_4px_20px_rgba(212,175,55,0.45)]">
-                Carnival
+              <span className="block gold-gradient-text drop-shadow-[0_6px_24px_rgba(212,175,55,0.45)]">
+                CARNIVAL
               </span>
             </h1>
 

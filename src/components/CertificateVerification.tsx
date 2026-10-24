@@ -85,7 +85,7 @@ export const CertificateVerification: React.FC = () => {
           <span>Public Verification Registry</span>
         </div>
         
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold font-decorative tracking-[0.02em] text-white">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-cinzel tracking-wider uppercase text-white">
           Verify Event Certificate
         </h2>
 
