@@ -507,17 +507,14 @@ export const Hero: React.FC<HeroProps> = ({
               Welcome to the ceremonial celebrations at Shri Ramswaroop Memorial University! Join us as good triumphs over evil with games, archery accuracy challenges, teamwork, and festival rewards.
             </p>
             <div className="relative w-full max-w-[280px] aspect-[9/16] max-h-[50vh] mx-auto rounded-2xl overflow-hidden border border-[#D4AF37]/50 bg-[#070104] flex items-center justify-center shadow-xl">
-              <img 
-                src="/assets/intro.gif" 
-                alt="Vijayadashami Carnival Battle Intro Animation" 
+              <video 
+                src="/assets/intro.mp4" 
+                autoPlay 
+                loop 
+                controls 
+                playsInline 
                 className="w-full h-full object-cover" 
-                style={{
-                  maskImage: 'radial-gradient(ellipse 90% 90% at 50% 50%, black 50%, transparent 98%)',
-                  WebkitMaskImage: 'radial-gradient(ellipse 90% 90% at 50% 50%, black 50%, transparent 98%)'
-                }}
               />
-              <div className="absolute inset-x-0 top-0 h-14 bg-gradient-to-b from-[#1C050F] to-transparent pointer-events-none" />
-              <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#1C050F] to-transparent pointer-events-none" />
             </div>
             <button
               onClick={() => setShowVideoModal(false)}
