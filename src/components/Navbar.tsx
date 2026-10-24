@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useRegistration } from '../context/RegistrationContext';
 import { 
   Menu, 
   X, 
@@ -8,7 +9,8 @@ import {
   ExternalLink,
   Award,
   Flame,
-  Trophy
+  Trophy,
+  Sparkles
 } from 'lucide-react';
 
 {/* Sacred Vijayadashami Bow & Arrow (Teer Dhanush pe chadha hua - Drawn Bow with Nocked Arrow) */}
@@ -89,6 +91,17 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenScoreboard }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { selectedGameIds, goToStep } = useRegistration();
+
+  const handleProceedToRegister = () => {
+    setActiveTab('register');
+    goToStep(2);
+    setMobileMenuOpen(false);
+    const el = document.getElementById('register');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   const handleNavClick = (tab: 'home' | 'games' | 'register' | 'verify') => {
     setActiveTab(tab);
@@ -185,6 +198,21 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenS
 
         {/* Action Controls */}
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          {/* Live Game Selection Badge & Fast Proceed */}
+          {selectedGameIds.length > 0 && (
+            <button
+              onClick={handleProceedToRegister}
+              className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r from-[#881337] via-[#B91C1C] to-[#881337] hover:from-[#9F1239] hover:to-[#B91C1C] text-white border border-[#E5C158]/70 shadow-md shadow-rose-950/60 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+              title="Proceed to Registration with selected games"
+            >
+              <span className="w-5 h-5 rounded-full bg-[#E5C158] text-[#881337] font-black text-[10px] flex items-center justify-center shrink-0">
+                {selectedGameIds.length}
+              </span>
+              <span className="font-extrabold text-amber-300">₹{selectedGameIds.length * 5}</span>
+              <span className="hidden sm:inline font-semibold">Proceed →</span>
+            </button>
+          )}
+
           {/* Admin link */}
           <a
             href="/admin/login.html"
@@ -211,6 +239,21 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenS
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
         <div className="md:hidden px-4 pt-2 pb-6 border-t border-[#3D0A17] bg-[#14030A] shadow-xl space-y-2">
+          {selectedGameIds.length > 0 && (
+            <button
+              onClick={handleProceedToRegister}
+              className="w-full text-left px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-between bg-gradient-to-r from-[#881337] to-[#B91C1C] text-white border border-[#E5C158]/60 shadow-md"
+            >
+              <div className="flex items-center gap-2">
+                <span className="w-5 h-5 rounded-full bg-[#E5C158] text-[#881337] font-black text-xs flex items-center justify-center">
+                  {selectedGameIds.length}
+                </span>
+                <span>{selectedGameIds.length === 1 ? '1 Game Selected' : `${selectedGameIds.length} Games Selected`}</span>
+              </div>
+              <span className="text-amber-300 font-extrabold">₹{selectedGameIds.length * 5} · Proceed →</span>
+            </button>
+          )}
+
           <button
             onClick={() => handleNavClick('home')}
             className={`w-full text-left px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 ${

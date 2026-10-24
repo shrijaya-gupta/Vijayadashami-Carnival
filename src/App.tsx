@@ -60,7 +60,16 @@ const CarnivalApp: React.FC = () => {
         onOpenScoreboard={() => setIsScoreboardOpen(true)}
       />
 
-      <main className="flex-1 pb-32 sm:pb-24">
+      {/* Sticky Top Selection Bar (appears under Navbar when games are selected) */}
+      {activeStep < 5 && (
+        <SelectionBar
+          selectedGameIds={selectedGameIds}
+          onRemoveGame={toggleGameSelection}
+          onProceed={handleProceedFromSelectionBar}
+        />
+      )}
+
+      <main className="flex-1 pb-12 sm:pb-16">
         {activeTab === 'home' && (
           <>
             <Hero 
@@ -98,15 +107,6 @@ const CarnivalApp: React.FC = () => {
           </div>
         )}
       </main>
-
-      {/* Sticky Bottom Selection Bar (shown when games are selected and before confirmation) */}
-      {activeStep < 5 && (
-        <SelectionBar
-          selectedGameIds={selectedGameIds}
-          onRemoveGame={toggleGameSelection}
-          onProceed={handleProceedFromSelectionBar}
-        />
-      )}
 
       {/* Live Campus Scoreboard Modal */}
       <ScoreboardModal 

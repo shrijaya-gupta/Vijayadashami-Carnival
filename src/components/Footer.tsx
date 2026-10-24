@@ -52,7 +52,7 @@ const VijayadashamiBowIcon: React.FC<{ className?: string }> = ({ className = "w
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="w-full bg-[#0B0205] text-stone-300 border-t border-[#D4AF37]/30 pt-16 pb-12 mt-16 text-white">
+    <footer className="w-full bg-[#0B0205] text-stone-300 border-t border-[#D4AF37]/30 pt-12 pb-10 mt-8 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-12 border-b border-white/10">
