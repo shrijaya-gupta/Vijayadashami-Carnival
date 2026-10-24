@@ -10,10 +10,18 @@ import { SelectionBar } from './components/SelectionBar';
 import { CertificateVerification } from './components/CertificateVerification';
 import { ScoreboardModal } from './components/ScoreboardModal';
 import { Footer } from './components/Footer';
+import { IntroScreen } from './components/IntroScreen';
 
 const CarnivalApp: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'home' | 'games' | 'register' | 'verify'>('home');
   const [isScoreboardOpen, setIsScoreboardOpen] = useState<boolean>(false);
+  const [showIntro, setShowIntro] = useState<boolean>(() => {
+    try {
+      return !sessionStorage.getItem('carnival_intro_seen');
+    } catch (e) {
+      return true;
+    }
+  });
   const { selectedGameIds, toggleGameSelection, goToStep, activeStep } = useRegistration();
 
   useEffect(() => {
@@ -83,6 +91,7 @@ const CarnivalApp: React.FC = () => {
             <Hero 
               onRegisterClick={handleRegisterClick} 
               onExploreGamesClick={handleExploreGamesClick} 
+              onWatchIntroClick={() => setShowIntro(true)}
             />
             <GamesCatalogue
               selectedGameIds={selectedGameIds}
@@ -129,6 +138,12 @@ const CarnivalApp: React.FC = () => {
       <ScoreboardModal 
         isOpen={isScoreboardOpen} 
         onClose={() => setIsScoreboardOpen(false)} 
+      />
+
+      {/* Cinematic Battle Intro Splash Screen */}
+      <IntroScreen 
+        isOpen={showIntro} 
+        onClose={() => setShowIntro(false)} 
       />
 
       <Footer />
