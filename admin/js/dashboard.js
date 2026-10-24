@@ -182,6 +182,15 @@ function initNavigation() {
   mobileClose?.addEventListener('click', closeSidebarMobile);
   backdrop?.addEventListener('click', closeSidebarMobile);
 
+  const bottomNavButtons = document.querySelectorAll('.bottom-nav-item[data-view]');
+  bottomNavButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const view = btn.dataset.view;
+      switchView(view);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+
   refreshBtn?.addEventListener('click', () => {
     refreshCurrentView();
     showToast('Dashboard data refreshed.');
@@ -191,8 +200,13 @@ function initNavigation() {
 function switchView(viewName) {
   currentView = viewName;
 
-  // Update nav buttons
+  // Update sidebar nav buttons
   document.querySelectorAll('.sidebar-nav-item[data-view]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.view === viewName);
+  });
+
+  // Update mobile bottom nav buttons
+  document.querySelectorAll('.bottom-nav-item[data-view]').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.view === viewName);
   });
 
@@ -349,16 +363,16 @@ function renderOverviewRecent(recent) {
     const dateStr = formatDate(r.createdAt);
     return `
       <tr>
-        <td><span class="reg-id-badge">${escapeHtml(r.registrationId)}</span></td>
-        <td><strong>${escapeHtml(r.studentName)}</strong></td>
-        <td>${escapeHtml(r.rollNumber)}</td>
-        <td>${escapeHtml(r.course)}</td>
-        <td>${r.gamesCount} game${r.gamesCount !== 1 ? 's' : ''}</td>
-        <td><span class="status-pill ${statusClass}">${escapeHtml(r.status || 'confirmed')}</span></td>
-        <td>${dateStr}</td>
-        <td>
+        <td data-label="ID"><span class="reg-id-badge">${escapeHtml(r.registrationId)}</span></td>
+        <td data-label="Student"><strong>${escapeHtml(r.studentName)}</strong></td>
+        <td data-label="Roll No">${escapeHtml(r.rollNumber || '—')}</td>
+        <td data-label="Course">${escapeHtml(r.course)}</td>
+        <td data-label="Games">${r.gamesCount} game${r.gamesCount !== 1 ? 's' : ''}</td>
+        <td data-label="Status"><span class="status-pill ${statusClass}">${escapeHtml(r.status || 'confirmed')}</span></td>
+        <td data-label="Date">${dateStr}</td>
+        <td data-label="Action">
           <button type="button" class="btn-table-action" onclick="openRegistrationModal('${escapeHtml(r.registrationId)}')">
-            View
+            View Details
           </button>
         </td>
       </tr>
@@ -520,22 +534,22 @@ async function loadRegistrationsData() {
 
       return `
         <tr>
-          <td><span class="reg-id-badge">${escapeHtml(reg.registrationId)}</span></td>
-          <td><strong>${escapeHtml(student.fullName)}</strong></td>
-          <td>${escapeHtml(student.rollNumber)}</td>
-          <td>${escapeHtml(student.course)} - ${escapeHtml(student.branch)}</td>
-          <td>${escapeHtml(student.academicYear)}</td>
-          <td>${gamesChips}</td>
-          <td><strong style="color: #F59E0B;">₹${fee}</strong></td>
-          <td>
+          <td data-label="ID"><span class="reg-id-badge">${escapeHtml(reg.registrationId)}</span></td>
+          <td data-label="Student"><strong>${escapeHtml(student.fullName)}</strong></td>
+          <td data-label="Roll No">${escapeHtml(student.rollNumber || '—')}</td>
+          <td data-label="Course">${escapeHtml(student.course || '—')} - ${escapeHtml(student.branch || '')}</td>
+          <td data-label="Year">${escapeHtml(student.academicYear || '—')}</td>
+          <td data-label="Games">${gamesChips}</td>
+          <td data-label="Fee"><strong style="color: #F59E0B;">₹${fee}</strong></td>
+          <td data-label="Payment">
             <span class="status-pill ${paymentClass}">${escapeHtml(paymentLabel)}</span>
             ${utrBadge}
           </td>
-          <td><span class="status-pill ${statusClass}">${escapeHtml(reg.status || 'confirmed')}</span></td>
-          <td>${dateStr}</td>
-          <td>
+          <td data-label="Status"><span class="status-pill ${statusClass}">${escapeHtml(reg.status || 'confirmed')}</span></td>
+          <td data-label="Date">${dateStr}</td>
+          <td data-label="Action">
             <button type="button" class="btn-table-action" onclick="openRegistrationModal('${escapeHtml(reg.registrationId)}')">
-              Details
+              View Details
             </button>
           </td>
         </tr>
@@ -649,14 +663,14 @@ async function loadGamewiseData(gameId) {
 
         return `
           <tr>
-            <td><span class="reg-id-badge">${escapeHtml(p.registrationId)}</span></td>
-            <td><strong>${escapeHtml(p.studentName)}</strong></td>
-            <td>${escapeHtml(p.rollNumber)}</td>
-            <td>${escapeHtml(p.course)} - ${escapeHtml(p.branch)}</td>
-            <td><span class="status-pill ${isTeam ? 'status-pending' : 'status-confirmed'}">${isTeam ? 'Team' : 'Solo'}</span></td>
-            <td>${teamInfo}</td>
-            <td>${formatDate(p.createdAt)}</td>
-            <td>
+            <td data-label="ID"><span class="reg-id-badge">${escapeHtml(p.registrationId)}</span></td>
+            <td data-label="Student"><strong>${escapeHtml(p.studentName)}</strong></td>
+            <td data-label="Roll No">${escapeHtml(p.rollNumber)}</td>
+            <td data-label="Course">${escapeHtml(p.course)} - ${escapeHtml(p.branch)}</td>
+            <td data-label="Format"><span class="status-pill ${isTeam ? 'status-pending' : 'status-confirmed'}">${isTeam ? 'Team' : 'Solo'}</span></td>
+            <td data-label="Squad Details">${teamInfo}</td>
+            <td data-label="Date">${formatDate(p.createdAt)}</td>
+            <td data-label="Action">
               <button type="button" class="btn-table-action" onclick="openRegistrationModal('${escapeHtml(p.registrationId)}')">
                 View
               </button>
@@ -876,19 +890,19 @@ function renderPaymentsRows(registrations) {
 
     return `
       <tr>
-        <td>
+        <td data-label="ID">
           <span class="reg-id-badge cursor-pointer" onclick="openRegistrationModal('${escapeHtml(reg.registrationId)}')">
             ${escapeHtml(reg.registrationId)}
           </span>
         </td>
-        <td><strong>${escapeHtml(student.fullName)}</strong></td>
-        <td>${escapeHtml(student.rollNumber || '—')}</td>
-        <td>${gamesDisplay}</td>
-        <td><strong style="color: #FCD34D;">₹${fee}</strong></td>
-        <td><span class="status-pill ${payBadgeClass}">${escapeHtml(payLabel)}</span></td>
-        <td>${utrDisplay}</td>
-        <td>${dateStr}</td>
-        <td>
+        <td data-label="Student"><strong>${escapeHtml(student.fullName)}</strong></td>
+        <td data-label="Roll No">${escapeHtml(student.rollNumber || '—')}</td>
+        <td data-label="Games">${gamesDisplay}</td>
+        <td data-label="Fee"><strong style="color: #FCD34D;">₹${fee}</strong></td>
+        <td data-label="Payment"><span class="status-pill ${payBadgeClass}">${escapeHtml(payLabel)}</span></td>
+        <td data-label="UTR / Ref">${utrDisplay}</td>
+        <td data-label="Date">${dateStr}</td>
+        <td data-label="Action">
           <div class="action-btn-group">
             ${actionButtons}
           </div>
@@ -1684,30 +1698,30 @@ function renderCertificatesRows(participants) {
 
     return `
       <tr>
-        <td>
+        <td data-label="ID">
           <span class="reg-id-badge cursor-pointer" onclick="window.openRegistrationModal('${p.registrationId}')" title="Click to view details">
             ${escapeHtml(p.registrationId)}
           </span>
         </td>
-        <td>
+        <td data-label="Participant">
           <div style="font-weight: 700; color: #FFFFFF;">${escapeHtml(p.studentName)}</div>
           <div style="font-size: 0.75rem; color: var(--text-dim);">${escapeHtml(p.course)} &bull; ${escapeHtml(p.branch)}</div>
         </td>
-        <td>
+        <td data-label="Roll No">
           <span style="font-family: monospace; color: var(--text-muted);">${escapeHtml(p.rollNumber || '—')}</span>
         </td>
-        <td>
+        <td data-label="Games">
           <div style="font-weight: 600; color: #FFFFFF;">${gamesCount} challenge${gamesCount !== 1 ? 's' : ''}</div>
           <div style="font-size: 0.72rem; color: var(--text-dim); max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(gamesNames)}">
             ${escapeHtml(gamesNames)}
           </div>
         </td>
-        <td>${partPill}</td>
-        <td>
+        <td data-label="Attendance">${partPill}</td>
+        <td data-label="Certificate">
           <div>${certStatusHtml}</div>
           ${p.certificateId ? `<div style="font-size: 0.72rem; font-family: monospace; color: var(--sky); margin-top: 2px;">${escapeHtml(p.certificateId)}</div>` : ''}
         </td>
-        <td>
+        <td data-label="Action">
           <div class="action-btn-group">
             ${actionButtonsHtml}
           </div>

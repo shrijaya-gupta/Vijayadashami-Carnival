@@ -1768,3 +1768,207 @@ button {
   }
 }
 
+/* ==============================================================================
+   PHASE 6: MOBILE UX ENHANCEMENTS - BOTTOM NAV & RESPONSIVE TABLE CARDS
+   ============================================================================== */
+
+/* Mobile Bottom Navigation Bar (Hidden on desktop) */
+.mobile-bottom-nav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  /* Prevent content clipping behind fixed bottom navigation bar */
+  .dashboard-content-area {
+    padding-bottom: 92px !important;
+  }
+
+  /* Fixed Bottom Nav Bar */
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: rgba(14, 11, 22, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(212, 175, 55, 0.28);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 4px calc(env(safe-area-inset-bottom, 0px) + 2px);
+  }
+
+  .bottom-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    padding: 6px 2px;
+    font-family: inherit;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: var(--radius-sm);
+  }
+
+  .bottom-nav-item svg {
+    transition: transform 0.2s ease, stroke 0.2s ease;
+  }
+
+  .bottom-nav-item:hover,
+  .bottom-nav-item:focus-visible {
+    color: #FFFDF9;
+  }
+
+  .bottom-nav-item.active {
+    color: #FDE047;
+  }
+
+  .bottom-nav-item.active svg {
+    stroke: #FDE047;
+    transform: translateY(-2px);
+    filter: drop-shadow(0 0 6px rgba(253, 224, 71, 0.5));
+  }
+
+  /* Responsive Table to Mobile Stacked Cards */
+  .table-responsive {
+    border: none;
+    background: transparent;
+    overflow: visible;
+  }
+
+  .data-table {
+    display: block;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 12px;
+  }
+
+  .data-table thead {
+    display: none;
+  }
+
+  .data-table tbody {
+    display: block;
+    width: 100%;
+  }
+
+  .data-table tbody tr {
+    display: flex;
+    flex-direction: column;
+    background: rgba(22, 16, 32, 0.78);
+    border: 1px solid rgba(212, 175, 55, 0.22);
+    border-radius: var(--radius-md);
+    margin-bottom: 14px;
+    padding: 12px 14px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .data-table tbody tr:hover {
+    border-color: rgba(212, 175, 55, 0.45);
+    transform: translateY(-1px);
+  }
+
+  .data-table tbody tr td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border: none;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+    font-size: 0.82rem;
+    text-align: right;
+  }
+
+  .data-table tbody tr td:last-child {
+    border-bottom: none;
+    padding-top: 10px;
+    margin-top: 2px;
+    justify-content: flex-end;
+  }
+
+  .data-table tbody tr td::before {
+    content: attr(data-label);
+    font-size: 0.74rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-dim);
+    margin-right: 12px;
+    flex-shrink: 0;
+    text-align: left;
+  }
+
+  .data-table tbody tr td:not([data-label])::before {
+    display: none;
+  }
+
+  .data-table tbody tr td[colspan] {
+    display: block;
+    width: 100%;
+    text-align: center !important;
+    padding: 28px 12px !important;
+    border: none !important;
+  }
+
+  .data-table tbody tr td[colspan]::before {
+    display: none !important;
+  }
+
+  .action-btn-group {
+    width: 100%;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+/* Light Theme Overrides for Mobile Bottom Nav & Cards */
+[data-theme="light"] .mobile-bottom-nav {
+  background: rgba(255, 252, 248, 0.95);
+  border-top-color: rgba(128, 0, 32, 0.18);
+  box-shadow: 0 -4px 20px rgba(128, 0, 32, 0.1);
+}
+
+[data-theme="light"] .bottom-nav-item {
+  color: #8C6A72;
+}
+
+[data-theme="light"] .bottom-nav-item.active {
+  color: #800020;
+}
+
+[data-theme="light"] .bottom-nav-item.active svg {
+  stroke: #800020;
+  filter: drop-shadow(0 0 6px rgba(128, 0, 32, 0.3));
+}
+
+@media (max-width: 768px) {
+  [data-theme="light"] .data-table tbody tr {
+    background: rgba(255, 255, 255, 0.92);
+    border-color: rgba(128, 0, 32, 0.18);
+    box-shadow: 0 4px 14px rgba(128, 0, 32, 0.08);
+  }
+
+  [data-theme="light"] .data-table tbody tr td {
+    border-bottom-color: rgba(128, 0, 32, 0.08);
+  }
+
+  [data-theme="light"] .data-table tbody tr td::before {
+    color: #8C6A72;
+  }
+}
+
+
