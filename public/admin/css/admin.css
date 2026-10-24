@@ -1372,15 +1372,97 @@ button {
 }
 
 /* --------------------------------------------------------------------------
+   Sidebar Backdrop & Mobile Drawer Elements
+   -------------------------------------------------------------------------- */
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 99;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.sidebar-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mobile-sidebar-close {
+  display: none;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: #FDE047;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-left: auto;
+  transition: all 0.2s ease;
+}
+
+.mobile-sidebar-close:hover {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: #FDE047;
+  color: #FFFFFF;
+}
+
+/* Direct Organizer Contact Buttons */
+.btn-quick-contact {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.74rem;
+  font-weight: 700;
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--emerald-light);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn-quick-contact:hover {
+  background: var(--emerald);
+  color: #FFFFFF;
+  border-color: var(--emerald);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+}
+
+.btn-quick-wa {
+  background: rgba(37, 211, 102, 0.15);
+  color: #4ADE80;
+  border-color: rgba(37, 211, 102, 0.35);
+}
+
+.btn-quick-wa:hover {
+  background: #25D366;
+  color: #000000;
+  border-color: #25D366;
+  box-shadow: 0 0 10px rgba(37, 211, 102, 0.4);
+}
+
+/* --------------------------------------------------------------------------
    RESPONSIVE MEDIA QUERIES
    -------------------------------------------------------------------------- */
 @media (max-width: 992px) {
   .dashboard-sidebar {
     transform: translateX(-100%);
+    z-index: 100;
   }
   
   .dashboard-sidebar.mobile-open {
     transform: translateX(0);
+  }
+
+  .mobile-sidebar-close {
+    display: inline-flex;
   }
   
   .dashboard-main {
@@ -1389,6 +1471,8 @@ button {
   
   .mobile-menu-toggle {
     display: block;
+    min-width: 40px;
+    min-height: 40px;
   }
   
   .filter-grid {
@@ -1398,11 +1482,130 @@ button {
 
 @media (max-width: 640px) {
   .dashboard-topbar {
-    padding: 0 16px;
+    padding: 6px 10px;
+    height: auto;
+    min-height: 52px;
+    gap: 8px;
+  }
+
+  .topbar-left {
+    min-width: 0;
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .topbar-title {
+    font-size: 0.86rem;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: 0.02em;
+  }
+
+  .topbar-right {
+    gap: 6px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .badge-live-db {
+    padding: 3px 8px;
+    font-size: 0.68rem;
+    gap: 5px;
+  }
+
+  #btnRefreshData {
+    padding: 6px 10px;
+    height: 32px;
+    min-width: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+  }
+
+  #btnRefreshData span {
+    display: none;
+  }
+
+  #btnRefreshData svg {
+    margin: 0;
   }
   
   .dashboard-content-area {
-    padding: 20px 16px;
+    padding: 14px 10px;
+  }
+
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+    margin-bottom: 20px !important;
+  }
+
+  .metric-card {
+    padding: 12px 10px !important;
+    gap: 10px !important;
+    border-radius: var(--radius-md) !important;
+    min-height: 78px !important;
+    align-items: center !important;
+  }
+
+  .metric-card:last-child:nth-child(odd) {
+    grid-column: span 2 !important;
+  }
+
+  .metric-icon-wrap {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    border-radius: var(--radius-sm) !important;
+  }
+
+  .metric-icon-wrap svg {
+    width: 19px !important;
+    height: 19px !important;
+  }
+
+  .metric-info {
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .metric-label {
+    font-size: 0.66rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.03em !important;
+    text-transform: uppercase !important;
+    color: var(--text-dim) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    display: block !important;
+  }
+
+  .metric-value {
+    font-size: 1.4rem !important;
+    font-weight: 800 !important;
+    line-height: 1.15 !important;
+    margin: 2px 0 !important;
+    display: block !important;
+  }
+
+  .metric-sub {
+    display: none !important;
+  }
+
+  .games-breakdown-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .game-stat-card {
+    padding: 14px 12px !important;
   }
   
   .filter-grid {
@@ -1411,6 +1614,29 @@ button {
   
   .modal-details-grid {
     grid-template-columns: 1fr;
+  }
+
+  .modal-content-card {
+    padding: 18px 14px;
+    max-height: 94vh;
+  }
+
+  .modal-actions-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .modal-actions-row > div {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .btn-update-status,
+  .btn-delete-record {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
   }
 }
 
@@ -1449,16 +1675,26 @@ button {
   }
 
   .dashboard-topbar {
-    padding: 0 12px;
+    padding: 6px 10px;
   }
 
   .topbar-title {
-    font-size: 0.95rem;
+    font-size: 0.84rem;
   }
 
   .badge-live-db {
     font-size: 0.68rem;
-    padding: 3px 8px;
+    padding: 4px;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .badge-live-db span:not(.pulse-dot) {
+    display: none;
   }
 
   .stat-card {
@@ -1640,4 +1876,208 @@ button {
     padding: 14px 16px;
   }
 }
+
+/* ==============================================================================
+   PHASE 6: MOBILE UX ENHANCEMENTS - BOTTOM NAV & RESPONSIVE TABLE CARDS
+   ============================================================================== */
+
+/* Mobile Bottom Navigation Bar (Hidden on desktop) */
+.mobile-bottom-nav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  /* Prevent content clipping behind fixed bottom navigation bar */
+  .dashboard-content-area {
+    padding-bottom: 92px !important;
+  }
+
+  /* Fixed Bottom Nav Bar */
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: rgba(14, 11, 22, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(212, 175, 55, 0.28);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 4px calc(env(safe-area-inset-bottom, 0px) + 2px);
+  }
+
+  .bottom-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    padding: 6px 2px;
+    font-family: inherit;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: var(--radius-sm);
+  }
+
+  .bottom-nav-item svg {
+    transition: transform 0.2s ease, stroke 0.2s ease;
+  }
+
+  .bottom-nav-item:hover,
+  .bottom-nav-item:focus-visible {
+    color: #FFFDF9;
+  }
+
+  .bottom-nav-item.active {
+    color: #FDE047;
+  }
+
+  .bottom-nav-item.active svg {
+    stroke: #FDE047;
+    transform: translateY(-2px);
+    filter: drop-shadow(0 0 6px rgba(253, 224, 71, 0.5));
+  }
+
+  /* Responsive Table to Mobile Stacked Cards */
+  .table-responsive {
+    border: none;
+    background: transparent;
+    overflow: visible;
+  }
+
+  .data-table {
+    display: block;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 12px;
+  }
+
+  .data-table thead {
+    display: none;
+  }
+
+  .data-table tbody {
+    display: block;
+    width: 100%;
+  }
+
+  .data-table tbody tr {
+    display: flex;
+    flex-direction: column;
+    background: rgba(22, 16, 32, 0.78);
+    border: 1px solid rgba(212, 175, 55, 0.22);
+    border-radius: var(--radius-md);
+    margin-bottom: 14px;
+    padding: 12px 14px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .data-table tbody tr:hover {
+    border-color: rgba(212, 175, 55, 0.45);
+    transform: translateY(-1px);
+  }
+
+  .data-table tbody tr td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border: none;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+    font-size: 0.82rem;
+    text-align: right;
+  }
+
+  .data-table tbody tr td:last-child {
+    border-bottom: none;
+    padding-top: 10px;
+    margin-top: 2px;
+    justify-content: flex-end;
+  }
+
+  .data-table tbody tr td::before {
+    content: attr(data-label);
+    font-size: 0.74rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-dim);
+    margin-right: 12px;
+    flex-shrink: 0;
+    text-align: left;
+  }
+
+  .data-table tbody tr td:not([data-label])::before {
+    display: none;
+  }
+
+  .data-table tbody tr td[colspan] {
+    display: block;
+    width: 100%;
+    text-align: center !important;
+    padding: 28px 12px !important;
+    border: none !important;
+  }
+
+  .data-table tbody tr td[colspan]::before {
+    display: none !important;
+  }
+
+  .action-btn-group {
+    width: 100%;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+/* Light Theme Overrides for Mobile Bottom Nav & Cards */
+[data-theme="light"] .mobile-bottom-nav {
+  background: rgba(255, 252, 248, 0.95);
+  border-top-color: rgba(128, 0, 32, 0.18);
+  box-shadow: 0 -4px 20px rgba(128, 0, 32, 0.1);
+}
+
+[data-theme="light"] .bottom-nav-item {
+  color: #8C6A72;
+}
+
+[data-theme="light"] .bottom-nav-item.active {
+  color: #800020;
+}
+
+[data-theme="light"] .bottom-nav-item.active svg {
+  stroke: #800020;
+  filter: drop-shadow(0 0 6px rgba(128, 0, 32, 0.3));
+}
+
+@media (max-width: 768px) {
+  [data-theme="light"] .data-table tbody tr {
+    background: rgba(255, 255, 255, 0.92);
+    border-color: rgba(128, 0, 32, 0.18);
+    box-shadow: 0 4px 14px rgba(128, 0, 32, 0.08);
+  }
+
+  [data-theme="light"] .data-table tbody tr td {
+    border-bottom-color: rgba(128, 0, 32, 0.08);
+  }
+
+  [data-theme="light"] .data-table tbody tr td::before {
+    color: #8C6A72;
+  }
+}
+
 

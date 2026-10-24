@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,17 +14,6 @@
 
   <!-- Admin Stylesheet -->
   <link rel="stylesheet" href="css/admin.css">
-
-  <script>
-    (function() {
-      try {
-        var savedTheme = localStorage.getItem('srmu_theme');
-        var systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        var theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
-        document.documentElement.setAttribute('data-theme', theme);
-      } catch (e) {}
-    })();
-  </script>
 </head>
 <body>
 
@@ -53,6 +42,12 @@
           <span class="brand-title">Vijayadashami Carnival</span>
           <span class="brand-sub">Admin Portal</span>
         </div>
+        <button type="button" id="mobileSidebarClose" class="mobile-sidebar-close" aria-label="Close navigation sidebar" title="Close navigation">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
       </div>
 
       <nav class="sidebar-nav">
@@ -139,6 +134,7 @@
         </button>
       </div>
     </aside>
+    <div id="sidebarBackdrop" class="sidebar-backdrop" aria-hidden="true"></div>
 
     <!-- =======================================================================
          MAIN CONTENT AREA
@@ -158,22 +154,6 @@
         </div>
 
         <div class="topbar-right">
-          <button type="button" id="adminThemeToggle" class="theme-toggle-btn" aria-label="Toggle visual theme" title="Toggle Light/Dark Theme">
-            <svg class="theme-icon-light" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-            </svg>
-            <svg class="theme-icon-dark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="5"></circle>
-              <line x1="12" y1="1" x2="12" y2="3"></line>
-              <line x1="12" y1="21" x2="12" y2="23"></line>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-              <line x1="1" y1="12" x2="3" y2="12"></line>
-              <line x1="21" y1="12" x2="23" y2="12"></line>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-            </svg>
-          </button>
           <div class="badge-live-db">
             <span class="pulse-dot" aria-hidden="true"></span>
             <span>MongoDB Connected</span>
@@ -885,7 +865,15 @@
         </div>
         <div class="detail-item">
           <span class="detail-label">Mobile Number (Organizer View)</span>
-          <span id="modalStudentMobile" class="detail-val" style="color: var(--emerald-light);">&mdash;</span>
+          <span id="modalStudentMobile" class="detail-val" style="color: var(--emerald-light); font-weight: 700;">&mdash;</span>
+          <div style="display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap;">
+            <a id="modalCallStudent" href="#" class="btn-quick-contact" title="Direct Phone Call">📞 Call</a>
+            <a id="modalWhatsAppStudent" href="#" target="_blank" rel="noopener noreferrer" class="btn-quick-contact btn-quick-wa" title="WhatsApp Message">💬 WhatsApp</a>
+          </div>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">WhatsApp Event Alerts</span>
+          <span id="modalWhatsAppConsent" class="detail-val">&mdash;</span>
         </div>
         <div class="detail-item">
           <span class="detail-label">University Roll Number</span>
@@ -983,6 +971,53 @@
       </div>
     </div>
   </div>
+
+  <!-- Mobile Bottom Navigation Bar (Phones & Small Tablets) -->
+  <nav id="mobileBottomNav" class="mobile-bottom-nav" aria-label="Quick mobile navigation">
+    <button type="button" class="bottom-nav-item active" data-view="overview" aria-label="Go to Overview">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="3" y="3" width="7" height="7"></rect>
+        <rect x="14" y="3" width="7" height="7"></rect>
+        <rect x="14" y="14" width="7" height="7"></rect>
+        <rect x="3" y="14" width="7" height="7"></rect>
+      </svg>
+      <span>Overview</span>
+    </button>
+
+    <button type="button" class="bottom-nav-item" data-view="registrations" aria-label="Go to Registrations">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+        <circle cx="9" cy="7" r="4"></circle>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+      </svg>
+      <span>Registrations</span>
+    </button>
+
+    <button type="button" class="bottom-nav-item" data-view="payments" aria-label="Go to Payments">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+        <line x1="2" y1="10" x2="22" y2="10"></line>
+      </svg>
+      <span>Payments</span>
+    </button>
+
+    <button type="button" class="bottom-nav-item" data-view="gamewise" aria-label="Go to Games">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polygon points="12 6 12 12 16 14"></polygon>
+      </svg>
+      <span>Games</span>
+    </button>
+
+    <button type="button" class="bottom-nav-item" data-view="certificates" aria-label="Go to Attendance & Certificates">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+      </svg>
+      <span>Attendance</span>
+    </button>
+  </nav>
 
   <!-- Toast Notification Container -->
   <div class="admin-toast-container">

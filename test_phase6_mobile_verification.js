@@ -84,14 +84,18 @@ assert(
   `Test 4: admin.css has balanced braces (${cssOpenBraces}/${cssCloseBraces}) and stacked card rules with attr(data-label)`
 );
 
-// 5. Dual-Mirror SHA-256 Parity
-const dashHtmlParity = getHash('admin/dashboard.html') === getHash('backend/public/admin/dashboard.html');
-const adminCssParity = getHash('admin/css/admin.css') === getHash('backend/public/admin/css/admin.css');
-const dashJsParity = getHash('admin/js/dashboard.js') === getHash('backend/public/admin/js/dashboard.js');
+// 5. Triple-Mirror SHA-256 Parity (admin/, backend/public/admin/, public/admin/)
+const backendHtmlParity = getHash('admin/dashboard.html') === getHash('backend/public/admin/dashboard.html');
+const backendCssParity = getHash('admin/css/admin.css') === getHash('backend/public/admin/css/admin.css');
+const backendJsParity = getHash('admin/js/dashboard.js') === getHash('backend/public/admin/js/dashboard.js');
+
+const viteHtmlParity = getHash('admin/dashboard.html') === getHash('public/admin/dashboard.html');
+const viteCssParity = getHash('admin/css/admin.css') === getHash('public/admin/css/admin.css');
+const viteJsParity = getHash('admin/js/dashboard.js') === getHash('public/admin/js/dashboard.js');
 
 assert(
-  dashHtmlParity && adminCssParity && dashJsParity,
-  'Test 5: 100% SHA-256 checksum parity confirmed across all 3 files between admin/ and backend/public/admin/'
+  backendHtmlParity && backendCssParity && backendJsParity && viteHtmlParity && viteCssParity && viteJsParity,
+  'Test 5: 100% SHA-256 checksum parity confirmed across all mirrors (admin/, backend/public/admin/, public/admin/)'
 );
 
 console.log('\n================================================================');

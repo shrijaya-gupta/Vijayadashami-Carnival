@@ -1482,31 +1482,130 @@ button {
 
 @media (max-width: 640px) {
   .dashboard-topbar {
-    padding: 0 12px;
+    padding: 6px 10px;
     height: auto;
-    min-height: 56px;
+    min-height: 52px;
     gap: 8px;
   }
 
   .topbar-left {
     min-width: 0;
-    flex: 1;
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
   .topbar-title {
-    font-size: 0.88rem;
+    font-size: 0.86rem;
+    font-weight: 700;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    letter-spacing: 0.02em;
   }
 
   .topbar-right {
-    gap: 8px;
+    gap: 6px;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .badge-live-db {
+    padding: 3px 8px;
+    font-size: 0.68rem;
+    gap: 5px;
+  }
+
+  #btnRefreshData {
+    padding: 6px 10px;
+    height: 32px;
+    min-width: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+  }
+
+  #btnRefreshData span {
+    display: none;
+  }
+
+  #btnRefreshData svg {
+    margin: 0;
   }
   
   .dashboard-content-area {
-    padding: 16px 12px;
+    padding: 14px 10px;
+  }
+
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+    margin-bottom: 20px !important;
+  }
+
+  .metric-card {
+    padding: 12px 10px !important;
+    gap: 10px !important;
+    border-radius: var(--radius-md) !important;
+    min-height: 78px !important;
+    align-items: center !important;
+  }
+
+  .metric-card:last-child:nth-child(odd) {
+    grid-column: span 2 !important;
+  }
+
+  .metric-icon-wrap {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    border-radius: var(--radius-sm) !important;
+  }
+
+  .metric-icon-wrap svg {
+    width: 19px !important;
+    height: 19px !important;
+  }
+
+  .metric-info {
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .metric-label {
+    font-size: 0.66rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.03em !important;
+    text-transform: uppercase !important;
+    color: var(--text-dim) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    display: block !important;
+  }
+
+  .metric-value {
+    font-size: 1.4rem !important;
+    font-weight: 800 !important;
+    line-height: 1.15 !important;
+    margin: 2px 0 !important;
+    display: block !important;
+  }
+
+  .metric-sub {
+    display: none !important;
+  }
+
+  .games-breakdown-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .game-stat-card {
+    padding: 14px 12px !important;
   }
   
   .filter-grid {
@@ -1576,16 +1675,26 @@ button {
   }
 
   .dashboard-topbar {
-    padding: 0 12px;
+    padding: 6px 10px;
   }
 
   .topbar-title {
-    font-size: 0.95rem;
+    font-size: 0.84rem;
   }
 
   .badge-live-db {
     font-size: 0.68rem;
-    padding: 3px 8px;
+    padding: 4px;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .badge-live-db span:not(.pulse-dot) {
+    display: none;
   }
 
   .stat-card {
