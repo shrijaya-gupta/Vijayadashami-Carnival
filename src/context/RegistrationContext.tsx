@@ -63,7 +63,7 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       configs[game.id] = {
         gameId: game.id,
         gameName: game.name,
-        participationType: game.participationType.toLowerCase().includes('team') ? 'team' : 'individual',
+        participationType: 'individual',
         teamName: '',
         teamMembers: []
       };
@@ -333,15 +333,17 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       selectedGames: selectedGameIds.map(gameId => {
         const config = gameConfigs[gameId];
         const gameMeta = GAMES_DATA.find(g => g.id === gameId);
+        const hasTeamName = Boolean(config?.teamName && config.teamName.trim());
+        const isTeam = config?.participationType === 'team' && hasTeamName;
         return {
           gameId,
-          gameName: gameMeta?.name || config.gameName,
-          participationType: config.participationType,
-          teamName: config.participationType === 'team' ? config.teamName.trim() : '',
-          teamMembers: config.participationType === 'team' ? config.teamMembers.map(m => ({
-            name: m.name.trim(),
-            roll: m.roll.trim(),
-            contact: m.contact.trim()
+          gameName: gameMeta?.name || config?.gameName || gameId,
+          participationType: isTeam ? 'team' : 'individual',
+          teamName: isTeam ? config.teamName.trim() : '',
+          teamMembers: isTeam ? (config.teamMembers || []).map(m => ({
+            name: (m.name || '').trim(),
+            roll: (m.roll || '').trim(),
+            contact: (m.contact || '').trim()
           })) : []
         };
       }),
@@ -358,10 +360,13 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         body: JSON.stringify(payload)
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => null) || {};
 
       if (!response.ok || !data.success) {
-        throw new Error(data.message || data.error || 'Failed to submit registration. Please check inputs.');
+        const errorMsg = (Array.isArray(data.errors) && data.errors.length > 0)
+          ? data.errors.join(' • ')
+          : (data.message || data.error || 'Failed to submit registration. Please check inputs.');
+        throw new Error(errorMsg);
       }
 
       const resData = data.data || {};

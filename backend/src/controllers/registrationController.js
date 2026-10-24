@@ -27,7 +27,8 @@ async function createRegistration(req, res, next) {
     if (!validation.isValid) {
       return res.status(400).json({
         success: false,
-        error: 'Validation failed',
+        error: validation.errors[0] || 'Validation failed',
+        message: validation.errors.join(' • '),
         errors: validation.errors
       });
     }
