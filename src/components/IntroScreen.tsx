@@ -188,21 +188,37 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({
       </header>
 
       {/* =========================================================================
-          CENTER TITLE OVERLAY
-          Floating elegantly above the animated battle scene
+          LOWER TITLE OVERLAY
+          Positioned lower down so Rama & Ravana battle action in center is fully visible.
+          Vijayadashami shifted slightly left, Carnival shifted slightly right ("halka sa").
           ========================================================================= */}
-      <div className="relative z-20 w-full max-w-3xl mx-auto px-4 text-center my-auto pointer-events-none">
-        <div className="inline-block px-4 py-1.5 mb-2 rounded-full bg-amber-500/10 border border-amber-400/25 backdrop-blur-sm">
-          <span className="text-[11px] sm:text-xs font-semibold tracking-widest uppercase text-amber-300">
+      <div className="relative z-20 w-full max-w-3xl mx-auto px-4 text-center mt-auto mb-3 sm:mb-4 pointer-events-none">
+        <div className="inline-block px-3.5 py-1 mb-1.5 rounded-full bg-amber-500/10 border border-amber-400/25 backdrop-blur-sm">
+          <span className="text-[10px] sm:text-xs font-semibold tracking-widest uppercase text-amber-300">
             Victory of Good Over Evil
           </span>
         </div>
         
-        <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl font-black font-cinzel tracking-wider uppercase text-[#FFFDF9] drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)]">
-          VIJAYADASHAMI <span className="gold-gradient-text drop-shadow-[0_4px_30px_rgba(212,175,55,0.5)]">CARNIVAL</span>
+        {/* Grand Title with subtle staggered offset in Runethia cursive font */}
+        <h1 className="flex flex-col items-center justify-center select-none space-y-0.5">
+          {/* Vijayadashami - shifted slightly left */}
+          <span 
+            className="block text-center text-4xl xs:text-5xl sm:text-6xl md:text-7xl font-normal tracking-wide text-[#FFFDF9] drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)] -translate-x-2.5 sm:-translate-x-4"
+            style={{ fontFamily: "'Runethia', 'Playfair Display', cursive" }}
+          >
+            Vijayadashami
+          </span>
+          
+          {/* Carnival - shifted slightly right */}
+          <span 
+            className="block text-center text-4xl xs:text-5xl sm:text-6xl md:text-7xl font-normal gold-gradient-text drop-shadow-[0_4px_28px_rgba(212,175,55,0.5)] -mt-1 xs:-mt-2 translate-x-2.5 sm:translate-x-4"
+            style={{ fontFamily: "'Runethia', 'Playfair Display', cursive" }}
+          >
+            Carnival
+          </span>
         </h1>
         
-        <p className="text-xs sm:text-sm md:text-base text-stone-200 font-normal tracking-wide max-w-lg mx-auto mt-2 drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
+        <p className="text-xs sm:text-sm text-stone-200 font-normal tracking-wide max-w-lg mx-auto mt-1.5 drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
           The celestial arrow is drawn. 6 thrilling campus challenges await!
         </p>
       </div>
@@ -210,7 +226,7 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({
       {/* =========================================================================
           BOTTOM FOOTER: ENTER CARNIVAL CTA & AUTO-TRANSITION PROGRESS
           ========================================================================= */}
-      <footer className="relative z-20 w-full max-w-md mx-auto px-4 pb-7 sm:pb-9 flex flex-col items-center gap-3.5">
+      <footer className="relative z-20 w-full max-w-md mx-auto px-4 pb-6 sm:pb-8 flex flex-col items-center gap-3">
         
         {/* Grand Enter Carnival CTA */}
         <button

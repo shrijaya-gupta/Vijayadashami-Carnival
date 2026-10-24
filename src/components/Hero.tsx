@@ -263,17 +263,17 @@ export const Hero: React.FC<HeroProps> = ({
           {/* Grand Hero Title (Mobile / Tablet) - Stylish Readable Cursive Centered Layout */}
           <div className="relative max-w-sm sm:max-w-md mx-auto pt-1 pb-1 text-center">
             <h1 className="flex flex-col items-center justify-center select-none space-y-0.5">
-              {/* Vijayadashami */}
+              {/* Vijayadashami - shifted slightly left */}
               <span 
-                className="block text-center text-4xl xs:text-5xl sm:text-6xl font-normal tracking-wide text-[#FFFDF9] drop-shadow-[0_4px_18px_rgba(0,0,0,0.95)]"
+                className="block text-center text-4xl xs:text-5xl sm:text-6xl font-normal tracking-wide text-[#FFFDF9] drop-shadow-[0_4px_18px_rgba(0,0,0,0.95)] -translate-x-2.5 sm:-translate-x-4"
                 style={{ fontFamily: "'Runethia', 'Playfair Display', cursive" }}
               >
                 Vijayadashami
               </span>
               
-              {/* Carnival */}
+              {/* Carnival - shifted slightly right */}
               <span 
-                className="block text-center text-4xl xs:text-5xl sm:text-6xl font-normal gold-gradient-text drop-shadow-[0_4px_24px_rgba(212,175,55,0.45)] -mt-1 xs:-mt-2"
+                className="block text-center text-4xl xs:text-5xl sm:text-6xl font-normal gold-gradient-text drop-shadow-[0_4px_24px_rgba(212,175,55,0.45)] -mt-1 xs:-mt-2 translate-x-2.5 sm:translate-x-4"
                 style={{ fontFamily: "'Runethia', 'Playfair Display', cursive" }}
               >
                 Carnival
