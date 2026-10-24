@@ -75,7 +75,7 @@ export const Step6Confirmation: React.FC = () => {
       `Registration ID: ${regId}\n` +
       `Participant: ${submissionResult.studentName}\n` +
       `Date: Thursday, 29 October 2026 • 11:00 AM\n` +
-      `Venue: SRMU Campus, B5-408\n\n` +
+      `Venue: SRMU B5-408\n\n` +
       `Join the carnival!`
     );
     window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');

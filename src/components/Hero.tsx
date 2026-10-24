@@ -199,7 +199,7 @@ export const Hero: React.FC<HeroProps> = ({
                 </div>
                 <div className="min-w-0">
                   <span className="block text-[9px] uppercase tracking-wider text-amber-300/80 font-bold">VENUE</span>
-                  <span className="font-bold text-white text-xs xl:text-sm truncate block">SRMU Campus, B5-408</span>
+                  <span className="font-bold text-white text-xs xl:text-sm truncate block">SRMU B5-408</span>
                 </div>
               </div>
 
@@ -317,7 +317,7 @@ export const Hero: React.FC<HeroProps> = ({
               </div>
               <div className="min-w-0">
                 <span className="block text-[9px] uppercase tracking-wider text-amber-300/80 font-bold">VENUE</span>
-                <span className="font-bold text-white text-xs truncate block">SRMU Campus, B5-408</span>
+                <span className="font-bold text-white text-xs truncate block">SRMU B5-408</span>
               </div>
             </div>
 
