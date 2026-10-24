@@ -34,23 +34,25 @@ export const Step2StudentDetails: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 text-white">
-      {/* Concise Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-white/10">
-        <div>
-          <h3 className="text-lg sm:text-xl font-bold font-heading text-white flex items-center gap-2">
-            <span>Student Registration</span>
-            <span className="text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-medium">
-              All 6 Games Included
-            </span>
+      {/* Concise Clean Header */}
+      <div className="pb-3 border-b border-white/10 space-y-1.5">
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="text-base sm:text-xl font-bold font-heading text-white tracking-wide">
+            Student Registration
           </h3>
-          <p className="text-xs text-stone-300 mt-0.5">
-            Fill in your details to get your ₹10 carnival pass.
-          </p>
-          <span className="sr-only">Step 2: Participant & Student Information Provide your official Shri Ramswaroop Memorial University enrollment details.</span>
+          <span className="text-xs font-bold text-amber-300 bg-black/50 px-2.5 py-1 rounded-full border border-[#D4AF37]/40 shadow-xs shrink-0 whitespace-nowrap">
+            Pass Fee: ₹10
+          </span>
         </div>
-        <span className="text-xs font-bold text-amber-300 bg-black/40 px-3 py-1.5 rounded-lg border border-[#D4AF37]/35 shadow-xs">
-          Pass Fee: ₹10
-        </span>
+        <div className="flex flex-wrap items-center gap-2 text-xs text-stone-300">
+          <span className="inline-flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-semibold whitespace-nowrap">
+            ✓ All 6 Games Included
+          </span>
+          <span className="text-stone-400 text-[11px]">
+            Fill details to get your ₹10 carnival pass
+          </span>
+        </div>
+        <span className="sr-only">Step 2: Participant & Student Information Provide your official Shri Ramswaroop Memorial University enrollment details.</span>
       </div>
 
       {submitError && (

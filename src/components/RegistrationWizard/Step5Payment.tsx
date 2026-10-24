@@ -66,22 +66,25 @@ export const Step5Payment: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 text-white">
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-white/10">
-        <div>
-          <h3 className="text-lg sm:text-xl font-bold font-heading text-white flex items-center gap-2">
-            <span>Pass Payment</span>
-            <span className="text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-medium">
-              Flat ₹10 All-Access
-            </span>
+      {/* Concise Clean Header */}
+      <div className="pb-3 border-b border-white/10 space-y-1.5">
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="text-base sm:text-xl font-bold font-heading text-white tracking-wide">
+            Pass Payment
           </h3>
-          <p className="text-xs text-stone-300 mt-0.5">
-            Scan UPI QR code or pay to UPI ID and submit UTR / Ref number.
-          </p>
-          <span className="sr-only">Step 5: Registration Fee & Payment Verification Review your entry, scan the official carnival UPI QR code, and submit your registration.</span>
+          <span className="text-xs font-bold text-amber-300 bg-black/50 px-2.5 py-1 rounded-full border border-[#D4AF37]/40 shadow-xs shrink-0 whitespace-nowrap">
+            Pay: ₹10
+          </span>
         </div>
-        <span className="text-xs font-bold text-amber-300 bg-black/40 px-3 py-1.5 rounded-lg border border-[#D4AF37]/35 shadow-xs">
-          Pay: ₹10
-        </span>
+        <div className="flex flex-wrap items-center gap-2 text-xs text-stone-300">
+          <span className="inline-flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-semibold whitespace-nowrap">
+            ✓ Flat ₹10 All-Access Pass
+          </span>
+          <span className="text-stone-400 text-[11px]">
+            Scan UPI QR or pay to UPI ID and submit UTR
+          </span>
+        </div>
+        <span className="sr-only">Step 5: Registration Fee & Payment Verification Review your entry, scan the official carnival UPI QR code, and submit your registration.</span>
       </div>
 
       {submitError && (
