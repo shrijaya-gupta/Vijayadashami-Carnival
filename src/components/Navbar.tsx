@@ -109,8 +109,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenS
   };
 
   return (
-    <header className="sticky top-2 z-50 w-full px-3 sm:px-6 lg:px-8 transition-all pointer-events-auto">
-      <div className="max-w-7xl mx-auto rounded-2xl bg-[#120208]/95 backdrop-blur-2xl border border-[#D4AF37]/45 text-stone-200 shadow-[0_12px_36px_rgba(0,0,0,0.75)] h-16 sm:h-18 px-4 sm:px-6 flex items-center justify-between gap-3 sm:gap-4 transition-all">
+    <header className="sticky top-2 sm:top-3 z-50 w-full px-3 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-1 transition-all pointer-events-auto">
+      <div className="max-w-7xl mx-auto rounded-2xl bg-[#14020A]/92 backdrop-blur-2xl border border-[#D4AF37]/50 ring-1 ring-white/10 text-stone-200 shadow-[0_14px_40px_rgba(0,0,0,0.85),0_0_20px_rgba(212,175,55,0.1)] h-16 sm:h-[4.25rem] px-4 sm:px-6 flex items-center justify-between gap-3 sm:gap-4 transition-all">
         
         {/* Brand / Logo with authentic Vijayadashami Dhanush-Baan icon */}
         <button 
@@ -202,7 +202,16 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenS
         </nav>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+          {/* Quick Register Pass CTA */}
+          <button
+            onClick={handleProceedToRegister}
+            className="hidden lg:flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r from-[#881337] via-[#B91C1C] to-[#881337] hover:from-[#9F1239] hover:to-[#DC2626] text-white border border-[#E5C158]/70 shadow-md shadow-rose-950/50 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
+          >
+            <Flame className="w-3.5 h-3.5 text-amber-300" />
+            <span>Pass (₹10)</span>
+          </button>
+
           {/* Admin Desk link (Desktop/Laptop only; on mobile it is inside the 3-line menu) */}
           <a
             href="/admin/login.html"
@@ -220,16 +229,16 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenS
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Open navigation menu"
-            className="md:hidden w-9 h-9 rounded-xl bg-[#2E0B16] border border-[#D4AF37]/30 text-stone-200 flex items-center justify-center hover:bg-[#3D0A17]"
+            className="md:hidden w-9 h-9 rounded-xl bg-[#2E0B16] border border-[#D4AF37]/40 text-stone-200 flex items-center justify-center hover:bg-[#3D0A17] active:scale-95 transition-all shadow-xs"
           >
-            {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+            {mobileMenuOpen ? <X className="w-4 h-4 text-amber-300" /> : <Menu className="w-4 h-4 text-amber-300" />}
           </button>
         </div>
       </div>
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden max-w-7xl mx-auto mt-2 p-4 rounded-2xl border border-[#D4AF37]/40 bg-[#14030A]/95 backdrop-blur-xl shadow-2xl space-y-2">
+        <div className="md:hidden max-w-7xl mx-auto mt-2.5 p-4 rounded-2xl border border-[#D4AF37]/45 bg-[#14030A]/98 backdrop-blur-2xl shadow-2xl space-y-2">
           {selectedGameIds.length > 0 && (
             <button
               onClick={handleProceedToRegister}
