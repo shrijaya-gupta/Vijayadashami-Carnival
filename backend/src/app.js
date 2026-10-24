@@ -86,7 +86,13 @@ const frontendPath = candidateStaticPaths.find(p => {
 });
 
 if (frontendPath) {
-  app.use(express.static(frontendPath));
+  app.use(express.static(frontendPath, {
+    setHeaders: (res, filePath) => {
+      if (filePath.includes('admin') || filePath.endsWith('.html') || filePath.endsWith('.js') || filePath.endsWith('.css')) {
+        res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+      }
+    }
+  }));
 
   app.get('/', (req, res) => {
     res.sendFile(path.join(frontendPath, 'index.html'));

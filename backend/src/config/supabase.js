@@ -69,7 +69,7 @@ module.exports = {
       registration_id: regData.registrationId || regData.registration_id,
       student: regData.student,
       selected_games: regData.selectedGames || regData.selected_games || [],
-      total_amount: regData.totalAmount != null ? regData.totalAmount : (regData.total_amount != null ? regData.total_amount : 5),
+      total_amount: regData.totalAmount != null ? regData.totalAmount : (regData.total_amount != null ? regData.total_amount : 10),
       payment_status: regData.paymentStatus || regData.payment_status || 'payment_pending',
       payment_reference: regData.paymentReference || regData.payment_reference || '',
       status: regData.status || 'confirmed',
@@ -182,12 +182,22 @@ module.exports = {
 
   async getAllRegistrations() {
     if (supabase) {
-      const { data, error } = await supabase
-        .from('registrations')
-        .select('*')
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-      return data || [];
+      let allData = [];
+      let from = 0;
+      const step = 1000;
+      while (true) {
+        const { data, error } = await supabase
+          .from('registrations')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .range(from, from + step - 1);
+        if (error) throw error;
+        if (!data || data.length === 0) break;
+        allData = allData.concat(data);
+        if (data.length < step) break;
+        from += step;
+      }
+      return allData;
     }
     return memoryStore.registrations;
   },

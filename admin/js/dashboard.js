@@ -74,6 +74,13 @@ let certPageState = {
 let activeGameId = 'lemon-race';
 let activeRegistrationInModal = null;
 
+// Request Sequence IDs to prevent race conditions and out-of-order renders
+let regRequestSeq = 0;
+let payRequestSeq = 0;
+let certRequestSeq = 0;
+let gamewiseRequestSeq = 0;
+let gamewiseScoresSeq = 0;
+
 document.addEventListener('DOMContentLoaded', async () => {
   const isAuthed = await checkSession();
   if (!isAuthed) return;
@@ -90,12 +97,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   initScanner();
   initGamesManagement();
 
-  // Real-Time live auto-refresh every 10s for on-ground festival desk
+  // Real-Time live auto-refresh every 15s for on-ground festival desk (silent background sync)
   setInterval(() => {
     if (document.visibilityState === 'visible') {
-      refreshCurrentView();
+      refreshCurrentView(true);
     }
-  }, 10000);
+  }, 15000);
 });
 
 // ============================================================================
@@ -220,7 +227,7 @@ function initNavigation() {
   document.getElementById('btnQuickHubGamewise')?.addEventListener('click', () => switchView('gamewise'));
 
   refreshBtn?.addEventListener('click', () => {
-    refreshCurrentView();
+    refreshCurrentView(true);
     showToast('Dashboard data refreshed.');
   });
 }
@@ -301,13 +308,13 @@ function switchView(viewName) {
   }
 }
 
-function refreshCurrentView() {
-  if (currentView === 'overview') loadOverviewData();
-  else if (currentView === 'registrations') loadRegistrationsData();
-  else if (currentView === 'payments') loadPaymentsData();
-  else if (currentView === 'gamesmanage') loadAdminGamesData();
-  else if (currentView === 'certificates') loadCertificatesData();
-  else if (currentView === 'gamewise') loadGamewiseData(activeGameId);
+function refreshCurrentView(isSilent = false) {
+  if (currentView === 'overview') loadOverviewData(isSilent);
+  else if (currentView === 'registrations') loadRegistrationsData(isSilent);
+  else if (currentView === 'payments') loadPaymentsData(isSilent);
+  else if (currentView === 'gamesmanage') loadAdminGamesData(isSilent);
+  else if (currentView === 'certificates') loadCertificatesData(isSilent);
+  else if (currentView === 'gamewise') loadGamewiseData(activeGameId, isSilent);
 }
 
 // ============================================================================
@@ -318,27 +325,50 @@ function initOverview() {
   loadOverviewData();
 }
 
-async function loadOverviewData() {
+async function loadOverviewData(isSilent = false) {
   try {
     const res = await fetch(`${API_BASE_URL}/api/admin/dashboard`, {
       credentials: 'include'
     });
 
+    function setOverviewErrorState() {
+      if (isSilent) return;
+      const revEl = document.getElementById('metricTotalRevenueDisplay');
+      if (revEl) revEl.textContent = 'Error';
+      const potEl = document.getElementById('metricPotentialRevenueDisplay');
+      if (potEl) potEl.textContent = 'Error';
+      const regEl = document.getElementById('metricTotalRegistrations');
+      if (regEl) regEl.textContent = '—';
+      const audEl = document.getElementById('metricPendingAuditsDisplay');
+      if (audEl) audEl.textContent = '—';
+    }
+
     if (!res.ok) {
-      if (res.status === 401) checkSession();
+      if (res.status === 401) {
+        checkSession();
+      } else {
+        setOverviewErrorState();
+        if (!isSilent) showToast('Error loading overview statistics from server.');
+      }
       return;
     }
 
     const { data } = await res.json();
-    if (!data) return;
+    if (!data || !data.summary) return;
 
     // Metrics summary
     const s = data.summary;
-    document.getElementById('metricTotalRegistrations').textContent = s.totalRegistrations || 0;
-    document.getElementById('metricTotalGameEntries').textContent = s.totalSelectedGameEntries || 0;
-    document.getElementById('metricIndividualEntries').textContent = s.totalIndividualEntries || 0;
-    document.getElementById('metricTeamEntries').textContent = s.totalTeamEntries || 0;
-    document.getElementById('metricTeamMembersSub').textContent = `${s.totalTeamMembersListed || 0} team members listed`;
+    const totalPasses = s.totalActivePasses != null ? s.totalActivePasses : (s.confirmedRegistrations || s.totalRegistrations || 0);
+    const totalRegsEl = document.getElementById('metricTotalRegistrations');
+    if (totalRegsEl) totalRegsEl.textContent = totalPasses;
+    const totalGameEntriesEl = document.getElementById('metricTotalGameEntries');
+    if (totalGameEntriesEl) totalGameEntriesEl.textContent = s.totalSelectedGameEntries || 0;
+    const indivEl = document.getElementById('metricIndividualEntries');
+    if (indivEl) indivEl.textContent = s.totalIndividualEntries || 0;
+    const teamEl = document.getElementById('metricTeamEntries');
+    if (teamEl) teamEl.textContent = s.totalTeamEntries || 0;
+    const teamSubEl = document.getElementById('metricTeamMembersSub');
+    if (teamSubEl) teamSubEl.textContent = `${s.totalTeamMembersListed || 0} team members listed`;
 
     const verifiedEl = document.getElementById('metricVerifiedAttendees');
     if (verifiedEl) verifiedEl.textContent = s.verifiedParticipantsCount || 0;
@@ -346,7 +376,7 @@ async function loadOverviewData() {
     const certIssuedEl = document.getElementById('metricCertificatesIssued');
     if (certIssuedEl) certIssuedEl.textContent = s.certificatesIssuedCount || 0;
 
-    // Payment Summary Metrics (Phase 5)
+    // Payment Summary Metrics
     const paidPaymentsEl = document.getElementById('metricPaidPayments');
     if (paidPaymentsEl) paidPaymentsEl.textContent = s.paidPaymentsCount || 0;
 
@@ -356,10 +386,15 @@ async function loadOverviewData() {
     const pendingPaymentsEl = document.getElementById('metricPendingPayments');
     if (pendingPaymentsEl) pendingPaymentsEl.textContent = s.pendingPaymentCount || 0;
 
-    // Reconstructed Revenue & Audits Display (Flat ₹10 Pass model)
-    const paidCount = Number(s.paidPaymentsCount || 0);
+    // Verified Revenue Display (Authoritative from backend calculation)
+    const verifiedRevenue = (s.verifiedRevenue != null && !isNaN(s.verifiedRevenue)) ? Number(s.verifiedRevenue) : (Number(s.paidPaymentsCount || 0) * 10);
     const revenueDisplayEl = document.getElementById('metricTotalRevenueDisplay');
-    if (revenueDisplayEl) revenueDisplayEl.textContent = `₹${paidCount * 10}`;
+    if (revenueDisplayEl) revenueDisplayEl.textContent = `₹${verifiedRevenue}`;
+
+    // Potential Revenue Display (Clearly separated estimate)
+    const potentialRevenue = (s.potentialRevenue != null && !isNaN(s.potentialRevenue)) ? Number(s.potentialRevenue) : (Number(totalPasses) * 10);
+    const potentialDisplayEl = document.getElementById('metricPotentialRevenueDisplay');
+    if (potentialDisplayEl) potentialDisplayEl.textContent = `₹${potentialRevenue}`;
 
     const pendingVer = Number(s.pendingVerificationCount || 0);
     const pendingPay = Number(s.pendingPaymentCount || 0);
@@ -374,6 +409,17 @@ async function loadOverviewData() {
 
   } catch (err) {
     console.error('Failed to load overview data:', err);
+    if (!isSilent) {
+      const revEl = document.getElementById('metricTotalRevenueDisplay');
+      if (revEl) revEl.textContent = 'Error';
+      const potEl = document.getElementById('metricPotentialRevenueDisplay');
+      if (potEl) potEl.textContent = 'Error';
+      const regEl = document.getElementById('metricTotalRegistrations');
+      if (regEl) regEl.textContent = '—';
+      const audEl = document.getElementById('metricPendingAuditsDisplay');
+      if (audEl) audEl.textContent = '—';
+      showToast('Failed to load overview data: ' + err.message);
+    }
   }
 }
 
@@ -520,11 +566,19 @@ function initRegistrationsTable() {
   });
 }
 
-async function loadRegistrationsData() {
+async function loadRegistrationsData(isSilent = false) {
   const tbody = document.getElementById('registrationsTbody');
   if (!tbody) return;
 
-  tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; color: var(--text-dim); padding: 40px;">Loading records from MongoDB...</td></tr>`;
+  const currentSeq = ++regRequestSeq;
+  const hasExistingRows = tbody.querySelectorAll('tr:not(.table-state-row)').length > 0;
+
+  if (!hasExistingRows && !isSilent) {
+    tbody.innerHTML = `<tr class="table-state-row"><td colspan="11" style="text-align: center; color: var(--text-dim); padding: 40px;">Loading registrations from database...</td></tr>`;
+  } else {
+    tbody.style.opacity = '0.65';
+    tbody.style.transition = 'opacity 0.2s ease';
+  }
 
   try {
     const params = new URLSearchParams({
@@ -544,12 +598,20 @@ async function loadRegistrationsData() {
       credentials: 'include'
     });
 
+    if (currentSeq !== regRequestSeq) return;
+
     if (!res.ok) {
+      tbody.style.opacity = '1';
       if (res.status === 401) checkSession();
+      if (!hasExistingRows) {
+        tbody.innerHTML = `<tr class="table-state-row"><td colspan="11" style="text-align: center; color: var(--red-light); padding: 40px;">Failed to load records from server.</td></tr>`;
+      }
       return;
     }
 
     const { registrations, pagination } = await res.json();
+    if (currentSeq !== regRequestSeq) return;
+
     regPageState.totalPages = pagination.totalPages;
     regPageState.total = pagination.total;
 
@@ -567,7 +629,8 @@ async function loadRegistrationsData() {
 
     // Render Table Rows
     if (!registrations || registrations.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; color: var(--text-dim); padding: 40px;">No registrations match your search or filter criteria.</td></tr>`;
+      tbody.innerHTML = `<tr class="table-state-row"><td colspan="11" style="text-align: center; color: var(--text-dim); padding: 40px;">No registrations match your search or filter criteria.</td></tr>`;
+      tbody.style.opacity = '1';
       return;
     }
 
@@ -583,7 +646,7 @@ async function loadRegistrationsData() {
         </span>`;
       }).join(' ');
 
-      const fee = reg.feeAmount != null ? reg.feeAmount : (reg.selectedGames ? reg.selectedGames.length * 5 : 0);
+      const fee = reg.feeAmount != null ? reg.feeAmount : 10;
       const isPaid = reg.paymentStatus === 'paid';
       const isPendingVer = reg.paymentStatus === 'payment_verification_pending';
       const isFailed = reg.paymentStatus === 'payment_failed';
@@ -633,9 +696,16 @@ async function loadRegistrationsData() {
       `;
     }).join('');
 
+    tbody.style.opacity = '1';
   } catch (err) {
+    if (currentSeq !== regRequestSeq) return;
     console.error('Failed to load registrations:', err);
-    tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; color: var(--red-light); padding: 40px;">Failed to load records from server.</td></tr>`;
+    tbody.style.opacity = '1';
+    if (!hasExistingRows) {
+      tbody.innerHTML = `<tr class="table-state-row"><td colspan="11" style="text-align: center; color: var(--red-light); padding: 40px;">Failed to load records from server.</td></tr>`;
+    } else {
+      showToast('Notice: Could not refresh registrations. Showing cached records.');
+    }
   }
 }
 
@@ -673,12 +743,20 @@ function initGamewiseRoster() {
   });
 }
 
-async function loadGamewiseData(gameId) {
+async function loadGamewiseData(gameId, isSilent = false) {
   const headerCard = document.getElementById('gamewiseGameHeader');
   const tbody = document.getElementById('gamewiseTbody');
+  const currentSeq = ++gamewiseRequestSeq;
+
+  const hasExistingRows = tbody ? tbody.querySelectorAll('tr:not(.table-state-row)').length > 0 : false;
 
   if (tbody) {
-    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-dim); padding: 30px;">Loading game roster...</td></tr>`;
+    if (!hasExistingRows && !isSilent) {
+      tbody.innerHTML = `<tr class="table-state-row"><td colspan="8" style="text-align: center; color: var(--text-dim); padding: 30px;">Loading game roster...</td></tr>`;
+    } else {
+      tbody.style.opacity = '0.65';
+      tbody.style.transition = 'opacity 0.2s ease';
+    }
   }
 
   try {
@@ -686,16 +764,19 @@ async function loadGamewiseData(gameId) {
       credentials: 'include'
     });
 
+    if (currentSeq !== gamewiseRequestSeq) return;
+
     if (!res.ok) {
+      if (tbody) tbody.style.opacity = '1';
       if (res.status === 401) checkSession();
       return;
     }
 
     const { data } = await res.json();
-    if (!data) return;
+    if (currentSeq !== gamewiseRequestSeq || !data) return;
 
     // Header Card
-    if (headerCard) {
+    if (headerCard && data.game && data.metrics) {
       const g = data.game;
       const m = data.metrics;
       headerCard.innerHTML = `
@@ -726,7 +807,8 @@ async function loadGamewiseData(gameId) {
     // Participants Table
     if (tbody) {
       if (!data.participants || data.participants.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-dim); padding: 40px;">No students have registered for this game yet.</td></tr>`;
+        tbody.innerHTML = `<tr class="table-state-row"><td colspan="8" style="text-align: center; color: var(--text-dim); padding: 40px;">No students have registered for this game yet.</td></tr>`;
+        tbody.style.opacity = '1';
         return;
       }
 
@@ -755,30 +837,46 @@ async function loadGamewiseData(gameId) {
           </tr>
         `;
       }).join('');
+      tbody.style.opacity = '1';
     }
 
     // Also load live heat scores for this game
-    loadGamewiseScores(gameId);
+    loadGamewiseScores(gameId, isSilent);
 
   } catch (err) {
+    if (currentSeq !== gamewiseRequestSeq) return;
     console.error('Failed to load game participants:', err);
+    if (tbody) tbody.style.opacity = '1';
   }
 }
 
-async function loadGamewiseScores(gameId) {
+async function loadGamewiseScores(gameId, isSilent = false) {
   const tbody = document.getElementById('gamewiseScoresTbody');
   if (!tbody) return;
+  const currentSeq = ++gamewiseScoresSeq;
 
-  tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-dim); padding: 20px;">Loading live heat scores...</td></tr>`;
+  const hasExistingScores = tbody.querySelectorAll('tr:not(.table-state-row)').length > 0;
+
+  if (!hasExistingScores && !isSilent) {
+    tbody.innerHTML = `<tr class="table-state-row"><td colspan="7" style="text-align: center; color: var(--text-dim); padding: 20px;">Loading live heat scores...</td></tr>`;
+  } else {
+    tbody.style.opacity = '0.65';
+    tbody.style.transition = 'opacity 0.2s ease';
+  }
 
   try {
     const res = await fetch(`${API_BASE_URL}/api/config/scoreboard?gameId=${encodeURIComponent(gameId)}`);
+    if (currentSeq !== gamewiseScoresSeq) return;
+
     if (!res.ok) throw new Error('Failed to fetch game scores');
     const json = await res.json();
+    if (currentSeq !== gamewiseScoresSeq) return;
+
     const scores = Array.isArray(json.data) ? json.data : [];
 
     if (scores.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-dim); padding: 24px;">No live heat scores recorded yet for this challenge. Click "Record Heat Score" above to add verified times or points.</td></tr>`;
+      tbody.innerHTML = `<tr class="table-state-row"><td colspan="7" style="text-align: center; color: var(--text-dim); padding: 24px;">No live heat scores recorded yet for this challenge. Click "Record Heat Score" above to add verified times or points.</td></tr>`;
+      tbody.style.opacity = '1';
       return;
     }
 
@@ -819,9 +917,14 @@ async function loadGamewiseScores(gameId) {
         </tr>
       `;
     }).join('');
+    tbody.style.opacity = '1';
   } catch (err) {
+    if (currentSeq !== gamewiseScoresSeq) return;
     console.error('Failed to load scoreboard:', err);
-    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--red-light); padding: 20px;">Could not load leaderboard scores.</td></tr>`;
+    tbody.style.opacity = '1';
+    if (!hasExistingScores) {
+      tbody.innerHTML = `<tr class="table-state-row"><td colspan="7" style="text-align: center; color: var(--red-light); padding: 20px;">Could not load leaderboard scores.</td></tr>`;
+    }
   }
 }
 
@@ -873,8 +976,10 @@ window.handleRecordScoreSubmit = async function(e) {
     const res = await fetch(`${API_BASE_URL}/api/config/scoreboard`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken || getCsrfToken()
       },
+      credentials: 'include',
       body: JSON.stringify({
         game_id,
         game_name,
@@ -908,7 +1013,11 @@ window.deleteHeatScore = async function(scoreId) {
 
   try {
     const res = await fetch(`${API_BASE_URL}/api/config/scoreboard/${encodeURIComponent(scoreId)}`, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: {
+        'X-CSRF-Token': csrfToken || getCsrfToken()
+      },
+      credentials: 'include'
     });
     const json = await res.json();
     if (!res.ok || !json.success) {
@@ -984,11 +1093,19 @@ function initPaymentsTable() {
   });
 }
 
-async function loadPaymentsData() {
+async function loadPaymentsData(isSilent = false) {
   const tbody = document.getElementById('paymentsTbody');
   if (!tbody) return;
+  const currentSeq = ++payRequestSeq;
 
-  tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--text-dim); padding: 30px;">Loading payment audit records...</td></tr>`;
+  const hasExistingRows = tbody.querySelectorAll('tr:not(.table-state-row)').length > 0;
+
+  if (!hasExistingRows && !isSilent) {
+    tbody.innerHTML = `<tr class="table-state-row"><td colspan="9" style="text-align: center; color: var(--text-dim); padding: 30px;">Loading payment audit records...</td></tr>`;
+  } else {
+    tbody.style.opacity = '0.65';
+    tbody.style.transition = 'opacity 0.2s ease';
+  }
 
   try {
     const params = new URLSearchParams({
@@ -1004,12 +1121,17 @@ async function loadPaymentsData() {
       credentials: 'include'
     });
 
+    if (currentSeq !== payRequestSeq) return;
+
     if (!res.ok) {
+      tbody.style.opacity = '1';
       if (res.status === 401) checkSession();
       throw new Error('Failed to load payment records');
     }
 
     const { registrations, pagination } = await res.json();
+    if (currentSeq !== payRequestSeq) return;
+
     payPageState.totalPages = pagination.totalPages || 1;
     payPageState.total = pagination.total || 0;
 
@@ -1041,16 +1163,23 @@ async function loadPaymentsData() {
           if (pv) pv.textContent = sm.pendingVerificationCount || 0;
           if (ppaid) ppaid.textContent = sm.paidPaymentsCount || 0;
           if (ppend) ppend.textContent = sm.pendingPaymentCount || 0;
-          if (ptot) ptot.textContent = `₹${(sm.paidPaymentsCount || 0) * 5}`;
+          if (ptot) ptot.textContent = `₹${sm.verifiedRevenue != null ? sm.verifiedRevenue : (sm.paidPaymentsCount || 0) * 10}`;
         }
       })
       .catch(() => {});
 
     renderPaymentsRows(registrations || []);
+    tbody.style.opacity = '1';
 
   } catch (err) {
+    if (currentSeq !== payRequestSeq) return;
     console.error('Failed to load payment records:', err);
-    tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--red-light); padding: 30px;">Error loading payment records: ${escapeHtml(err.message)}</td></tr>`;
+    tbody.style.opacity = '1';
+    if (!hasExistingRows) {
+      tbody.innerHTML = `<tr class="table-state-row"><td colspan="9" style="text-align: center; color: var(--red-light); padding: 30px;">Error loading payment records: ${escapeHtml(err.message)}</td></tr>`;
+    } else {
+      showToast('Notice: Could not refresh payment records. Showing cached data.');
+    }
   }
 }
 
@@ -1059,14 +1188,14 @@ function renderPaymentsRows(registrations) {
   if (!tbody) return;
 
   if (registrations.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--text-dim); padding: 36px;">No payment records match your search or filter criteria.</td></tr>`;
+    tbody.innerHTML = `<tr class="table-state-row"><td colspan="9" style="text-align: center; color: var(--text-dim); padding: 36px;">No payment records match your search or filter criteria.</td></tr>`;
     return;
   }
 
   tbody.innerHTML = registrations.map(reg => {
     const student = reg.student || {};
     const games = reg.selectedGames || [];
-    const fee = reg.feeAmount != null ? reg.feeAmount : (games.length * 5);
+    const fee = reg.totalAmount != null ? reg.totalAmount : (reg.feeAmount != null ? reg.feeAmount : 10);
     const dateStr = formatDate(reg.createdAt);
 
     const isPaid = reg.paymentStatus === 'paid';
@@ -1300,7 +1429,7 @@ async function initPaymentQrConfig() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRF-Token': csrfToken || ''
+          'X-CSRF-Token': csrfToken || getCsrfToken()
         },
         credentials: 'include',
         body: JSON.stringify({
@@ -1486,8 +1615,8 @@ window.openRegistrationModal = async function(registrationId) {
     // Fee & Payment Status
     const modalFeeEl = document.getElementById('modalRegistrationFee');
     const modalPayEl = document.getElementById('modalPaymentStatus');
-    const feeVal = data.feeAmount != null ? data.feeAmount : (data.selectedGames ? data.selectedGames.length * 5 : 0);
-    if (modalFeeEl) modalFeeEl.textContent = `₹${feeVal}.00 (₹5/game)`;
+    const feeVal = data.totalAmount != null ? data.totalAmount : (data.feeAmount != null ? data.feeAmount : 10);
+    if (modalFeeEl) modalFeeEl.textContent = `₹${feeVal}.00 (All-Access Pass)`;
     if (modalPayEl) {
       const isPaid = data.paymentStatus === 'paid';
       const isPendingVer = data.paymentStatus === 'payment_verification_pending';
@@ -1821,11 +1950,19 @@ function initCertificatesTable() {
   });
 }
 
-async function loadCertificatesData() {
+async function loadCertificatesData(isSilent = false) {
   const tbody = document.getElementById('certificatesTbody');
   if (!tbody) return;
+  const currentSeq = ++certRequestSeq;
 
-  tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 24px; color: var(--text-dim);">Loading participant records...</td></tr>`;
+  const hasExistingRows = tbody.querySelectorAll('tr:not(.table-state-row)').length > 0;
+
+  if (!hasExistingRows && !isSilent) {
+    tbody.innerHTML = `<tr class="table-state-row"><td colspan="7" style="text-align: center; padding: 24px; color: var(--text-dim);">Loading participant records...</td></tr>`;
+  } else {
+    tbody.style.opacity = '0.65';
+    tbody.style.transition = 'opacity 0.2s ease';
+  }
 
   try {
     const params = new URLSearchParams({
@@ -1840,16 +1977,22 @@ async function loadCertificatesData() {
       credentials: 'include'
     });
 
+    if (currentSeq !== certRequestSeq) return;
+
     if (!res.ok) {
+      tbody.style.opacity = '1';
       if (res.status === 401) checkSession();
       throw new Error('Failed to load certificates participant roster');
     }
 
     const data = await res.json();
+    if (currentSeq !== certRequestSeq) return;
+
     certPageState.total = data.totalCount || 0;
     certPageState.totalPages = data.totalPages || 1;
 
     renderCertificatesRows(data.participants || []);
+    tbody.style.opacity = '1';
 
     // Pagination display
     const start = certPageState.total === 0 ? 0 : (certPageState.page - 1) * certPageState.limit + 1;
@@ -1870,8 +2013,14 @@ async function loadCertificatesData() {
     if (nextBtn) nextBtn.disabled = certPageState.page >= certPageState.totalPages;
 
   } catch (err) {
+    if (currentSeq !== certRequestSeq) return;
     console.error('Error loading certificates data:', err);
-    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--red-light); padding: 24px;">Failed to load participant data.</td></tr>`;
+    tbody.style.opacity = '1';
+    if (!hasExistingRows) {
+      tbody.innerHTML = `<tr class="table-state-row"><td colspan="7" style="text-align: center; color: var(--red-light); padding: 24px;">Failed to load participant data.</td></tr>`;
+    } else {
+      showToast('Notice: Could not refresh certificates roster. Showing cached data.');
+    }
   }
 }
 
@@ -1880,7 +2029,7 @@ function renderCertificatesRows(participants) {
   if (!tbody) return;
 
   if (participants.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-dim); padding: 32px;">No matching participant records found.</td></tr>`;
+    tbody.innerHTML = `<tr class="table-state-row"><td colspan="7" style="text-align: center; color: var(--text-dim); padding: 32px;">No matching participant records found.</td></tr>`;
     return;
   }
 
@@ -2049,7 +2198,7 @@ window.handleInstantQrLookup = async function(e) {
     const games = Array.isArray(item.selectedGames) ? item.selectedGames : [];
     const isAttended = item.attendanceStatus === 'verified' || item.participationStatus === 'verified';
     const payStatus = item.paymentStatus || 'pending';
-    const totalFee = item.feeAmount != null ? item.feeAmount : (games.length * 5);
+    const totalFee = item.totalAmount != null ? item.totalAmount : (item.feeAmount != null ? item.feeAmount : 10);
 
     const gamesSummary = games.map(g => {
       if (typeof g === 'string') return g;
@@ -2519,7 +2668,7 @@ async function fetchAndDisplayPass(regId) {
     const reg = body.data;
     const isPaid = reg.paymentStatus === 'paid';
     const isPendingVer = reg.paymentStatus === 'payment_verification_pending';
-    const fee = reg.registrationFee || (Array.isArray(reg.selectedGames) ? reg.selectedGames.length * 5 : 5);
+    const fee = reg.totalAmount != null ? reg.totalAmount : (reg.feeAmount != null ? reg.feeAmount : (reg.registrationFee || 10));
     const student = reg.student || {};
 
     let bannerClass = 'status-unpaid';
@@ -2739,9 +2888,14 @@ function initGamesManagement() {
   });
 }
 
-async function loadAdminGamesData() {
+async function loadAdminGamesData(isSilent = false) {
   const container = document.getElementById('adminGamesContainer');
   if (!container) return;
+
+  const hasExistingCards = container.querySelectorAll('.game-item-card').length > 0;
+  if (!hasExistingCards && !isSilent) {
+    container.innerHTML = `<div class="empty-state-card" style="padding: 30px; text-align: center; color: var(--text-dim);">Loading games catalogue...</div>`;
+  }
 
   try {
     const res = await fetch(`${API_BASE_URL}/api/admin/games-catalogue`, {
@@ -2750,7 +2904,9 @@ async function loadAdminGamesData() {
     });
     const data = await res.json();
     if (!res.ok || !data.success) {
-      container.innerHTML = `<div class="empty-state-card" style="padding: 30px; text-align: center; color: var(--text-dim);">Failed to load games: ${escapeHtml(data.error || 'Server error')}</div>`;
+      if (!hasExistingCards) {
+        container.innerHTML = `<div class="empty-state-card" style="padding: 30px; text-align: center; color: var(--text-dim);">Failed to load games: ${escapeHtml(data.error || 'Server error')}</div>`;
+      }
       return;
     }
 
@@ -2758,7 +2914,9 @@ async function loadAdminGamesData() {
     renderAdminGameCards(adminGamesList);
   } catch (err) {
     console.error('Error loading games catalogue:', err);
-    container.innerHTML = `<div class="empty-state-card" style="padding: 30px; text-align: center; color: var(--text-dim);">Network error loading games catalogue.</div>`;
+    if (!hasExistingCards) {
+      container.innerHTML = `<div class="empty-state-card" style="padding: 30px; text-align: center; color: var(--text-dim);">Network error loading games catalogue.</div>`;
+    }
   }
 }
 

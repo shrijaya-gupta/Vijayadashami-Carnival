@@ -22,8 +22,9 @@ const EVENT_CONFIG = {
   registrationDeadline: 'Monday, 26 October 2026',
   registrationDeadlineNotice: 'Students are requested to complete their registration and online payment by the registration deadline.',
   
-  // Registration Fee Policy
-  feePerGame: 5,
+  // Registration Fee Policy (Flat ₹10 All-Access Pass)
+  allAccessPassFee: 10,
+  feePerGame: 10, // Backward-compatible alias
   feeCurrency: 'INR',
   
   // Online Payment Configuration

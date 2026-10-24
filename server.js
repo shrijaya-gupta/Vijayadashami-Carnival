@@ -56,7 +56,14 @@ const server = http.createServer((req, res) => {
         res.end('500 Server Error: ' + err.code);
       }
     } else {
-      res.writeHead(200, { 'Content-Type': contentType });
+      if (reqPath.startsWith('/admin')) {
+        res.writeHead(200, {
+          'Content-Type': contentType,
+          'Cache-Control': 'no-cache, must-revalidate'
+        });
+      } else {
+        res.writeHead(200, { 'Content-Type': contentType });
+      }
       res.end(content);
     }
   });

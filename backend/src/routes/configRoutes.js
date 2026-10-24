@@ -1,6 +1,7 @@
 const express = require('express');
 const EVENT_CONFIG = require('../config/eventConfig');
 const db = require('../config/supabase');
+const { requireAdminAuth, verifyCsrf } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
@@ -54,7 +55,7 @@ router.get('/payment-qr', async (req, res) => {
  * POST /api/config/payment-qr
  * Updates payment QR code image URL and UPI details (Admin action)
  */
-router.post('/payment-qr', async (req, res) => {
+router.post('/payment-qr', requireAdminAuth, verifyCsrf, async (req, res) => {
   try {
     const { upi_id, upi_name, qr_image_url, is_qr_active } = req.body || {};
     const updated = await db.updateEventConfig({
@@ -103,7 +104,7 @@ router.get('/scoreboard', async (req, res) => {
  * POST /api/config/scoreboard
  * Records or updates a verified carnival heat score
  */
-router.post('/scoreboard', async (req, res) => {
+router.post('/scoreboard', requireAdminAuth, verifyCsrf, async (req, res) => {
   try {
     const { game_id, game_name, participant_name, score, rank, category, roll_number } = req.body || {};
     if (!game_id || !participant_name || !score) {
@@ -140,7 +141,7 @@ router.post('/scoreboard', async (req, res) => {
  * DELETE /api/config/scoreboard/:id
  * Removes a recorded heat score
  */
-router.delete('/scoreboard/:id', async (req, res) => {
+router.delete('/scoreboard/:id', requireAdminAuth, verifyCsrf, async (req, res) => {
   try {
     const { id } = req.params;
     const deleted = await db.deleteGameScore(id);

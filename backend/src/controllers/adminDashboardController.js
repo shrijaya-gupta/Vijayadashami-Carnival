@@ -35,32 +35,74 @@ function sanitizeCsvCell(value) {
  */
 async function getDashboardStats(req, res, next) {
   try {
-    const totalRegistrations = await Registration.countDocuments();
-    const confirmedCount = await Registration.countDocuments({ status: 'confirmed' });
-    const cancelledCount = await Registration.countDocuments({ status: 'cancelled' });
-    const pendingCount = await Registration.countDocuments({ status: 'pending' });
-    const verifiedParticipantsCount = await Registration.countDocuments({ participationStatus: 'verified' });
-    const certificatesIssuedCount = await Registration.countDocuments({ certificateIssued: true });
+    const db = require('../config/supabase');
+    const allRecordsRaw = await db.getAllRegistrations();
+    
+    // Normalize records to consistent schema and ensure valid numeric fee values
+    const allRecords = allRecordsRaw.map(r => {
+      const games = r.selected_games || r.selectedGames || [];
+      const rawFee = r.total_amount != null ? Number(r.total_amount) : (r.totalAmount != null ? Number(r.totalAmount) : (r.fee_amount != null ? Number(r.fee_amount) : Number(r.feeAmount)));
+      const hasReliableFee = !isNaN(rawFee) && rawFee > 0;
+      const fee = hasReliableFee ? rawFee : 10;
+      
+      const st = String(r.status || 'confirmed').trim().toLowerCase();
+      const ps = String(r.payment_status || r.paymentStatus || 'payment_pending').trim().toLowerCase();
+      const att = String(r.attendance_status || r.attendanceStatus || 'pending').trim().toLowerCase();
+      const partVerified = att === 'verified' || String(r.participationStatus || '').toLowerCase() === 'verified';
 
-    // Payment status counts
-    const paidPaymentsCount = await Registration.countDocuments({ paymentStatus: 'paid' });
-    const pendingVerificationCount = await Registration.countDocuments({ paymentStatus: 'payment_verification_pending' });
-    const pendingPaymentCount = await Registration.countDocuments({
-      paymentStatus: { $in: ['pending', 'pending_desk_collection', 'payment_pending'] }
+      return {
+        ...r,
+        registrationId: r.registration_id || r.registrationId,
+        student: r.student || {},
+        selectedGames: games,
+        totalAmount: fee,
+        feeAmount: fee,
+        hasReliableFee,
+        status: st,
+        paymentStatus: ps,
+        attendanceStatus: att,
+        participationStatus: partVerified ? 'verified' : 'unverified',
+        certificateIssued: Boolean(r.certificateIssued || r.certificate_id),
+        createdAt: r.created_at || r.createdAt || new Date().toISOString()
+      };
     });
-    const failedPaymentCount = await Registration.countDocuments({ paymentStatus: 'payment_failed' });
 
-    // Fetch all active registrations to aggregate game counts accurately
-    const activeRegistrations = await Registration.find({ status: { $ne: 'cancelled' } })
-      .select('registrationId selectedGames createdAt')
-      .lean();
+    const totalRegistrations = allRecords.length;
+    const cancelledCount = allRecords.filter(r => r.status === 'cancelled').length;
+    const confirmedCount = allRecords.filter(r => r.status === 'confirmed').length;
+    const pendingCount = allRecords.filter(r => r.status === 'pending').length;
+    
+    // Total valid active passes (all non-cancelled registrations)
+    const totalActivePasses = allRecords.filter(r => r.status !== 'cancelled').length;
 
+    const verifiedParticipantsCount = allRecords.filter(r => r.status !== 'cancelled' && r.participationStatus === 'verified').length;
+    const certificatesIssuedCount = allRecords.filter(r => r.status !== 'cancelled' && r.certificateIssued).length;
+
+    // Payment status counts (only for active, non-cancelled passes)
+    const paidRecords = allRecords.filter(r => r.status !== 'cancelled' && (r.paymentStatus === 'paid' || r.paymentStatus === 'verified'));
+    const paidPaymentsCount = paidRecords.length;
+
+    const pendingVerificationCount = allRecords.filter(r => r.status !== 'cancelled' && r.paymentStatus === 'payment_verification_pending').length;
+    const pendingPaymentCount = allRecords.filter(r => r.status !== 'cancelled' && ['pending', 'pending_desk_collection', 'payment_pending'].includes(r.paymentStatus)).length;
+    const failedPaymentCount = allRecords.filter(r => r.paymentStatus === 'payment_failed' || r.paymentStatus === 'rejected').length;
+
+    // Missing fee audit tracking
+    const missingFeePaidCount = paidRecords.filter(r => !r.hasReliableFee).length;
+    const missingFeeTotalCount = allRecords.filter(r => !r.hasReliableFee).length;
+
+    // Verified Revenue: Sum stored fees for eligible active registrations with verified payment
+    const verifiedRevenue = paidRecords.reduce((sum, r) => sum + r.totalAmount, 0);
+
+    // Potential Revenue (Estimate): Sum expected fees across all active (non-cancelled) passes
+    const activeRegistrations = allRecords.filter(r => r.status !== 'cancelled');
+    const potentialRevenue = activeRegistrations.reduce((sum, r) => sum + r.totalAmount, 0);
+
+    // Game breakdown for active registrations
     let totalSelectedGameEntries = 0;
     let totalIndividualEntries = 0;
     let totalTeamEntries = 0;
     let totalTeamMembersListed = 0;
 
-    // Per-game map based on authoritative catalogue and legacy games
     const gameMetrics = {};
     let gamesListForMetrics = [...GAMES_CATALOGUE, ...LEGACY_GAMES];
     try {
@@ -98,14 +140,15 @@ async function getDashboardStats(req, res, next) {
             totalIndividualEntries++;
           }
 
-          if (gameMetrics[sg.gameId]) {
-            gameMetrics[sg.gameId].totalEntries++;
+          const gId = sg.gameId || sg.id;
+          if (gameMetrics[gId]) {
+            gameMetrics[gId].totalEntries++;
             if (isTeam) {
-              gameMetrics[sg.gameId].teamEntries++;
+              gameMetrics[gId].teamEntries++;
               const membersLen = Array.isArray(sg.teamMembers) ? sg.teamMembers.length : 0;
-              gameMetrics[sg.gameId].teamMembersCount += membersLen;
+              gameMetrics[gId].teamMembersCount += membersLen;
             } else {
-              gameMetrics[sg.gameId].individualEntries++;
+              gameMetrics[gId].individualEntries++;
             }
           }
         });
@@ -113,11 +156,9 @@ async function getDashboardStats(req, res, next) {
     });
 
     // 5 most recent registrations
-    const recentDocs = await Registration.find()
-      .sort({ createdAt: -1 })
-      .limit(5)
-      .select('registrationId student.fullName student.rollNumber student.course student.mobileNumber selectedGames status createdAt')
-      .lean();
+    const recentDocs = [...allRecords]
+      .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
+      .slice(0, 5);
 
     const recentRegistrations = recentDocs.map(doc => ({
       registrationId: doc.registrationId,
@@ -136,6 +177,7 @@ async function getDashboardStats(req, res, next) {
       data: {
         summary: {
           totalRegistrations,
+          totalActivePasses,
           confirmedRegistrations: confirmedCount,
           cancelledRegistrations: cancelledCount,
           pendingRegistrations: pendingCount,
@@ -145,6 +187,12 @@ async function getDashboardStats(req, res, next) {
           pendingVerificationCount,
           pendingPaymentCount,
           failedPaymentCount,
+          verifiedRevenue,
+          potentialRevenue,
+          passFee: 10,
+          missingFeePaidCount,
+          missingFeeTotalCount,
+          hasMissingFeeRecords: missingFeeTotalCount > 0,
           totalSelectedGameEntries,
           totalIndividualEntries,
           totalTeamEntries,
@@ -257,7 +305,7 @@ async function getRegistrationsList(req, res, next) {
         teamName: g.teamName || '',
         teamMembersCount: Array.isArray(g.teamMembers) ? g.teamMembers.length : 0
       })),
-      feeAmount: doc.feeAmount !== undefined ? doc.feeAmount : ((doc.selectedGames?.length || 0) * 5),
+      feeAmount: doc.totalAmount != null ? doc.totalAmount : (doc.feeAmount != null ? doc.feeAmount : 10),
       paymentStatus: doc.paymentStatus || 'pending_desk_collection',
       paymentReference: doc.paymentReference || null,
       paymentVerifiedAt: doc.paymentVerifiedAt || null,
@@ -523,7 +571,7 @@ async function exportRegistrationsCsv(req, res, next) {
         .join('; ');
 
       const dateStr = doc.createdAt ? new Date(doc.createdAt).toISOString().replace('T', ' ').slice(0, 19) : '';
-      const feeCalculated = doc.feeAmount !== undefined ? doc.feeAmount : (games.length * 5);
+      const feeCalculated = doc.totalAmount != null ? doc.totalAmount : (doc.feeAmount != null ? doc.feeAmount : 10);
       const payStatus = doc.paymentStatus || 'payment_pending';
 
       const row = [
