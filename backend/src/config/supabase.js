@@ -161,6 +161,32 @@ module.exports = {
     });
   },
 
+  async deleteRegistration(regId) {
+    const cleanId = String(regId).trim().toUpperCase();
+    if (supabase) {
+      const { data, error } = await supabase
+        .from('registrations')
+        .delete()
+        .eq('registration_id', cleanId);
+      if (error) {
+        console.error('[SUPABASE DELETE ERROR]', error);
+        throw error;
+      }
+      try {
+        await supabase.from('certificates').delete().eq('registration_id', cleanId);
+      } catch (e) {}
+      return data;
+    }
+    const idx = memoryStore.registrations.findIndex(r => r.registration_id === cleanId);
+    if (idx !== -1) {
+      const removed = memoryStore.registrations.splice(idx, 1)[0];
+      const certIdx = memoryStore.certificates.findIndex(c => c.registration_id === cleanId);
+      if (certIdx !== -1) memoryStore.certificates.splice(certIdx, 1);
+      return removed;
+    }
+    return null;
+  },
+
   async getAllRegistrations() {
     if (supabase) {
       const { data, error } = await supabase

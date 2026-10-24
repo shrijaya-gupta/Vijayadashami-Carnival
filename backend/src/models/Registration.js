@@ -443,15 +443,43 @@ Registration.findById = async function(id) {
   return normalizeRegistrationDoc(doc);
 };
 
-Registration.deleteOne = async function(query = {}) {
-  const db = require('../config/supabase');
-  const regId = query.registrationId || query._id;
-  if (db && db.supabase && regId) {
-    try {
+Registration.findOneAndDelete = function(query = {}) {
+  return new QueryChain(async () => {
+    const db = require('../config/supabase');
+    const regId = (query.registrationId || query._id || '').trim().toUpperCase();
+    if (!regId) return null;
+
+    let existing = null;
+    if (db && typeof db.findRegistrationById === 'function') {
+      const doc = await db.findRegistrationById(regId);
+      if (doc) existing = normalizeRegistrationDoc(doc);
+    }
+    if (!existing) {
+      const all = await db.getAllRegistrations();
+      const list = all.map(normalizeRegistrationDoc);
+      existing = list.find(item => matchesFilter(item, query)) || null;
+    }
+
+    if (!existing) return null;
+
+    if (db && typeof db.deleteRegistration === 'function') {
+      await db.deleteRegistration(regId);
+    } else if (db && db.supabase) {
       await db.supabase.from('registrations').delete().eq('registration_id', regId);
-    } catch (e) {}
-  }
-  return { deletedCount: 1 };
+    }
+
+    return existing;
+  });
+};
+
+Registration.findByIdAndDelete = function(id) {
+  return Registration.findOneAndDelete({ registrationId: id });
+};
+
+Registration.deleteOne = async function(query = {}) {
+  const regId = (query.registrationId || query._id || '').trim().toUpperCase();
+  const res = await Registration.findOneAndDelete({ registrationId: regId });
+  return { deletedCount: res ? 1 : 0 };
 };
 
 module.exports = Registration;

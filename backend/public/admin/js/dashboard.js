@@ -371,9 +371,15 @@ function renderOverviewRecent(recent) {
         <td data-label="Status"><span class="status-pill ${statusClass}">${escapeHtml(r.status || 'confirmed')}</span></td>
         <td data-label="Date">${dateStr}</td>
         <td data-label="Action">
-          <button type="button" class="btn-table-action" onclick="openRegistrationModal('${escapeHtml(r.registrationId)}')">
-            View Details
-          </button>
+          <div class="action-btn-group">
+            <button type="button" class="btn-table-action" onclick="openRegistrationModal('${escapeHtml(r.registrationId)}')">
+              Details
+            </button>
+            <button type="button" class="btn-table-action btn-revoke" onclick="window.deleteRegistrationQuick('${escapeHtml(r.registrationId)}', '${escapeHtml(r.studentName)}')" title="Delete participant">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              <span>Delete</span>
+            </button>
+          </div>
         </td>
       </tr>
     `;
@@ -532,25 +538,43 @@ async function loadRegistrationsData() {
       const paymentClass = isPaid ? 'status-paid' : (isPendingVer ? 'status-payment_verification_pending' : (isFailed ? 'status-payment_failed' : 'status-payment_pending'));
       const utrBadge = reg.paymentReference ? `<div style="font-size: 0.7rem; font-family: monospace; color: #FCD34D; margin-top: 3px;" title="Submitted UTR: ${escapeHtml(reg.paymentReference)}">Ref: ${escapeHtml(reg.paymentReference)}</div>` : '';
 
+      const subInfo = [
+        student.rollNumber || '',
+        student.course || '',
+        student.branch ? `(${student.branch})` : ''
+      ].filter(Boolean).join(' • ');
+
       return `
         <tr>
-          <td data-label="ID"><span class="reg-id-badge">${escapeHtml(reg.registrationId)}</span></td>
-          <td data-label="Student"><strong>${escapeHtml(student.fullName)}</strong></td>
-          <td data-label="Roll No">${escapeHtml(student.rollNumber || '—')}</td>
-          <td data-label="Course">${escapeHtml(student.course || '—')} - ${escapeHtml(student.branch || '')}</td>
-          <td data-label="Year">${escapeHtml(student.academicYear || '—')}</td>
-          <td data-label="Games">${gamesChips}</td>
-          <td data-label="Fee"><strong style="color: #F59E0B;">₹${fee}</strong></td>
+          <td data-label="ID">
+            <span class="reg-id-badge cursor-pointer" onclick="openRegistrationModal('${escapeHtml(reg.registrationId)}')">${escapeHtml(reg.registrationId)}</span>
+          </td>
+          <td data-label="Student">
+            <div style="font-weight: 700; color: #FFFDF9; font-size: 0.92rem;">${escapeHtml(student.fullName)}</div>
+            <div style="font-size: 0.74rem; color: var(--text-dim); margin-top: 2px;">${escapeHtml(subInfo || '—')}</div>
+          </td>
+          <td data-label="Games">
+            <div style="font-size: 0.76rem; font-weight: 600; color: #FFFDF9; margin-bottom: 2px;">
+              ${(reg.selectedGames || []).length} Game${(reg.selectedGames || []).length !== 1 ? 's' : ''}
+            </div>
+            ${gamesChips}
+          </td>
+          <td data-label="Fee"><strong style="color: #FCD34D; font-size: 0.95rem;">₹${fee}</strong></td>
           <td data-label="Payment">
             <span class="status-pill ${paymentClass}">${escapeHtml(paymentLabel)}</span>
             ${utrBadge}
           </td>
           <td data-label="Status"><span class="status-pill ${statusClass}">${escapeHtml(reg.status || 'confirmed')}</span></td>
-          <td data-label="Date">${dateStr}</td>
           <td data-label="Action">
-            <button type="button" class="btn-table-action" onclick="openRegistrationModal('${escapeHtml(reg.registrationId)}')">
-              View Details
-            </button>
+            <div class="action-btn-group">
+              <button type="button" class="btn-table-action" onclick="openRegistrationModal('${escapeHtml(reg.registrationId)}')" title="View complete details">
+                Details
+              </button>
+              <button type="button" class="btn-table-action btn-revoke" onclick="window.deleteRegistrationQuick('${escapeHtml(reg.registrationId)}', '${escapeHtml(student.fullName)}')" title="Delete participant">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                <span>Delete</span>
+              </button>
+            </div>
           </td>
         </tr>
       `;
@@ -919,6 +943,42 @@ window.copyTextToClipboard = function(text) {
   }).catch(() => {
     prompt('Copy transaction reference:', text);
   });
+};
+
+window.deleteRegistrationQuick = async function(registrationId, studentName) {
+  if (!registrationId) return;
+  const nameLabel = studentName ? `for ${studentName} (${registrationId})` : `(${registrationId})`;
+  const confirmMsg = `Are you sure you want to delete participant ${nameLabel}?\n\nThis will permanently remove their registration, payment audit, and issued certificates.\nThis action cannot be undone.`;
+  
+  if (!window.confirm(confirmMsg)) return;
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/admin/registrations/${encodeURIComponent(registrationId)}`, {
+      method: 'DELETE',
+      headers: {
+        'X-CSRF-Token': csrfToken || ''
+      },
+      credentials: 'include'
+    });
+
+    const data = await res.json().catch(() => null);
+    if (!res.ok) {
+      throw new Error(data?.error || `Failed to delete registration ${registrationId}`);
+    }
+
+    showToast(`✓ Participant ${registrationId} successfully deleted.`);
+    
+    // Close modal if open for this registration
+    if (activeRegistrationInModal && activeRegistrationInModal.registrationId === registrationId) {
+      closeModal();
+    }
+
+    // Refresh active data
+    refreshCurrentView();
+  } catch (err) {
+    console.error('Delete registration error:', err);
+    alert(`Could not delete registration: ${err.message}`);
+  }
 };
 
 window.markPaymentVerifiedQuick = async function(registrationId, utr) {
@@ -1481,35 +1541,9 @@ function initModalActions() {
   // Delete record handler
   deleteBtn?.addEventListener('click', async () => {
     if (!activeRegistrationInModal) return;
-
     const regId = activeRegistrationInModal.registrationId;
-    const confirmDelete = window.confirm(`Are you sure you want to permanently delete registration ${regId}?\nThis action is irreversible and should only be used for duplicate or test entries.`);
-    if (!confirmDelete) return;
-
-    deleteBtn.disabled = true;
-
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/registrations/${regId}`, {
-        method: 'DELETE',
-        headers: {
-          'X-CSRF-Token': csrfToken || ''
-        },
-        credentials: 'include'
-      });
-
-      if (!res.ok) {
-        const errData = await res.json().catch(() => null);
-        throw new Error(errData?.error || 'Deletion failed');
-      }
-
-      showToast(`✓ Registration ${regId} was removed.`);
-      closeModal();
-      refreshCurrentView();
-    } catch (err) {
-      showToast(`Error: ${err.message}`);
-    } finally {
-      deleteBtn.disabled = false;
-    }
+    const studentName = activeRegistrationInModal.student?.fullName || '';
+    window.deleteRegistrationQuick(regId, studentName);
   });
 }
 
