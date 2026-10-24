@@ -19,8 +19,8 @@ async function connectDB() {
   const uri = process.env.MONGODB_URI;
 
   if (!uri) {
-    console.error('FATAL: MONGODB_URI environment variable is missing.');
-    process.exit(1);
+    // MongoDB is optional/deprecated; system runs fully on Supabase
+    return null;
   }
 
   try {
