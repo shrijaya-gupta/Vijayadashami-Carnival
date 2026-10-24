@@ -157,7 +157,7 @@ async function getDashboardStats(req, res, next) {
 function buildFilterQuery(queryParams) {
   const query = {};
 
-  // Search keyword (matches registrationId, student name, or roll number)
+  // Search keyword (matches registrationId, student name, roll number, payment UTR, or mobile)
   if (queryParams.search && queryParams.search.trim()) {
     const term = queryParams.search.trim();
     // Escape regex characters
@@ -165,7 +165,9 @@ function buildFilterQuery(queryParams) {
     query.$or = [
       { registrationId: safeRegex },
       { 'student.fullName': safeRegex },
-      { 'student.rollNumber': safeRegex }
+      { 'student.rollNumber': safeRegex },
+      { 'student.mobileNumber': safeRegex },
+      { paymentReference: safeRegex }
     ];
   }
 
@@ -236,7 +238,8 @@ async function getRegistrationsList(req, res, next) {
         rollNumber: doc.student.rollNumber,
         course: doc.student.course,
         branch: doc.student.branch,
-        academicYear: doc.student.academicYear
+        academicYear: doc.student.academicYear,
+        whatsAppConsent: doc.student.whatsAppConsent !== false
       },
       selectedGames: doc.selectedGames.map(g => ({
         gameId: g.gameId,
@@ -481,6 +484,7 @@ async function exportRegistrationsCsv(req, res, next) {
       'Course',
       'Branch',
       'Academic Year',
+      'WhatsApp Consent',
       'Status',
       'Participation Status',
       'Certificate Issued',
@@ -521,6 +525,7 @@ async function exportRegistrationsCsv(req, res, next) {
         sanitizeCsvCell(student.course),
         sanitizeCsvCell(student.branch),
         sanitizeCsvCell(student.academicYear),
+        sanitizeCsvCell(student.whatsAppConsent !== false ? 'YES' : 'NO'),
         sanitizeCsvCell(doc.status || 'confirmed'),
         sanitizeCsvCell(doc.participationStatus || 'unverified'),
         sanitizeCsvCell(doc.certificateIssued ? 'YES' : 'NO'),

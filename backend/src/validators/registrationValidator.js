@@ -150,7 +150,8 @@ function validateRegistrationPayload(body) {
         rollNumber: student.rollNumber.trim(),
         course: student.course.trim(),
         branch: student.branch.trim(),
-        academicYear: student.academicYear.trim()
+        academicYear: student.academicYear.trim(),
+        whatsAppConsent: typeof student.whatsAppConsent === 'boolean' ? student.whatsAppConsent : true
       },
       selectedGames: selectedGames.map(item => {
         const gameDef = getGameById(item.gameId);

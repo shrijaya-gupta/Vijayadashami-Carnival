@@ -113,6 +113,10 @@ const studentSchema = new mongoose.Schema({
     required: [true, 'Academic year is required'],
     trim: true,
     maxlength: [50, 'Academic year cannot exceed 50 characters']
+  },
+  whatsAppConsent: {
+    type: Boolean,
+    default: true
   }
 }, { _id: false });
 
@@ -333,6 +337,8 @@ function matchesFilter(item, filter = {}) {
     if (!item.selectedGames || !item.selectedGames.some(g => g.participationType === targetFormat)) return false;
   }
 
+  if (filter['student.rollNumber'] && item.student?.rollNumber !== filter['student.rollNumber']) return false;
+  if (filter.idempotencyKey && item.idempotencyKey !== filter.idempotencyKey) return false;
   if (filter['student.course'] && item.student?.course !== filter['student.course']) return false;
   if (filter['student.branch'] && item.student?.branch !== filter['student.branch']) return false;
   if (filter['student.academicYear'] && item.student?.academicYear !== filter['student.academicYear']) return false;
@@ -353,6 +359,16 @@ function matchesFilter(item, filter = {}) {
         const roll = item.student?.rollNumber || '';
         if (clause['student.rollNumber'].test && clause['student.rollNumber'].test(roll)) return true;
         if (typeof clause['student.rollNumber'] === 'string' && roll.toLowerCase().includes(clause['student.rollNumber'].toLowerCase())) return true;
+      }
+      if (clause['student.mobileNumber']) {
+        const mobile = item.student?.mobileNumber || '';
+        if (clause['student.mobileNumber'].test && clause['student.mobileNumber'].test(mobile)) return true;
+        if (typeof clause['student.mobileNumber'] === 'string' && mobile.includes(clause['student.mobileNumber'])) return true;
+      }
+      if (clause.paymentReference) {
+        const ref = item.paymentReference || '';
+        if (clause.paymentReference.test && clause.paymentReference.test(ref)) return true;
+        if (typeof clause.paymentReference === 'string' && ref.toLowerCase().includes(clause.paymentReference.toLowerCase())) return true;
       }
       return false;
     });

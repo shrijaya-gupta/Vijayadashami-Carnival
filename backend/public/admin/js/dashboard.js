@@ -148,15 +148,22 @@ function initNavigation() {
   const navButtons = document.querySelectorAll('.sidebar-nav-item[data-view]');
   const logoutBtn = document.getElementById('btnLogoutSidebar');
   const mobileToggle = document.getElementById('mobileMenuToggle');
+  const mobileClose = document.getElementById('mobileSidebarClose');
+  const backdrop = document.getElementById('sidebarBackdrop');
   const sidebar = document.getElementById('dashboardSidebar');
   const refreshBtn = document.getElementById('btnRefreshData');
+
+  const closeSidebarMobile = () => {
+    sidebar?.classList.remove('mobile-open');
+    backdrop?.classList.remove('active');
+  };
 
   navButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       const view = btn.dataset.view;
       switchView(view);
-      if (window.innerWidth <= 992 && sidebar) {
-        sidebar.classList.remove('mobile-open');
+      if (window.innerWidth <= 992) {
+        closeSidebarMobile();
       }
     });
   });
@@ -164,22 +171,20 @@ function initNavigation() {
   logoutBtn?.addEventListener('click', handleLogout);
 
   mobileToggle?.addEventListener('click', () => {
-    sidebar?.classList.toggle('mobile-open');
+    const isOpen = sidebar?.classList.toggle('mobile-open');
+    if (isOpen) {
+      backdrop?.classList.add('active');
+    } else {
+      backdrop?.classList.remove('active');
+    }
   });
+
+  mobileClose?.addEventListener('click', closeSidebarMobile);
+  backdrop?.addEventListener('click', closeSidebarMobile);
 
   refreshBtn?.addEventListener('click', () => {
     refreshCurrentView();
     showToast('Dashboard data refreshed.');
-  });
-
-  const themeToggle = document.getElementById('adminThemeToggle');
-  themeToggle?.addEventListener('click', () => {
-    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-    const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', nextTheme);
-    try {
-      localStorage.setItem('srmu_theme', nextTheme);
-    } catch (e) {}
   });
 }
 
@@ -1155,6 +1160,38 @@ window.openRegistrationModal = async function(registrationId) {
     document.getElementById('modalStudentRoll').textContent = data.student.rollNumber;
     document.getElementById('modalStudentAcademic').textContent = `${data.student.course} - ${data.student.branch} (${data.student.academicYear})`;
     document.getElementById('modalCreatedAt').textContent = formatDate(data.createdAt);
+
+    // Direct phone call & WhatsApp links
+    const rawMobile = data.student.mobileNumber ? String(data.student.mobileNumber).replace(/[^0-9]/g, '') : '';
+    const clean10 = rawMobile.length >= 10 ? rawMobile.slice(-10) : rawMobile;
+    const callBtn = document.getElementById('modalCallStudent');
+    const waBtn = document.getElementById('modalWhatsAppStudent');
+    if (callBtn) {
+      if (clean10) {
+        callBtn.href = `tel:+91${clean10}`;
+        callBtn.style.display = 'inline-flex';
+      } else {
+        callBtn.style.display = 'none';
+      }
+    }
+    if (waBtn) {
+      if (clean10) {
+        const textMsg = encodeURIComponent(`Namaste ${data.student.fullName}, regards from Vijayadashami Carnival (SRMU B5-408 Desk). Regarding your Registration ID: ${data.registrationId}:`);
+        waBtn.href = `https://wa.me/91${clean10}?text=${textMsg}`;
+        waBtn.style.display = 'inline-flex';
+      } else {
+        waBtn.style.display = 'none';
+      }
+    }
+
+    // WhatsApp Consent badge
+    const consentEl = document.getElementById('modalWhatsAppConsent');
+    if (consentEl) {
+      const consented = data.student.whatsAppConsent !== false;
+      consentEl.innerHTML = consented
+        ? `<span style="color: var(--emerald-light); font-weight: 700; font-size: 0.82rem;">✓ Subscribed for Event Alerts</span>`
+        : `<span style="color: var(--text-dim); font-size: 0.82rem;">Not Opted In</span>`;
+    }
 
     const statusPill = `<span class="status-pill status-${data.status || 'confirmed'}">${escapeHtml(data.status || 'confirmed')}</span>`;
     document.getElementById('modalStatusBadgeWrap').innerHTML = statusPill;

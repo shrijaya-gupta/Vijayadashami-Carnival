@@ -1372,15 +1372,97 @@ button {
 }
 
 /* --------------------------------------------------------------------------
+   Sidebar Backdrop & Mobile Drawer Elements
+   -------------------------------------------------------------------------- */
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 99;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.sidebar-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mobile-sidebar-close {
+  display: none;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: #FDE047;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-left: auto;
+  transition: all 0.2s ease;
+}
+
+.mobile-sidebar-close:hover {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: #FDE047;
+  color: #FFFFFF;
+}
+
+/* Direct Organizer Contact Buttons */
+.btn-quick-contact {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.74rem;
+  font-weight: 700;
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--emerald-light);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn-quick-contact:hover {
+  background: var(--emerald);
+  color: #FFFFFF;
+  border-color: var(--emerald);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+}
+
+.btn-quick-wa {
+  background: rgba(37, 211, 102, 0.15);
+  color: #4ADE80;
+  border-color: rgba(37, 211, 102, 0.35);
+}
+
+.btn-quick-wa:hover {
+  background: #25D366;
+  color: #000000;
+  border-color: #25D366;
+  box-shadow: 0 0 10px rgba(37, 211, 102, 0.4);
+}
+
+/* --------------------------------------------------------------------------
    RESPONSIVE MEDIA QUERIES
    -------------------------------------------------------------------------- */
 @media (max-width: 992px) {
   .dashboard-sidebar {
     transform: translateX(-100%);
+    z-index: 100;
   }
   
   .dashboard-sidebar.mobile-open {
     transform: translateX(0);
+  }
+
+  .mobile-sidebar-close {
+    display: inline-flex;
   }
   
   .dashboard-main {
@@ -1389,6 +1471,8 @@ button {
   
   .mobile-menu-toggle {
     display: block;
+    min-width: 40px;
+    min-height: 40px;
   }
   
   .filter-grid {
@@ -1398,11 +1482,31 @@ button {
 
 @media (max-width: 640px) {
   .dashboard-topbar {
-    padding: 0 16px;
+    padding: 0 12px;
+    height: auto;
+    min-height: 56px;
+    gap: 8px;
+  }
+
+  .topbar-left {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .topbar-title {
+    font-size: 0.88rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .topbar-right {
+    gap: 8px;
+    flex-shrink: 0;
   }
   
   .dashboard-content-area {
-    padding: 20px 16px;
+    padding: 16px 12px;
   }
   
   .filter-grid {
@@ -1411,6 +1515,29 @@ button {
   
   .modal-details-grid {
     grid-template-columns: 1fr;
+  }
+
+  .modal-content-card {
+    padding: 18px 14px;
+    max-height: 94vh;
+  }
+
+  .modal-actions-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .modal-actions-row > div {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .btn-update-status,
+  .btn-delete-record {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
   }
 }
 
