@@ -13,7 +13,7 @@ export const RegistrationWizard: React.FC = () => {
   const { activeStep, goToStep, selectedGameIds, totalFee } = useRegistration();
 
   return (
-    <section id="register" className="relative py-16 sm:py-24 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
+    <section id="register" className="relative py-16 sm:py-24 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-white scroll-mt-20">
       
       {/* Decorative Background Ambient Glow */}
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-96 h-96 bg-rose-950/20 rounded-full blur-3xl pointer-events-none" />
@@ -103,7 +103,10 @@ export const RegistrationWizard: React.FC = () => {
       <WizardProgress />
 
       {/* Dynamic Step Panes in Royal Velvet Theme */}
-      <div className="relative rounded-3xl p-6 sm:p-8 md:p-10 bg-gradient-to-b from-[#1E0510]/95 via-[#14030A]/95 to-[#0C0206] border-2 border-[#D4AF37]/45 shadow-[0_20px_60px_rgba(0,0,0,0.9),inset_0_1px_1px_rgba(255,240,190,0.15)] backdrop-blur-2xl transition-all">
+      <div 
+        id="wizard-form-card" 
+        className="relative rounded-3xl p-6 sm:p-8 md:p-10 bg-gradient-to-b from-[#1E0510]/95 via-[#14030A]/95 to-[#0C0206] border-2 border-[#D4AF37]/45 shadow-[0_20px_60px_rgba(0,0,0,0.9),inset_0_1px_1px_rgba(255,240,190,0.15)] backdrop-blur-2xl transition-all min-h-[580px] scroll-mt-24"
+      >
         {activeStep === 1 && <Step1GamesSelection />}
         {activeStep === 2 && <Step2StudentDetails />}
         {activeStep === 3 && <Step3TeamRoster />}

@@ -25,27 +25,40 @@ const CarnivalApp: React.FC = () => {
 
   const handleRegisterClick = () => {
     setActiveTab('register');
-    const el = document.getElementById('register');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
+    setTimeout(() => {
+      const el = document.getElementById('wizard-form-card') || document.getElementById('register');
+      if (el) {
+        const y = Math.max(0, el.getBoundingClientRect().top + window.pageYOffset - 80);
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }, 50);
   };
 
   const handleExploreGamesClick = () => {
     setActiveTab('games');
-    const el = document.getElementById('games');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
+    setTimeout(() => {
+      const el = document.getElementById('games');
+      if (el) {
+        const y = Math.max(0, el.getBoundingClientRect().top + window.pageYOffset - 80);
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }, 50);
   };
 
   const handleProceedFromSelectionBar = () => {
     setActiveTab('register');
     goToStep(2);
-    const el = document.getElementById('register');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
+    setTimeout(() => {
+      const el = document.getElementById('wizard-form-card') || document.getElementById('register');
+      if (el) {
+        const y = Math.max(0, el.getBoundingClientRect().top + window.pageYOffset - 80);
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+    }, 50);
   };
 
   return (

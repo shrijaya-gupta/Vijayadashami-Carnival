@@ -79,14 +79,33 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   // Authoritative Fee calculation: Strictly count * 5
   const totalFee = selectedGameIds.length * 5;
 
-  // Smooth scroll helper to keep student focused on wizard top
+  // Precision scroll helper to keep student focused directly on the active form card
   const scrollToWizard = () => {
+    const target = document.getElementById('wizard-form-card') || document.getElementById('register');
+    if (!target) return;
+
+    const navbarHeight = 80;
+    const targetY = Math.max(0, target.getBoundingClientRect().top + window.pageYOffset - navbarHeight);
+
+    // Immediate scroll before render so page height shrink never forces scroll to footer
+    window.scrollTo({
+      top: targetY,
+      behavior: 'smooth'
+    });
+
+    // Guard timeout to verify position after React unmounts previous step and mounts new step
     setTimeout(() => {
-      const el = document.getElementById('register');
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const recheckTarget = document.getElementById('wizard-form-card') || document.getElementById('register');
+      if (recheckTarget) {
+        const recheckY = Math.max(0, recheckTarget.getBoundingClientRect().top + window.pageYOffset - navbarHeight);
+        if (Math.abs(window.pageYOffset - recheckY) > 80) {
+          window.scrollTo({
+            top: recheckY,
+            behavior: 'smooth'
+          });
+        }
       }
-    }, 60);
+    }, 70);
   };
 
   // Toggle game selection with non-blocking feedback
