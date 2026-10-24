@@ -1,0 +1,218 @@
+[
+  {
+    "id": "lemon-race",
+    "name": "Lemon Race",
+    "category": "Balance & Speed",
+    "participationType": "Individual",
+    "shortDescription": "Balance a lemon on a spoon and reach the finish line.",
+    "description": "Classic campus sprint requiring players to balance a fresh lemon on a spoon while racing through designated lane checkpoints.",
+    "objective": "Complete the course while maintaining the approved lemon-and-spoon setup.",
+    "approvalStatus": "Approved & Active",
+    "registrationFee": "₹5 per selected game",
+    "feeAmount": 5,
+    "suggestedTeamSize": "Individual (1 player per track lane)",
+    "suggestedDuration": "Provisional: 3 to 5 minutes per heat",
+    "procedure": [
+      "Begin behind the designated starting line in your assigned lane.",
+      "Carry the lemon and spoon according to the organizer's instructions.",
+      "Navigate the sprint course towards the finish line without holding or steadying the lemon by hand.",
+      "Complete the course while maintaining the approved lemon-and-spoon setup."
+    ],
+    "proposedRules": [
+      "Begin behind the designated starting line.",
+      "Carry the lemon and spoon according to the organizer's instructions.",
+      "Avoid pushing, blocking or interfering with other participants.",
+      "If the lemon falls, retrieve it and resume from the drop point."
+    ],
+    "materials": "Spoons, lemons, start/finish line markers, and official stopwatches.",
+    "winningCriteria": "Completion of the course according to the approved rules.",
+    "safetyNotes": [
+      "Sprint course must be clear, flat, and free of slick surfaces or debris.",
+      "Participants must wear appropriate closed-toe footwear.",
+      "Maintain safe separation distance between lanes to prevent accidental collisions."
+    ],
+    "iconName": "Timer",
+    "isActive": true,
+    "isLegacy": false,
+    "createdAt": "2026-10-24T16:22:44.400Z",
+    "updatedAt": "2026-10-24T16:43:46.229Z"
+  },
+  {
+    "id": "target-shooting",
+    "name": "Target Shooting",
+    "category": "Focus & Precision",
+    "participationType": "Individual / Supervised Challenge",
+    "shortDescription": "Take part in a supervised target-based accuracy challenge.",
+    "description": "A campus target challenge testing focus, aim, and precision. The activity will follow organizer-approved safety procedures and supervised equipment use in a controlled arena.",
+    "objective": "Hit the designated target using organizer-approved equipment.",
+    "approvalStatus": "Approved & Active",
+    "registrationFee": "₹5 per selected game",
+    "feeAmount": 5,
+    "suggestedTeamSize": "Individual / Supervised",
+    "suggestedDuration": "Provisional: 2 to 4 minutes per participant attempt",
+    "procedure": [
+      "Report to the designated supervised target station under direct official guidance.",
+      "Receive approved attempt limits and target rotation instructions from the range supervisor.",
+      "Execute your challenge attempt strictly within the supervised area.",
+      "Step back behind the safety perimeter immediately once your turn concludes."
+    ],
+    "proposedRules": [
+      "Follow the event organizer's instructions at all times.",
+      "Participate only in the designated supervised area.",
+      "Use only the equipment and procedures approved for the event.",
+      "Follow all safety boundaries and stop instructions immediately.",
+      "Do not aim at people or use equipment outside the activity area."
+    ],
+    "materials": "Organizer-approved precision target set, soft projectiles, scoring pads.",
+    "winningCriteria": "Highest score based on target rings hit.",
+    "safetyNotes": [
+      "Strict supervised range rules apply at all times.",
+      "Participants and spectators must remain behind safety perimeter markings."
+    ],
+    "iconName": "Target",
+    "isActive": true,
+    "isLegacy": false,
+    "createdAt": "2026-10-24T16:22:44.406Z"
+  },
+  {
+    "id": "musical-chairs",
+    "name": "Musical Chairs",
+    "category": "Agility & Rhythm",
+    "participationType": "Individual",
+    "shortDescription": "Circle the chairs while music plays and grab a seat when it stops.",
+    "description": "High-energy musical sprint around a decreasing ring of chairs to popular campus beats, demanding razor-sharp reflexes.",
+    "objective": "Secure a chair every time the music halts until the champion is crowned.",
+    "approvalStatus": "Approved & Active",
+    "registrationFee": "₹5 per selected game",
+    "feeAmount": 5,
+    "suggestedTeamSize": "Individual (Solo entry)",
+    "suggestedDuration": "Provisional: 10 to 15 minutes per round heat",
+    "procedure": [
+      "Assemble around the perimeter of the arranged chair circle.",
+      "Circle the chairs continuously in one direction while music plays.",
+      "Claim an unoccupied chair immediately as the audio track pauses.",
+      "The single player left without a seat is gracefully eliminated for that heat."
+    ],
+    "proposedRules": [
+      "Move clockwise around the ring at a steady pace without lingering.",
+      "Keep hands off chair backs until the audio pauses completely.",
+      "No pushing, shoving, or pulling chairs out from other contestants.",
+      "Organizing referee decision on contested seat ties is final."
+    ],
+    "materials": "Sturdy armless chairs, sound system, and whistle.",
+    "winningCriteria": "Last remaining participant seated in the final chair duel.",
+    "safetyNotes": [
+      "Ensure clear non-skid floor surface free of bags or loose wires.",
+      "Space chairs safely to avoid pinching fingers."
+    ],
+    "iconName": "Music",
+    "isActive": true,
+    "isLegacy": false,
+    "createdAt": "2026-10-24T16:22:44.406Z"
+  },
+  {
+    "id": "human-knot",
+    "name": "Human Knot",
+    "category": "Teamwork & Coordination",
+    "participationType": "Team / Group",
+    "shortDescription": "Work together as a squad to untangle your human circle without breaking grip.",
+    "description": "Collaborative physical puzzle where participants grasp hands across a circle and maneuver to untangle without releasing contact.",
+    "objective": "Untangle the entire cluster into a clean unbroken circle within the time limit.",
+    "approvalStatus": "Approved & Active",
+    "registrationFee": "₹5 per selected game",
+    "feeAmount": 5,
+    "suggestedTeamSize": "Team / Group (6 to 10 players)",
+    "suggestedDuration": "Provisional: 5 to 8 minutes per squad attempt",
+    "procedure": [
+      "Form a tight standing circle facing towards the center.",
+      "Reach across with both hands to grab hands of two different opposite teammates.",
+      "Communicate, step over, duck under, and rotate to unravel the tangle.",
+      "Conclude when all squad members stand in a continuous open circle."
+    ],
+    "proposedRules": [
+      "Never release handholds; grips may pivot and adjust, but fingers must stay connected.",
+      "Work calmly without forceful pulling or jerky movements.",
+      "Time penalty applies if a hand connection is broken."
+    ],
+    "materials": "Open floor arena, official stopwatch, team bandanas.",
+    "winningCriteria": "Shortest time to completely untangle into an unbroken circle.",
+    "safetyNotes": [
+      "Maintain gentle motion to prevent wrist or shoulder strain.",
+      "Clear perimeter of 3 meters around each active team circle."
+    ],
+    "iconName": "Users",
+    "isActive": true,
+    "isLegacy": false,
+    "createdAt": "2026-10-24T16:22:44.406Z"
+  },
+  {
+    "id": "cup-balloon-pyramid",
+    "name": "Cup and Balloon Pyramid Challenge",
+    "category": "Skill & Precision",
+    "participationType": "Individual or Team (Provisional)",
+    "shortDescription": "Use an inflating balloon to lift, transfer, and stack cups into a stable pyramid.",
+    "description": "Dexterity challenge using inflated balloons to pick up, transfer, and stack cups into a stable multi-tier pyramid without manual touch.",
+    "objective": "Build a complete 6-cup or 10-cup pyramid and disassemble it cleanly using only balloons.",
+    "approvalStatus": "Approved & Active",
+    "registrationFee": "₹5 per selected game",
+    "feeAmount": 5,
+    "suggestedTeamSize": "Individual or Pair (1-2 players)",
+    "suggestedDuration": "Provisional: 3 to 5 minutes per attempt",
+    "procedure": [
+      "Place empty challenge cups rim-up at the base station.",
+      "Insert an uninflated balloon inside a cup and blow into it to grip the cup walls.",
+      "Lift the gripped cup by the balloon neck and transfer it onto the building platform.",
+      "Repeat to assemble a 4-tier or 3-tier pyramid without using bare hands."
+    ],
+    "proposedRules": [
+      "Hands may only touch the balloon neck, never the plastic cups directly.",
+      "If a cup falls off the table, participant must re-grip it using the balloon.",
+      "The pyramid must stand unsupported for 5 seconds upon completion."
+    ],
+    "materials": "Paper/plastic cups, latex balloons, flat wooden game tables.",
+    "winningCriteria": "Fastest successful pyramid assembly without cup collapses.",
+    "safetyNotes": [
+      "Use sanitized individual balloons for each contestant.",
+      "Careful handling of popped balloon pieces."
+    ],
+    "iconName": "Layers",
+    "isActive": true,
+    "isLegacy": false,
+    "createdAt": "2026-10-24T16:22:44.406Z"
+  },
+  {
+    "id": "balloon-dual-race",
+    "name": "Balloon Dual Race",
+    "category": "Duo Synergy",
+    "participationType": "Pairs / Duo (2 Players)",
+    "shortDescription": "Navigate the sprint track in pairs balancing a balloon between you without hands.",
+    "description": "High-energy pair sprint where teammates balance a balloon between their backs or shoulders while navigating the race course.",
+    "objective": "Cross the finish line in tandem keeping the balloon held firmly between partners.",
+    "approvalStatus": "Approved & Active",
+    "registrationFee": "₹5 per selected game",
+    "feeAmount": 5,
+    "suggestedTeamSize": "Pairs / Duo (2 players)",
+    "suggestedDuration": "Provisional: 2 to 4 minutes per heat",
+    "procedure": [
+      "Pair up back-to-back or hip-to-hip at the sprint starting line.",
+      "Position the inflated balloon between partners without holding with hands.",
+      "Coordinate steps to race along your designated track lane to the turn-around marker and back.",
+      "Cross the finish threshold with the balloon still intact and in position."
+    ],
+    "proposedRules": [
+      "Hands and arms must remain folded across chest or behind head.",
+      "If the balloon drops, pair must stop, retrieve it, reposition at that exact spot, and resume.",
+      "If balloon bursts, pair takes a fresh balloon from referee station with a 5-second hold."
+    ],
+    "materials": "High-grade 12-inch balloons, lane cones, whistle, stopwatches.",
+    "winningCriteria": "First duo to cleanly cross the finish line without rules infractions.",
+    "safetyNotes": [
+      "Ensure wide sprint lanes with at least 1.5 meters clearance between pairs.",
+      "Dry, non-slippery indoor or turf surface."
+    ],
+    "iconName": "Zap",
+    "isActive": true,
+    "isLegacy": false,
+    "createdAt": "2026-10-24T16:22:44.406Z"
+  }
+]

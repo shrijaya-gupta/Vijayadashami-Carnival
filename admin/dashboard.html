@@ -88,6 +88,14 @@
           <span>Game-wise Roster</span>
         </button>
 
+        <button type="button" class="sidebar-nav-item" data-view="gamesmanage" id="navGamesManage">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+            <path d="M6 12h4m-2-2v4m10-2h.01m-3 0h.01"></path>
+          </svg>
+          <span>Manage Games</span>
+        </button>
+
         <button type="button" class="sidebar-nav-item" data-view="payments" id="navPayments">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <rect x="2" y="5" width="20" height="14" rx="2"></rect>
@@ -243,7 +251,7 @@
             </button>
           </div>
 
-          <!-- Overview Metric Cards Grid -->
+          <!-- Overview Primary Hero KPIs (Clean 4-Card Executive Grid) -->
           <div class="metrics-grid">
             <!-- 1. Total Unique Registrations -->
             <div class="metric-card">
@@ -272,43 +280,13 @@
               <div class="metric-info">
                 <span class="metric-label">Game Selections</span>
                 <span id="metricTotalGameEntries" class="metric-value">0</span>
-                <span class="metric-sub">Across all 6 event challenges</span>
+                <span class="metric-sub">Across active event challenges</span>
               </div>
             </div>
 
-            <!-- 3. Individual Participation Entries -->
+            <!-- 3. Verified Event Attendees -->
             <div class="metric-card">
               <div class="metric-icon-wrap metric-icon-purple" aria-hidden="true">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-              </div>
-              <div class="metric-info">
-                <span class="metric-label">Solo / Individual</span>
-                <span id="metricIndividualEntries" class="metric-value">0</span>
-                <span class="metric-sub">Solo competitor entries</span>
-              </div>
-            </div>
-
-            <!-- 4. Team Participation Entries -->
-            <div class="metric-card">
-              <div class="metric-icon-wrap metric-icon-amber" aria-hidden="true">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-                </svg>
-              </div>
-              <div class="metric-info">
-                <span class="metric-label">Squad / Team</span>
-                <span id="metricTeamEntries" class="metric-value">0</span>
-                <span id="metricTeamMembersSub" class="metric-sub">0 team members listed</span>
-              </div>
-            </div>
-
-            <!-- 5. Verified Event Attendees -->
-            <div class="metric-card">
-              <div class="metric-icon-wrap metric-icon-emerald" aria-hidden="true">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                   <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                   <polyline points="22 4 12 14.01 9 11.01"></polyline>
@@ -317,43 +295,13 @@
               <div class="metric-info">
                 <span class="metric-label">Verified Attendees</span>
                 <span id="metricVerifiedAttendees" class="metric-value">0</span>
-                <span class="metric-sub">Participation verified by staff</span>
+                <span class="metric-sub">Checked-in at B5-408 desk</span>
               </div>
             </div>
 
-            <!-- 6. Official Certificates Issued -->
-            <div class="metric-card">
-              <div class="metric-icon-wrap metric-icon-blue" aria-hidden="true">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <circle cx="12" cy="8" r="6"></circle>
-                  <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path>
-                </svg>
-              </div>
-              <div class="metric-info">
-                <span class="metric-label">Certificates Issued</span>
-                <span id="metricCertificatesIssued" class="metric-value">0</span>
-                <span class="metric-sub">With active QR verification</span>
-              </div>
-            </div>
-
-            <!-- 7. Payments Verification Pending -->
+            <!-- 4. Payments Verified -->
             <div class="metric-card">
               <div class="metric-icon-wrap metric-icon-amber" aria-hidden="true">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <polyline points="12 6 12 12 16 14"></polyline>
-                </svg>
-              </div>
-              <div class="metric-info">
-                <span class="metric-label">Verification Pending</span>
-                <span id="metricPendingVerPayments" class="metric-value">0</span>
-                <span class="metric-sub">UTR submitted &bull; awaiting audit</span>
-              </div>
-            </div>
-
-            <!-- 8. Payments Verified -->
-            <div class="metric-card">
-              <div class="metric-icon-wrap metric-icon-emerald" aria-hidden="true">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                   <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                   <polyline points="22 4 12 14.01 9 11.01"></polyline>
@@ -362,24 +310,38 @@
               <div class="metric-info">
                 <span class="metric-label">Payments Verified</span>
                 <span id="metricPaidPayments" class="metric-value">0</span>
-                <span class="metric-sub">Verified by desk/staff</span>
+                <span class="metric-sub">Fee audit approved by desk</span>
               </div>
             </div>
+          </div>
 
-            <!-- 9. Payments Pending -->
-            <div class="metric-card">
-              <div class="metric-icon-wrap metric-icon-purple" aria-hidden="true">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <line x1="12" y1="8" x2="12" y2="12"></line>
-                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                </svg>
-              </div>
-              <div class="metric-info">
-                <span class="metric-label">Payment Pending</span>
-                <span id="metricPendingPayments" class="metric-value">0</span>
-                <span class="metric-sub">No UTR submitted yet</span>
-              </div>
+          <!-- Secondary Metrics Ribbon (Compact, Non-Cluttered Indicators) -->
+          <div class="metrics-secondary-ribbon">
+            <div class="sec-stat-pill">
+              <span class="sec-stat-dot dot-solo"></span>
+              <span class="sec-stat-label">Solo Entries:</span>
+              <span id="metricIndividualEntries" class="sec-stat-val">0</span>
+            </div>
+            <div class="sec-stat-pill">
+              <span class="sec-stat-dot dot-team"></span>
+              <span class="sec-stat-label">Squad Entries:</span>
+              <span id="metricTeamEntries" class="sec-stat-val">0</span>
+              <span id="metricTeamMembersSub" class="metric-sub" style="display:none;">0 team members</span>
+            </div>
+            <div class="sec-stat-pill">
+              <span class="sec-stat-dot dot-pending-ver"></span>
+              <span class="sec-stat-label">UTR Audit Pending:</span>
+              <span id="metricPendingVerPayments" class="sec-stat-val">0</span>
+            </div>
+            <div class="sec-stat-pill">
+              <span class="sec-stat-dot dot-pending-pay"></span>
+              <span class="sec-stat-label">Unpaid / Cash Pending:</span>
+              <span id="metricPendingPayments" class="sec-stat-val">0</span>
+            </div>
+            <div class="sec-stat-pill">
+              <span class="sec-stat-dot dot-certs"></span>
+              <span class="sec-stat-label">Certificates Issued:</span>
+              <span id="metricCertificatesIssued" class="sec-stat-val">0</span>
             </div>
           </div>
 
@@ -970,6 +932,29 @@
         </section>
 
         <!-- ===================================================================
+             VIEW: GAME CATALOGUE & ACTIVITY MANAGEMENT (ADMIN CONTROL)
+             =================================================================== -->
+        <section id="viewGamesManage" class="dashboard-view-section" aria-labelledby="gamesManageHeading">
+          <div class="view-header-bar">
+            <div>
+              <h2 id="gamesManageHeading" class="section-title">Games &amp; Activities Catalogue</h2>
+              <p class="section-subtitle">Add new carnival games, edit titles, rules, descriptions, fees, or toggle visibility on the live portal.</p>
+            </div>
+            <div class="view-header-actions">
+              <button type="button" id="btnOpenAddGameModal" class="btn-primary-action btn-add-game" onclick="window.openAddGameModal()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>Add New Game</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Dynamic Games Grid -->
+          <div id="adminGamesContainer" class="admin-games-container">
+            <div style="text-align: center; padding: 40px; color: var(--text-dim);">Loading event games catalogue...</div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
              VIEW 7: PASS QR CODE CAMERA SCANNER & INSTANT VERIFICATION
              =================================================================== -->
         <section id="viewScanner" class="dashboard-view-section" aria-labelledby="scannerPageTitle">
@@ -1265,6 +1250,86 @@
     </div>
   </div>
 
+  <!-- Modal: Add / Edit Carnival Game (Phase 8 Admin Control) -->
+  <div id="gameEditorModal" class="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="modalGameEditorTitle">
+    <div class="modal-content-card" style="max-width: 620px;">
+      <div class="modal-header-flex">
+        <div>
+          <span class="reg-id-badge" style="background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.4); color: #FCD34D;">Game Catalogue Control</span>
+          <h3 id="modalGameEditorTitle" style="font-size: 1.25rem; font-weight: 800; color: #FFFFFF; margin-top: 6px;">Add New Carnival Game</h3>
+        </div>
+        <button type="button" id="btnGameModalClose" class="modal-close-btn" aria-label="Close modal" onclick="window.closeGameEditorModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form id="gameEditorForm" onsubmit="window.handleGameEditorSubmit(event); return false;" style="display: flex; flex-direction: column; gap: 14px; margin-top: 14px;">
+        <input type="hidden" id="editGameId">
+        
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label for="gameTitleInput" class="form-label">Game Title / Name *</label>
+            <input type="text" id="gameTitleInput" class="filter-input" style="width: 100%;" placeholder="e.g. Tug of War, Lemon Race" required />
+          </div>
+          <div class="form-group">
+            <label for="gameFeeInput" class="form-label">Fee Amount (₹) *</label>
+            <input type="number" id="gameFeeInput" class="filter-input" style="width: 100%;" min="0" max="500" value="5" required />
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label for="gameCategoryInput" class="form-label">Category *</label>
+            <input type="text" id="gameCategoryInput" class="filter-input" style="width: 100%;" placeholder="e.g. Strength &amp; Teamwork" required />
+          </div>
+          <div class="form-group">
+            <label for="gameFormatSelect" class="form-label">Participation Format *</label>
+            <select id="gameFormatSelect" class="filter-input" style="width: 100%;">
+              <option value="Individual">Individual (Solo)</option>
+              <option value="Team / Group">Team / Group</option>
+              <option value="Pairs / Duo (2 Players)">Pairs / Duo</option>
+              <option value="Individual or Team (Provisional)">Individual or Team</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="gameShortDescInput" class="form-label">Short Tagline (Card Preview)</label>
+          <input type="text" id="gameShortDescInput" class="filter-input" style="width: 100%;" placeholder="Punchy one-line description for student view..." />
+        </div>
+
+        <div class="form-group">
+          <label for="gameDescTextarea" class="form-label">Challenge Objective / Overview</label>
+          <textarea id="gameDescTextarea" class="filter-input" style="width: 100%; resize: vertical;" rows="2" placeholder="Full summary of the game rules and setup..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="gameRulesTextarea" class="form-label">Rules &amp; Guidelines (One rule per line)</label>
+          <textarea id="gameRulesTextarea" class="filter-input" style="width: 100%; resize: vertical;" rows="3" placeholder="Enter each key rule on a separate line..."></textarea>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--color-border); border-radius: var(--radius-md);">
+          <div>
+            <div style="font-weight: 700; font-size: 0.9rem; color: #FFFFFF;">Portal Visibility Status</div>
+            <div style="font-size: 0.78rem; color: var(--text-dim);">When active, students can select this game on the public website.</div>
+          </div>
+          <label class="toggle-switch-label" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" id="gameActiveCheckbox" checked style="width: 18px; height: 18px; accent-color: #10B981; cursor: pointer;" />
+            <span id="gameActiveStatusText" style="font-weight: 700; font-size: 0.85rem; color: #10B981;">Active</span>
+          </label>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+          <button type="button" class="btn-reset-filters" onclick="window.closeGameEditorModal()">Cancel</button>
+          <button type="submit" id="btnSubmitGame" class="btn-primary" style="padding: 10px 22px; font-weight: 700;">Save Game</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Mobile Bottom Navigation Bar (Phones & Small Tablets) -->
   <nav id="mobileBottomNav" class="mobile-bottom-nav" aria-label="Quick mobile navigation">
     <button type="button" class="bottom-nav-item active" data-view="overview" aria-label="Go to Overview">
@@ -1300,7 +1365,15 @@
         <circle cx="12" cy="12" r="10"></circle>
         <polygon points="12 6 12 12 16 14"></polygon>
       </svg>
-      <span>Games</span>
+      <span>Roster</span>
+    </button>
+
+    <button type="button" class="bottom-nav-item" data-view="gamesmanage" aria-label="Manage Games">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+        <path d="M6 12h4m-2-2v4m10-2h.01m-3 0h.01"></path>
+      </svg>
+      <span>Catalogue</span>
     </button>
 
     <button type="button" class="bottom-nav-item" data-view="certificates" aria-label="Go to Attendance & Certificates">

@@ -86,13 +86,28 @@ const LEGACY_GAMES = [
   }
 ];
 
-// Active game IDs allowed for new registrations (exactly 6)
+// Active game IDs allowed for new registrations (baseline 6)
 const VALID_GAME_IDS = GAMES_CATALOGUE.map(g => g.id);
+const origIncludes = VALID_GAME_IDS.includes.bind(VALID_GAME_IDS);
+VALID_GAME_IDS.includes = function(id) {
+  if (origIncludes(id)) return true;
+  try {
+    const gamesStore = require('../services/gamesStore');
+    return gamesStore.getActiveGameIds().includes(id);
+  } catch (e) {
+    return false;
+  }
+};
 
 // All known game IDs (active + legacy) for database schema validation & historical queries
 const ALL_KNOWN_GAME_IDS = [...VALID_GAME_IDS, ...LEGACY_GAMES.map(g => g.id)];
 
 function getGameById(gameId) {
+  try {
+    const gamesStore = require('../services/gamesStore');
+    const fromStore = gamesStore.getGameById(gameId);
+    if (fromStore) return fromStore;
+  } catch (e) {}
   return GAMES_CATALOGUE.find(g => g.id === gameId) || LEGACY_GAMES.find(g => g.id === gameId) || null;
 }
 

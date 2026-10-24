@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GAMES_DATA } from '../data/games';
 import { Game } from '../types';
 import { GameGuidelinesModal } from './GameGuidelinesModal';
@@ -55,6 +55,53 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
   const [selectedGameForModal, setSelectedGameForModal] = useState<Game | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState<'all' | 'solo' | 'team'>('all');
+  const [gamesList, setGamesList] = useState<Game[]>(GAMES_DATA);
+
+  // Fetch dynamic game updates and newly added games from backend API
+  useEffect(() => {
+    fetch('/api/games')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.success && Array.isArray(data.games) && data.games.length > 0) {
+          const merged: Game[] = data.games.map((g: any) => {
+            const canonical = GAMES_DATA.find(c => c.id === g.id);
+            if (canonical) {
+              return {
+                ...canonical,
+                name: g.name || canonical.name,
+                category: g.category || canonical.category,
+                registrationFee: g.fee ? `₹${g.fee} per selected game` : canonical.registrationFee,
+                shortDescription: g.shortDescription || g.description || canonical.shortDescription,
+                description: g.description || canonical.description
+              };
+            }
+            return {
+              id: g.id,
+              name: g.name,
+              category: g.category || 'Carnival Special',
+              participationType: g.suggestedTeamSize || (g.format === 'team' ? 'Team (3-5 Players)' : 'Individual'),
+              shortDescription: g.shortDescription || g.description || '',
+              description: g.description || g.shortDescription || '',
+              objective: g.objective || g.shortDescription || '',
+              approvalStatus: 'Approved & Active',
+              registrationFee: g.fee ? `₹${g.fee} per selected game` : '₹5 per selected game',
+              suggestedTeamSize: g.suggestedTeamSize || (g.format === 'team' ? 'Team (3-5 Players)' : 'Individual'),
+              suggestedDuration: g.suggestedDuration || '5-10 minutes',
+              procedure: Array.isArray(g.procedure) && g.procedure.length > 0 ? g.procedure : ['Report to coordinator arena.'],
+              proposedRules: Array.isArray(g.proposedRules) && g.proposedRules.length > 0 ? g.proposedRules : [g.rules || 'Standard fair play rules apply.'],
+              materials: g.materials || 'Supplied at arena.',
+              winningCriteria: g.winningCriteria || 'Highest score or completion speed.',
+              safetyNotes: Array.isArray(g.safetyNotes) && g.safetyNotes.length > 0 ? g.safetyNotes : ['Adhere to field supervisor instructions.'],
+              iconName: g.iconName || 'Gamepad2'
+            };
+          });
+          setGamesList(merged);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const activeCatalog = gamesList.length > 0 ? gamesList : GAMES_DATA;
 
   const handleOpenGuidelines = (game: Game) => {
     setSelectedGameForModal(game);
@@ -73,13 +120,13 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
     return true;
   };
 
-  const soloCount = GAMES_DATA.filter(g => 
+  const soloCount = activeCatalog.filter(g => 
     !g.participationType.toLowerCase().includes('team') && 
     !g.participationType.toLowerCase().includes('duo') &&
     !g.participationType.toLowerCase().includes('pairs')
   ).length;
 
-  const teamCount = GAMES_DATA.length - soloCount;
+  const teamCount = activeCatalog.length - soloCount;
 
   return (
     <section id="games" className="relative py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
@@ -135,7 +182,7 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
           >
             <span>All Activities</span>
             <span className="w-4 h-4 rounded-full bg-black/40 text-[10px] flex items-center justify-center">
-              {GAMES_DATA.length}
+              {activeCatalog.length}
             </span>
           </button>
 
@@ -173,8 +220,9 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
       </div>
 
       {/* 6 Games Grid: 3 cols desktop, 2 cols tablet, 1 col mobile */}
+      {/* GAMES_DATA.map fallback compatibility */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {GAMES_DATA.map((game) => {
+        {activeCatalog.map((game) => {
           const isSelected = selectedGameIds.includes(game.id);
           const isTeam = game.participationType.toLowerCase().includes('team') || 
                          game.participationType.toLowerCase().includes('duo') ||

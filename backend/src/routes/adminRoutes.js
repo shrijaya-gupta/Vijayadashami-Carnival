@@ -82,5 +82,31 @@ router.post('/certificates/:certificateId/revoke', requireAdminAuth, verifyCsrf,
 // GET /api/admin/certificates/:certificateId/download — Admin certificate PDF download
 router.get('/certificates/:certificateId/download', requireAdminAuth, adminDownloadCertificatePdf);
 
+// ============================================================================
+// 4. GAME CATALOGUE MANAGEMENT ENDPOINTS (FULL ADMIN CONTROL)
+// ============================================================================
+const {
+  getAdminGamesList,
+  createAdminGame,
+  updateAdminGame,
+  toggleAdminGameStatus,
+  deleteAdminGame
+} = require('../controllers/adminGamesController');
+
+// GET /api/admin/games-catalogue — List all games for management
+router.get('/games-catalogue', requireAdminAuth, getAdminGamesList);
+
+// POST /api/admin/games-catalogue — Add new game
+router.post('/games-catalogue', requireAdminAuth, verifyCsrf, createAdminGame);
+
+// PUT /api/admin/games-catalogue/:id — Update existing game
+router.put('/games-catalogue/:id', requireAdminAuth, verifyCsrf, updateAdminGame);
+
+// PATCH /api/admin/games-catalogue/:id/toggle — Toggle game active/hidden
+router.patch('/games-catalogue/:id/toggle', requireAdminAuth, verifyCsrf, toggleAdminGameStatus);
+
+// DELETE /api/admin/games-catalogue/:id — Delete game
+router.delete('/games-catalogue/:id', requireAdminAuth, verifyCsrf, deleteAdminGame);
+
 module.exports = router;
 

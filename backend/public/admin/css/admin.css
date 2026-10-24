@@ -1209,7 +1209,8 @@ button {
   transition: opacity 0.2s ease, visibility 0.2s ease;
 }
 
-.modal-overlay.is-open {
+.modal-overlay.is-open,
+.modal-overlay.active {
   opacity: 1;
   visibility: visible;
 }
@@ -2573,6 +2574,118 @@ button {
 .quick-hub-icon-amber { background: rgba(245, 158, 11, 0.15); color: #FCD34D; }
 .quick-hub-icon-blue { background: rgba(59, 130, 246, 0.15); color: #60A5FA; }
 .quick-hub-icon-purple { background: rgba(139, 92, 246, 0.15); color: #C084FC; }
+
+/* ==============================================================================
+   PHASE 8: GAME CATALOGUE MANAGEMENT & REFINED EXECUTIVE DASHBOARD STYLES
+   ============================================================================== */
+
+/* Secondary Metrics Ribbon in Overview */
+.metrics-secondary-ribbon {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 12px 18px;
+  background: rgba(24, 34, 52, 0.65);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.sec-stat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: all 0.2s ease;
+}
+
+.sec-stat-pill:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(212, 175, 55, 0.3);
+}
+
+.sec-stat-val {
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.sec-stat-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dot-solo { background: #A855F7; box-shadow: 0 0 6px rgba(168, 85, 247, 0.4); }
+.dot-team { background: #F59E0B; box-shadow: 0 0 6px rgba(245, 158, 11, 0.4); }
+.dot-pending-ver { background: #F97316; box-shadow: 0 0 6px rgba(249, 115, 22, 0.4); }
+.dot-pending-pay { background: #EC4899; box-shadow: 0 0 6px rgba(236, 72, 153, 0.4); }
+.dot-certs { background: #3B82F6; box-shadow: 0 0 6px rgba(59, 130, 246, 0.4); }
+
+/* Games Catalogue Management */
+.admin-games-container {
+  margin-top: 18px;
+}
+
+.admin-games-grid-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.admin-game-card {
+  background: rgba(24, 34, 52, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.28);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.admin-game-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  border-color: rgba(212, 175, 55, 0.45);
+}
+
+.admin-game-card.card-inactive {
+  opacity: 0.65;
+  border-color: var(--color-border);
+}
+
+.btn-add-game {
+  background: linear-gradient(135deg, #881337, #B91C1C);
+  color: #FFFFFF;
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  padding: 9px 20px;
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(136, 19, 55, 0.35);
+  transition: all 0.2s ease;
+}
+
+.btn-add-game:hover {
+  background: linear-gradient(135deg, #9F1239, #DC2626);
+  box-shadow: 0 6px 20px rgba(185, 28, 28, 0.5);
+  transform: translateY(-1px);
+}
+
 
 
 

@@ -62,12 +62,21 @@ async function getDashboardStats(req, res, next) {
 
     // Per-game map based on authoritative catalogue and legacy games
     const gameMetrics = {};
-    [...GAMES_CATALOGUE, ...LEGACY_GAMES].forEach(g => {
+    let gamesListForMetrics = [...GAMES_CATALOGUE, ...LEGACY_GAMES];
+    try {
+      const gamesStore = require('../services/gamesStore');
+      const storeGames = gamesStore.getAllGames({ includeInactive: true });
+      if (Array.isArray(storeGames) && storeGames.length > 0) {
+        gamesListForMetrics = storeGames;
+      }
+    } catch (e) {}
+
+    gamesListForMetrics.forEach(g => {
       gameMetrics[g.id] = {
         id: g.id,
         name: g.name,
-        category: g.category || 'Legacy Event',
-        rulesApprovalStatus: g.rulesApprovalStatus || 'Archived Game',
+        category: g.category || 'Event Game',
+        rulesApprovalStatus: g.rulesApprovalStatus || 'Approved & Active',
         totalEntries: 0,
         individualEntries: 0,
         teamEntries: 0,

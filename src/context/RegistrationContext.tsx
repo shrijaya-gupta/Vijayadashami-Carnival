@@ -76,6 +76,32 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submissionResult, setSubmissionResult] = useState<RegistrationSubmissionResult | null>(null);
 
+  // Sync dynamic game configs from API if available
+  useEffect(() => {
+    fetch('/api/games')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.success && Array.isArray(data.games)) {
+          setGameConfigs(prev => {
+            const next = { ...prev };
+            data.games.forEach((g: any) => {
+              if (!next[g.id]) {
+                next[g.id] = {
+                  gameId: g.id,
+                  gameName: g.name,
+                  participationType: g.format === 'team' ? 'team' : 'individual',
+                  teamName: '',
+                  teamMembers: []
+                };
+              }
+            });
+            return next;
+          });
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   // Authoritative Flat ₹10 Registration Fee (All Games Included; legacy: selectedGameIds.length * 5)
   const totalFee = 10;
 
