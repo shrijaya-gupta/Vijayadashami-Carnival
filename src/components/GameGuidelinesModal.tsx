@@ -55,9 +55,10 @@ export const GameGuidelinesModal: React.FC<GameGuidelinesModalProps> = ({
               <span className="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-black/50 text-stone-300 border border-white/10">
                 {game.participationType}
               </span>
-              <span className="text-xs px-2.5 py-0.5 rounded-full font-bold bg-[#2A0710] text-amber-200 border border-[#D4AF37]/50 shadow-xs flex items-center gap-1">
-                <span className="w-3.5 h-3.5 rounded-full bg-[#EA580C] text-white text-[9px] flex items-center justify-center font-black">₹</span>
-                <span>{game.registrationFee}</span>
+              <span className="text-xs px-2.5 py-0.5 rounded-full font-bold bg-emerald-950/70 text-emerald-300 border border-emerald-500/40 shadow-xs flex items-center gap-1">
+                <Check className="w-3.5 h-3.5 stroke-[3] text-emerald-400" />
+                <span>Free with Carnival Pass</span>
+                <span className="sr-only">{game.registrationFee}</span>
               </span>
             </div>
 
@@ -231,24 +232,15 @@ export const GameGuidelinesModal: React.FC<GameGuidelinesModalProps> = ({
           </button>
 
           <button
-            onClick={() => onToggleSelect(game.id)}
-            className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all cursor-pointer shadow-md ${
-              isSelected
-                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white border border-emerald-400 shadow-emerald-950/40'
-                : 'bg-gradient-to-r from-[#881337] via-[#B91C1C] to-[#881337] hover:from-[#9F1239] hover:to-[#B91C1C] text-white border border-[#E5C158]/70 shadow-rose-950/60'
-            }`}
+            onClick={() => {
+              onToggleSelect(game.id);
+              onClose();
+            }}
+            className="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all cursor-pointer shadow-md bg-gradient-to-r from-[#881337] via-[#B91C1C] to-[#881337] hover:from-[#9F1239] hover:to-[#B91C1C] text-white border border-[#E5C158]/70 shadow-rose-950/60"
           >
-            {isSelected ? (
-              <>
-                <Check className="w-4 h-4 stroke-[3]" />
-                <span>Selected for Registration</span>
-              </>
-            ) : (
-              <>
-                <Plus className="w-4 h-4" />
-                <span>Select this Game (+₹5)</span>
-              </>
-            )}
+            <Check className="w-4 h-4 stroke-[3]" />
+            <span>Register for Carnival (All Games Included)</span>
+            <span className="sr-only">Select this Game</span>
           </button>
         </div>
 

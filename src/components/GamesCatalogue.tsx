@@ -249,19 +249,17 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
               {/* Fee & Action Buttons */}
               <div className="pt-4 mt-4 border-t border-[#3D0A17] space-y-3">
                 
-                {/* Fee & Entry Pill */}
+                {/* Entry & Access Pill */}
                 <div className="flex items-center justify-between text-xs font-semibold">
                   <span className="text-stone-400 flex items-center gap-1.5">
-                    <span>Registration Fee</span>
+                    <span>Activity Entry</span>
                   </span>
                   
-                  {/* Golden Ticket Fee Pill */}
-                  <div className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-[#2B0813] to-[#18030B] border border-[#D4AF37]/50 shadow-xs flex items-center gap-1.5">
-                    <span className="w-4 h-4 rounded-full bg-[#EA580C] text-white font-black text-[10px] flex items-center justify-center shrink-0">
-                      ₹
-                    </span>
-                    <span className="text-amber-200 font-bold text-xs">
-                      Included in ₹10 Pass
+                  {/* Free with Pass Tag */}
+                  <div className="px-2.5 py-1 rounded-lg bg-emerald-950/60 border border-emerald-500/40 shadow-xs flex items-center gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-emerald-400 stroke-[3]" />
+                    <span className="text-emerald-300 font-bold text-xs">
+                      Free with Pass
                     </span>
                     <span className="sr-only">₹5 per entry</span>
                   </div>
@@ -279,7 +277,7 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
                     <span>Guidelines</span>
                   </button>
 
-                  {/* Register / Select Game Button */}
+                  {/* Join Activity Button */}
                   <button
                     onClick={() => {
                       onToggleGame(game.id);
@@ -287,8 +285,8 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
                     }}
                     className="py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-md active:scale-95 cursor-pointer bg-gradient-to-r from-[#881337] via-[#B91C1C] to-[#881337] hover:from-[#9F1239] hover:to-[#DC2626] text-white border border-[#E5C158]/60 hover:scale-[1.02]"
                   >
-                    <Check className="w-3.5 h-3.5 stroke-[3] text-amber-300" />
-                    <span>Get ₹10 Pass</span>
+                    <Flame className="w-3.5 h-3.5 text-amber-300" />
+                    <span>Join Activity</span>
                     <span className="sr-only">Select Game</span>
                   </button>
 
