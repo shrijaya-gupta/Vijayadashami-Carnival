@@ -295,12 +295,11 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const goToStep = (stepNumber: number) => {
     let target = stepNumber;
-    if (target === 4) target = 5; // Fast-track review step to payment
-    if (target < activeStep || target === 1) {
-      setSubmitError(null);
-      setActiveStep(target);
-      scrollToWizard();
-    }
+    if (target === 1) target = 2; // Under flat ₹10 pass, registration begins directly at student details
+    if (target === 3 || target === 4) target = 5; // Fast-track directly to payment
+    setSubmitError(null);
+    setActiveStep(target);
+    scrollToWizard();
   };
 
   const resetRegistration = () => {

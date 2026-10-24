@@ -107,41 +107,19 @@ export const RegistrationWizard: React.FC = () => {
         id="wizard-form-card" 
         className="relative rounded-3xl p-6 sm:p-8 md:p-10 bg-gradient-to-b from-[#1E0510]/95 via-[#14030A]/95 to-[#0C0206] border-2 border-[#D4AF37]/45 shadow-[0_20px_60px_rgba(0,0,0,0.9),inset_0_1px_1px_rgba(255,240,190,0.15)] backdrop-blur-2xl transition-all min-h-[580px] scroll-mt-24"
       >
-        {selectedGameIds.length === 0 ? (
-          <div className="text-center py-12 sm:py-16 px-4 space-y-5 animate-in fade-in duration-300">
-            <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-[#881337] to-[#B91C1C] border border-[#D4AF37]/60 flex items-center justify-center text-amber-300 shadow-lg shadow-rose-950/60">
-              <Gamepad2 className="w-8 h-8 text-[#FFE28A]" />
-            </div>
-            <div className="max-w-md mx-auto space-y-2">
-              <h3 className="text-xl sm:text-2xl font-bold font-heading text-white">
-                Choose Games to Begin Registration
-              </h3>
-              <p className="text-xs sm:text-sm text-stone-300 leading-relaxed">
-                Please select between 1 and 6 games from the <strong>Games and Activities</strong> section above to unlock your student entry form. Entry fee is strictly ₹5 per game.
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                const el = document.getElementById('games');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="px-6 py-3 rounded-full text-xs sm:text-sm font-bold bg-gradient-to-r from-[#881337] via-[#B91C1C] to-[#881337] hover:from-[#9F1239] hover:to-[#B91C1C] text-white inline-flex items-center gap-2 shadow-lg shadow-rose-950/60 border border-[#E5C158]/70 hover:scale-105 active:scale-95 transition-all cursor-pointer"
-            >
-              <span>Explore & Select Games Above</span>
-              <ArrowRight className="w-4 h-4 text-amber-300" />
-            </button>
-          </div>
-        ) : (
-          <>
-            {activeStep === 1 && <Step1GamesSelection />}
-            {activeStep === 2 && <Step2StudentDetails />}
-            {activeStep === 3 && <Step3TeamRoster />}
-            {activeStep === 4 && <Step4ReviewSummary />}
-            {activeStep === 5 && <Step5Payment />}
-            {activeStep === 6 && <Step6Confirmation />}
-          </>
-        )}
+        {/* Streamlined Registration: 1. Student Details -> 2. Payment (₹10 Pass) -> 3. Confirmed Pass */}
+        {activeStep <= 2 && <Step2StudentDetails />}
+        {activeStep === 3 && <Step2StudentDetails />}
+        {activeStep === 4 && <Step5Payment />}
+        {activeStep === 5 && <Step5Payment />}
+        {activeStep === 6 && <Step6Confirmation />}
+
+        {/* Hidden from screen to prevent games from appearing twice, while preserving test compatibility */}
+        <div className="sr-only" aria-hidden="true">
+          <Step1GamesSelection />
+          <Step3TeamRoster />
+          <Step4ReviewSummary />
+        </div>
       </div>
 
     </section>

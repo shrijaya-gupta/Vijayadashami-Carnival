@@ -24,30 +24,17 @@ const CarnivalApp: React.FC = () => {
   }, []);
 
   const handleRegisterClick = () => {
-    if (selectedGameIds.length > 0) {
-      setActiveTab('register');
-      goToStep(2);
-      setTimeout(() => {
-        const el = document.getElementById('wizard-form-card') || document.getElementById('register');
-        if (el) {
-          const y = Math.max(0, el.getBoundingClientRect().top + window.pageYOffset - 80);
-          window.scrollTo({ top: y, behavior: 'smooth' });
-        } else {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-      }, 50);
-    } else {
-      setActiveTab('home');
-      setTimeout(() => {
-        const el = document.getElementById('games');
-        if (el) {
-          const y = Math.max(0, el.getBoundingClientRect().top + window.pageYOffset - 80);
-          window.scrollTo({ top: y, behavior: 'smooth' });
-        } else {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-      }, 50);
-    }
+    setActiveTab('home');
+    goToStep(2);
+    setTimeout(() => {
+      const el = document.getElementById('wizard-form-card') || document.getElementById('register');
+      if (el) {
+        const y = Math.max(0, el.getBoundingClientRect().top + window.pageYOffset - 80);
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }, 50);
   };
 
   const handleExploreGamesClick = () => {
@@ -64,22 +51,11 @@ const CarnivalApp: React.FC = () => {
   };
 
   const handleToggleGame = (gameId: string) => {
-    toggleGameSelection(gameId);
-    if (activeStep === 1) {
-      goToStep(2);
-    }
+    handleRegisterClick();
   };
 
   const handleProceedFromSelectionBar = () => {
-    setActiveTab('register');
-    goToStep(2);
-    setTimeout(() => {
-      const el = document.getElementById('wizard-form-card') || document.getElementById('register');
-      if (el) {
-        const y = Math.max(0, el.getBoundingClientRect().top + window.pageYOffset - 80);
-        window.scrollTo({ top: y, behavior: 'smooth' });
-      }
-    }, 50);
+    handleRegisterClick();
   };
 
   return (
@@ -140,14 +116,14 @@ const CarnivalApp: React.FC = () => {
         )}
       </main>
 
-      {/* Floating Action Pill (Bottom-Right corner, compact and non-obtrusive) */}
-      {activeStep < 5 && (
+      {/* SelectionBar hidden as ₹10 all-access pass covers all games without individual selection */}
+      <div className="sr-only">
         <SelectionBar
           selectedGameIds={selectedGameIds}
           onRemoveGame={handleToggleGame}
           onProceed={handleProceedFromSelectionBar}
         />
-      )}
+      </div>
 
       {/* Live Campus Scoreboard Modal */}
       <ScoreboardModal 

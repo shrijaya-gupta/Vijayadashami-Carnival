@@ -187,19 +187,8 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
               key={game.id}
               className={`group relative rounded-3xl p-5 sm:p-6 flex flex-col justify-between transition-all duration-300 ${
                 !isVisible ? 'opacity-30 scale-95 pointer-events-none hidden' : ''
-              } ${
-                isSelected
-                  ? 'bg-gradient-to-b from-[#0C2417] via-[#081B10] to-[#040F08] border-2 border-emerald-400 shadow-[0_15px_40px_-5px_rgba(16,185,129,0.35)] scale-[1.01] backdrop-blur-xl'
-                  : 'bg-gradient-to-b from-[#24060F]/95 via-[#18030B]/95 to-[#0E0207] hover:from-[#2E0914] hover:to-[#14030A] border border-[#D4AF37]/35 hover:border-[#F5D372]/90 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.8)] hover:shadow-[0_20px_45px_-8px_rgba(212,175,55,0.25)] hover:-translate-y-1.5 backdrop-blur-xl'
-              }`}
+              } bg-gradient-to-b from-[#24060F]/95 via-[#18030B]/95 to-[#0E0207] hover:from-[#2E0914] hover:to-[#14030A] border border-[#D4AF37]/35 hover:border-[#F5D372]/90 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.8)] hover:shadow-[0_20px_45px_-8px_rgba(212,175,55,0.25)] hover:-translate-y-1.5 backdrop-blur-xl`}
             >
-              {/* Selected VIP Badge */}
-              {isSelected && (
-                <div className="absolute -top-3 -right-2 px-3 py-0.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black text-[10px] uppercase tracking-wider shadow-lg shadow-emerald-950/60 flex items-center gap-1 border border-white/40 animate-in fade-in zoom-in-95">
-                  <Check className="w-3 h-3 stroke-[3]" />
-                  <span>All-Access Pass Active</span>
-                </div>
-              )}
 
               {/* Card Header & Content */}
               <div>
