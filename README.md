@@ -5,7 +5,7 @@ A college event registration web application for the **Vijayadashami Carnival** 
 - **Event Name:** Vijayadashami Carnival
 - **Date:** Thursday, 29 October 2026
 - **Time:** 11:00 AM
-- **Venue:** SRMU Campus, Building B5
+- **Venue:** SRMU Campus, Building B5-408
 - **Current Milestone:** **Phase 7: Verified Participation Certificates with QR Verification**
 
 ---
@@ -253,7 +253,7 @@ If disconnected, returns `503 Service Unavailable` with `status: "degraded"` and
     "eventName": "Vijayadashami Carnival",
     "date": "Thursday, 29 October 2026",
     "time": "11:00 AM",
-    "venue": "SRMU Campus, B5",
+    "venue": "SRMU Campus, B5-408",
     "status": "confirmed",
     "student": {
       "fullName": "Aryan Verma",
@@ -295,7 +295,7 @@ If disconnected, returns `503 Service Unavailable` with `status: "degraded"` and
     "eventName": "Vijayadashami Carnival",
     "date": "Thursday, 29 October 2026",
     "time": "11:00 AM",
-    "venue": "SRMU Campus, B5",
+    "venue": "SRMU Campus, B5-408",
     "status": "confirmed",
     "student": {
       "fullName": "Aryan Verma",

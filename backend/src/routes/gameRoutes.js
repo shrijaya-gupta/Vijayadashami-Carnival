@@ -14,7 +14,7 @@ router.get('/', (req, res) => {
     eventName: 'Vijayadashami Carnival',
     date: 'Thursday, 29 October 2026',
     time: '11:00 AM',
-    venue: 'SRMU Campus, B5',
+    venue: 'SRMU Campus, B5-408',
     games: GAMES_CATALOGUE
   });
 });

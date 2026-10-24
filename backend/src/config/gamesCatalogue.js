@@ -77,7 +77,7 @@ const LEGACY_GAMES = [
     id: 'treasure-hunt',
     name: 'Treasure Hunt',
     category: 'Mystery & Strategy',
-    description: 'Cryptic campus clue-solving adventure across Building B5 landmarks testing team wit, coordination, and rapid deduction.',
+    description: 'Cryptic campus clue-solving adventure across Building B5-408 landmarks testing team wit, coordination, and rapid deduction.',
     participationOptions: ['team', 'individual'],
     defaultParticipationType: 'team',
     rulesApprovalStatus: 'Archived / Legacy',

@@ -12,7 +12,7 @@ async function startServer() {
   try {
     // 1. Initialize Supabase / Database layer
     console.log('================================================================');
-    console.log('VIJAYADASHAMI CARNIVAL BACKEND (SRMU B5) — POWERED BY SUPABASE');
+    console.log('VIJAYADASHAMI CARNIVAL BACKEND (SRMU B5-408) — POWERED BY SUPABASE');
     console.log('================================================================');
     
     if (db.isSupabaseConfigured) {

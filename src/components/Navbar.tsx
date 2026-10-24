@@ -127,7 +127,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenS
                 VIJAYADASHAMI
               </span>
               <span className="text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold bg-[#E5C158]/20 text-[#E5C158] border border-[#E5C158]/40 whitespace-nowrap">
-                SRMU B5
+                SRMU B5-408
               </span>
             </div>
             <p className="text-[10px] sm:text-[11px] text-amber-200/80 font-medium whitespace-nowrap">
@@ -203,12 +203,12 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenS
 
         {/* Action Controls */}
         <div className="flex items-center gap-2 shrink-0">
-          {/* Admin Desk link */}
+          {/* Admin Desk link (Desktop/Laptop only; on mobile it is inside the 3-line menu) */}
           <a
             href="/admin/login.html"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#2E0B16] hover:bg-[#3D0A17] text-amber-200 border border-[#D4AF37]/30 transition-colors whitespace-nowrap"
+            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#2E0B16] hover:bg-[#3D0A17] text-amber-200 border border-[#D4AF37]/30 transition-colors whitespace-nowrap"
             title="Organizer Admin Desk"
           >
             <ShieldCheck className="w-3.5 h-3.5 text-[#E5C158] shrink-0" />

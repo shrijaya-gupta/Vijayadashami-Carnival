@@ -1000,7 +1000,7 @@ async function initPaymentQrConfig() {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const upi_id = upiIdInput ? upiIdInput.value.trim() : 'srmu.carnival@upi';
-    const upi_name = upiNameInput ? upiNameInput.value.trim() : 'SRMU B5 Carnival Desk';
+    const upi_name = upiNameInput ? upiNameInput.value.trim() : 'SRMU B5-408 Carnival Desk';
     const qr_image_url = qrUrlInput ? qrUrlInput.value.trim() : '';
 
     try {
@@ -1202,7 +1202,7 @@ window.openRegistrationModal = async function(registrationId) {
       } else if (isFailed) {
         payWorkflowDesc.innerHTML = `<span style="color: var(--red-light);">Payment verification was marked as FAILED/INVALID. Can be reviewed or reset.</span>`;
       } else {
-        payWorkflowDesc.textContent = 'Awaiting online transaction reference or cash fee payment at Carnival Helpdesk B5.';
+        payWorkflowDesc.textContent = 'Awaiting online transaction reference or cash fee payment at Carnival Helpdesk B5-408.';
       }
     }
 

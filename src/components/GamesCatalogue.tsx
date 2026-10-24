@@ -251,7 +251,7 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
                 {/* Highlights / Safety Badge */}
                 <div className="mt-3.5 flex items-center gap-2 text-[11px] text-amber-200/80">
                   <Sparkles className="w-3 h-3 text-amber-400 shrink-0" />
-                  <span className="truncate">SRMU Campus B5 Grounds • Official Rulebook</span>
+                  <span className="truncate">SRMU Campus B5-408 • Official Rulebook</span>
                 </div>
 
               </div>

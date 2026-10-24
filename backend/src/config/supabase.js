@@ -46,7 +46,7 @@ const memoryStore = {
   eventConfig: {
     id: 'payment_config',
     upi_id: 'srmu.carnival@upi',
-    upi_name: 'SRMU B5 Carnival Desk',
+    upi_name: 'SRMU B5-408 Carnival Desk',
     qr_image_url: '',
     is_qr_active: false,
     announcement: 'Registrations are open! ₹5 entry fee per game.'

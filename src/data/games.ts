@@ -213,7 +213,7 @@ export const GAMES_DATA: Game[] = [
 export const EVENT_DETAILS = {
   name: "Vijayadashami Carnival",
   institution: "Shri Ramswaroop Memorial University (SRMU)",
-  venue: "SRMU Campus, B5 Building Grounds",
+  venue: "SRMU Campus, B5-408",
   eventDate: "Thursday, 29 October 2026",
   eventTime: "11:00 AM",
   deadlineDate: "Monday, 26 October 2026",

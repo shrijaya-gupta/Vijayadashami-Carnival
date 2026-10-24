@@ -1,6 +1,6 @@
 # Vijayadashami Carnival — Assets Directory
 
-This directory stores visual assets and icons for the **Vijayadashami Carnival** website at SRMU Campus, B5.
+This directory stores visual assets and icons for the **Vijayadashami Carnival** website at SRMU Campus, B5-408.
 
 ## Directory Structure
 - `assets/`
@@ -18,6 +18,6 @@ This directory stores visual assets and icons for the **Vijayadashami Carnival**
 
 ## Upcoming Assets (Phase 3: Registration & Student Flow)
 - Official SRMU logo vector asset
-- High-resolution campus map marker for Building B5
+- High-resolution campus map marker for Building B5-408
 - Game rule infographics & downloadable reference cards
 - Department & sponsor banners

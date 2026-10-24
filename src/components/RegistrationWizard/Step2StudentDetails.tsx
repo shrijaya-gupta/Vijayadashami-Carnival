@@ -178,7 +178,7 @@ export const Step2StudentDetails: React.FC = () => {
           <strong className="block text-white font-semibold mb-0.5">
             Receive Event Schedule & Heat Alerts via WhatsApp
           </strong>
-          Allow the SRMU B5 carnival coordination committee to send official reminders, lane timings, and certificate updates to this mobile number.
+          Allow the SRMU B5-408 carnival coordination committee to send official reminders, lane timings, and certificate updates to this mobile number.
         </label>
       </div>
 

@@ -51,7 +51,7 @@ const certificateSchema = new mongoose.Schema({
   eventVenue: {
     type: String,
     required: true,
-    default: 'SRMU Campus, B5',
+    default: 'SRMU Campus, B5-408',
     trim: true
   },
   gamesParticipated: {

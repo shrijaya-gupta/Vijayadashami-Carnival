@@ -102,7 +102,7 @@ CREATE INDEX IF NOT EXISTS idx_certificates_token ON public.certificates (verifi
 CREATE TABLE IF NOT EXISTS public.event_config (
     id TEXT PRIMARY KEY,
     upi_id TEXT DEFAULT 'srmu.carnival@upi',
-    upi_name TEXT DEFAULT 'SRMU B5 Carnival Desk',
+    upi_name TEXT DEFAULT 'SRMU B5-408 Carnival Desk',
     qr_image_url TEXT DEFAULT '',
     is_qr_active BOOLEAN DEFAULT false,
     announcement TEXT DEFAULT '',
@@ -114,7 +114,7 @@ INSERT INTO public.event_config (id, upi_id, upi_name, qr_image_url, is_qr_activ
 VALUES (
     'payment_config',
     'srmu.carnival@upi',
-    'SRMU B5 Carnival Desk',
+    'SRMU B5-408 Carnival Desk',
     '',
     false,
     'Official registrations active. ₹5 per game.'

@@ -49,11 +49,11 @@ export const Step6Confirmation: React.FC = () => {
 
   const handleShareWhatsApp = () => {
     const text = encodeURIComponent(
-      `🎉 I have registered for the Vijayadashami Carnival at SRMU B5!\n\n` +
+      `🎉 I have registered for the Vijayadashami Carnival at SRMU B5-408!\n\n` +
       `Registration ID: ${regId}\n` +
       `Participant: ${submissionResult.studentName}\n` +
       `Date: Thursday, 29 October 2026 • 11:00 AM\n` +
-      `Venue: SRMU Campus, B5 Building Grounds\n\n` +
+      `Venue: SRMU Campus, B5-408\n\n` +
       `Join the carnival!`
     );
     window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
@@ -143,7 +143,7 @@ export const Step6Confirmation: React.FC = () => {
           </div>
           <div>
             <span className="text-stone-400 block">Venue & Time</span>
-            <span className="font-bold text-white">B5 Grounds • 11:00 AM</span>
+            <span className="font-bold text-white">B5-408 • 11:00 AM</span>
           </div>
         </div>
       </div>

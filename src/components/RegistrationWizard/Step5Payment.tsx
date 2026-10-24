@@ -67,7 +67,7 @@ export const Step5Payment: React.FC = () => {
           Carnival Helpdesk & Payment Policy Notice
         </div>
         <p className="leading-relaxed text-stone-300">
-          The event uses a manual audit verification workflow at the Building B5 Helpdesk. You may complete your UPI payment online and enter the 12-digit UTR reference below, or register now and pay cash at the B5 registration counter on carnival day.
+          The event uses a manual audit verification workflow at the Building B5-408 Helpdesk. You may complete your UPI payment online and enter the 12-digit UTR reference below, or register now and pay cash at the B5-408 registration counter on carnival day.
         </p>
       </div>
 
@@ -95,7 +95,7 @@ export const Step5Payment: React.FC = () => {
               <span className="text-xs font-bold text-amber-200">QR Code Space</span>
               <span className="text-[10px] text-stone-400 mt-1 leading-tight">Official Carnival QR will be uploaded by Desk Admin</span>
               <span className="text-[9px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 font-semibold mt-2 border border-amber-500/30">
-                Pay via UPI ID below or Cash at B5
+                Pay via UPI ID below or Cash at B5-408
               </span>
             </div>
           )}
@@ -155,7 +155,7 @@ export const Step5Payment: React.FC = () => {
               className="w-full px-4 py-3 rounded-xl border border-[#D4AF37]/35 bg-black/50 text-white placeholder-stone-500 text-sm font-mono focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] focus:outline-hidden"
             />
             <p className="text-[11px] text-stone-400">
-              Leave blank if you will pay cash at the SRMU B5 carnival helpdesk.
+              Leave blank if you will pay cash at the SRMU B5-408 carnival helpdesk.
             </p>
           </div>
 

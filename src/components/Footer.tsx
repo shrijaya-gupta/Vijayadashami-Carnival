@@ -68,13 +68,13 @@ export const Footer: React.FC = () => {
                   VIJAYADASHAMI CARNIVAL 2026
                 </span>
                 <span className="text-xs text-amber-300 font-semibold">
-                  Shri Ramswaroop Memorial University (SRMU B5)
+                  Shri Ramswaroop Memorial University (SRMU B5-408)
                 </span>
               </div>
             </div>
 
             <p className="text-xs sm:text-sm text-stone-300 leading-relaxed max-w-md">
-              A university festival honoring valor, unity, and excellence. Featuring 6 thrilling athletic challenges, agility arenas, and cooperative puzzles at Building B5.
+              A university festival honoring valor, unity, and excellence. Featuring 6 thrilling athletic challenges, agility arenas, and cooperative puzzles at B5-408.
             </p>
 
             <div className="space-y-1.5 text-xs text-amber-200/90 pt-1">
@@ -84,7 +84,7 @@ export const Footer: React.FC = () => {
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-amber-400" />
-                <span>SRMU Campus, Building B5 Grounds</span>
+                <span>SRMU Campus, B5-408</span>
               </div>
             </div>
           </div>
@@ -146,7 +146,7 @@ export const Footer: React.FC = () => {
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-400">
           <p>© 2026 Shri Ramswaroop Memorial University. All rights reserved.</p>
           <div className="flex items-center gap-1 text-stone-400">
-            <span>Built with festive spirit for SRMU B5 Carnival</span>
+            <span>Built with festive spirit for SRMU B5-408 Carnival</span>
           </div>
         </div>
 

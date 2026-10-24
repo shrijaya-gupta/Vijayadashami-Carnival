@@ -1,6 +1,6 @@
 # Vijayadashami Carnival — Backend API
  
-Node.js, Express, and MongoDB backend for the Vijayadashami Carnival event registration system at SRMU Campus, B5.
+Node.js, Express, and MongoDB backend for the Vijayadashami Carnival event registration system at SRMU Campus, B5-408.
 
 ## Setup & Running
 

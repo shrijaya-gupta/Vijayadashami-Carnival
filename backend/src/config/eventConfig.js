@@ -13,7 +13,7 @@
 const EVENT_CONFIG = {
   eventName: 'Vijayadashami Carnival',
   institution: 'SRMU',
-  venue: 'SRMU Campus, B5',
+  venue: 'SRMU Campus, B5-408',
   date: 'Thursday, 29 October 2026',
   time: '11:00 AM',
   reportingTime: '10:45 AM',

@@ -115,7 +115,7 @@ async function generateCertificatePdf(cert, verifyUrl) {
       doc.font('Helvetica-Bold')
          .fontSize(10)
          .fillColor('#6366F1')
-         .text('CAMPUS B5 • ANNUAL FESTIVITY', 0, 70, {
+         .text('CAMPUS B5-408 • ANNUAL FESTIVITY', 0, 70, {
            align: 'center',
            characterSpacing: 1.5
          });
@@ -196,7 +196,7 @@ async function generateCertificatePdf(cert, verifyUrl) {
          .fontSize(11)
          .fillColor('#4B5563')
          .text(
-           `held on ${cert.eventDate || 'Thursday, 29 October 2026'} at ${cert.eventVenue || 'SRMU Campus, B5'}.`,
+           `held on ${cert.eventDate || 'Thursday, 29 October 2026'} at ${cert.eventVenue || 'SRMU Campus, B5-408'}.`,
            80, 258,
            { align: 'center', width: pageWidth - 160 }
          );
@@ -394,7 +394,7 @@ async function issueCertificateForRegistration(registrationId, adminUsername) {
         participantName,
         eventName: 'Vijayadashami Carnival',
         eventDate: 'Thursday, 29 October 2026',
-        eventVenue: 'SRMU Campus, B5',
+        eventVenue: 'SRMU Campus, B5-408',
         gamesParticipated,
         certificateType: 'participation',
         status: 'valid',
