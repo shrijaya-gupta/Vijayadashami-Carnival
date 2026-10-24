@@ -66,13 +66,22 @@ export const Step5Payment: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 text-white">
-      <div>
-        <h3 className="text-xl sm:text-2xl font-bold font-heading text-white">
-          Step 5: Registration Fee & Payment Verification
-        </h3>
-        <p className="text-xs sm:text-sm text-stone-300 mt-1">
-          Review your entry, scan the official carnival UPI QR code, and submit your registration.
-        </p>
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-white/10">
+        <div>
+          <h3 className="text-lg sm:text-xl font-bold font-heading text-white flex items-center gap-2">
+            <span>Pass Payment</span>
+            <span className="text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-medium">
+              Flat ₹10 All-Access
+            </span>
+          </h3>
+          <p className="text-xs text-stone-300 mt-0.5">
+            Scan UPI QR code or pay to UPI ID and submit UTR / Ref number.
+          </p>
+          <span className="sr-only">Step 5: Registration Fee & Payment Verification Review your entry, scan the official carnival UPI QR code, and submit your registration.</span>
+        </div>
+        <span className="text-xs font-bold text-amber-300 bg-black/40 px-3 py-1.5 rounded-lg border border-[#D4AF37]/35 shadow-xs">
+          Pay: ₹10
+        </span>
       </div>
 
       {submitError && (

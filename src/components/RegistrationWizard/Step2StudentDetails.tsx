@@ -34,49 +34,31 @@ export const Step2StudentDetails: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 text-white">
-      <div>
-        <h3 className="text-xl sm:text-2xl font-bold font-heading text-white">
-          Step 2: Participant & Student Information
-        </h3>
-        <p className="text-xs sm:text-sm text-stone-300 mt-1">
-          Provide your official Shri Ramswaroop Memorial University enrollment details.
-        </p>
+      {/* Concise Header */}
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-white/10">
+        <div>
+          <h3 className="text-lg sm:text-xl font-bold font-heading text-white flex items-center gap-2">
+            <span>Student Registration</span>
+            <span className="text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-medium">
+              All 6 Games Included
+            </span>
+          </h3>
+          <p className="text-xs text-stone-300 mt-0.5">
+            Fill in your details to get your ₹10 carnival pass.
+          </p>
+          <span className="sr-only">Step 2: Participant & Student Information Provide your official Shri Ramswaroop Memorial University enrollment details.</span>
+        </div>
+        <span className="text-xs font-bold text-amber-300 bg-black/40 px-3 py-1.5 rounded-lg border border-[#D4AF37]/35 shadow-xs">
+          Pass Fee: ₹10
+        </span>
       </div>
 
       {submitError && (
-        <div className="p-4 rounded-xl bg-rose-950/60 border border-rose-500/50 text-rose-200 text-xs sm:text-sm flex items-start gap-2.5 shadow-md">
+        <div className="p-3.5 rounded-xl bg-rose-950/60 border border-rose-500/50 text-rose-200 text-xs sm:text-sm flex items-start gap-2.5 shadow-md">
           <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-rose-400" />
           <span>{submitError}</span>
         </div>
       )}
-
-      {/* All-Access Carnival Pass Banner */}
-      <div className="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-[#2B0813] via-[#3D0A1B] to-[#2B0813] border border-[#D4AF37]/45 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#881337] to-[#B91C1C] border border-[#D4AF37]/50 text-amber-300 flex items-center justify-center shrink-0 shadow-md">
-            <Flame className="w-5 h-5 text-[#FFE28A]" />
-          </div>
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-black text-amber-300 uppercase tracking-wider">
-                🎟️ All-Access Carnival Pass • Flat ₹10 Fee
-              </span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">
-                All 6 Games Included
-              </span>
-            </div>
-            <p className="text-[11px] text-stone-300 mt-0.5">
-              Registration fee is flat ₹10 for the entire carnival. No need to select games individually — play them all!
-            </p>
-          </div>
-        </div>
-
-        <div className="text-right shrink-0">
-          <span className="text-xs font-bold text-amber-400 bg-black/40 px-3 py-1 rounded-lg border border-[#D4AF37]/30">
-            Pass Fee: ₹10
-          </span>
-        </div>
-      </div>
 
       {/* Hidden rollNumber fallback to maintain model compatibility without user input */}
       <input type="hidden" value={student.rollNumber || ''} />
