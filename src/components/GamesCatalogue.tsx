@@ -319,6 +319,34 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
         })}
       </div>
 
+      {/* Inline Selection Banner (Natural in-page card, zero sticky obstruction) */}
+      {selectedGameIds.length > 0 && (
+        <div className="mt-8 p-4 rounded-2xl bg-gradient-to-r from-[#2B0813] via-[#3F0C1B] to-[#2B0813] border border-[#D4AF37]/50 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="flex items-center gap-3">
+            <span className="w-9 h-9 rounded-full bg-gradient-to-r from-[#881337] to-[#B91C1C] text-[#FFE28A] font-black text-sm flex items-center justify-center border border-[#D4AF37]/60 shadow-md">
+              {selectedGameIds.length}
+            </span>
+            <div>
+              <h4 className="text-sm font-bold text-white">
+                {selectedGameIds.length === 1 ? '1 Game Selected' : `${selectedGameIds.length} Games Selected`}
+              </h4>
+              <p className="text-xs text-amber-200/80">
+                Total Registration Fee: <strong className="text-amber-300 font-extrabold text-sm">₹{selectedGameIds.length * 5}</strong> (₹5 per game)
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={onProceedToRegister}
+            className="w-full sm:w-auto px-6 py-2.5 rounded-full font-bold text-xs sm:text-sm bg-gradient-to-r from-[#881337] via-[#B91C1C] to-[#881337] hover:from-[#9F1239] hover:to-[#B91C1C] text-white flex items-center justify-center gap-2 shadow-lg shadow-rose-950/70 hover:scale-[1.02] active:scale-[0.98] transition-all border border-[#E5C158]/70 cursor-pointer whitespace-nowrap"
+          >
+            <Sparkles className="w-4 h-4 text-amber-300" />
+            <span>Proceed to Registration</span>
+            <ArrowRight className="w-4 h-4 text-amber-300" />
+          </button>
+        </div>
+      )}
+
       {/* Value Props & Safety Assurance Banner */}
       <div className="mt-12 sm:mt-16 p-4 sm:p-6 rounded-2xl bg-gradient-to-r from-[#24060F]/90 via-[#350A16]/90 to-[#18030B]/90 border border-[#D4AF37]/40 shadow-xl">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center sm:text-left">
