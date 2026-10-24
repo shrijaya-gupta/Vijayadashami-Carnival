@@ -70,6 +70,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initGamewiseRoster();
   initExportSection();
   initModalActions();
+  initScanner();
 
   // Real-Time live auto-refresh every 10s for on-ground festival desk
   setInterval(() => {
@@ -191,6 +192,15 @@ function initNavigation() {
     });
   });
 
+  // Topbar & Quick Action Hub shortcuts
+  const quickScanBtn = document.getElementById('btnQuickScanPass');
+  quickScanBtn?.addEventListener('click', () => switchView('scanner'));
+
+  document.getElementById('btnQuickHubScan')?.addEventListener('click', () => switchView('scanner'));
+  document.getElementById('btnQuickHubPayments')?.addEventListener('click', () => switchView('payments'));
+  document.getElementById('btnQuickHubRegistrations')?.addEventListener('click', () => switchView('registrations'));
+  document.getElementById('btnQuickHubGamewise')?.addEventListener('click', () => switchView('gamewise'));
+
   refreshBtn?.addEventListener('click', () => {
     refreshCurrentView();
     showToast('Dashboard data refreshed.');
@@ -198,6 +208,13 @@ function initNavigation() {
 }
 
 function switchView(viewName) {
+  // If leaving scanner view, stop camera stream to save resources
+  if (currentView === 'scanner' && viewName !== 'scanner') {
+    if (typeof stopCameraScanner === 'function') {
+      stopCameraScanner();
+    }
+  }
+
   currentView = viewName;
 
   // Update sidebar nav buttons
@@ -214,6 +231,7 @@ function switchView(viewName) {
   const viewMap = {
     overview: 'viewOverview',
     registrations: 'viewRegistrations',
+    scanner: 'viewScanner',
     gamewise: 'viewGamewise',
     payments: 'viewPayments',
     certificates: 'viewCertificates',
@@ -223,6 +241,7 @@ function switchView(viewName) {
   const titleMap = {
     overview: 'Dashboard Overview',
     registrations: 'All Registrations Management',
+    scanner: 'QR Pass Scanner & Student Verification',
     gamewise: 'Game-wise Participants Roster',
     payments: 'Payment Management & Desk Verification',
     certificates: 'Participation Certificates & Attendance Verification',
@@ -254,6 +273,9 @@ function switchView(viewName) {
     loadCertificatesData();
   } else if (viewName === 'gamewise') {
     loadGamewiseData(activeGameId);
+  } else if (viewName === 'scanner') {
+    const manualInput = document.getElementById('manualPassIdInput');
+    manualInput?.focus();
   }
 }
 
@@ -2226,3 +2248,424 @@ function escapeHtml(text) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
+
+// ============================================================================
+// 10. QR PASS SCANNER & CAMERA CONTROLLER
+// ============================================================================
+
+let html5QrScannerInstance = null;
+let isCameraActive = false;
+let currentCameraId = null;
+let lastScannedPassId = null;
+let scanCooldownTimer = null;
+
+function playScanSuccessTone() {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (AudioCtx) {
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      gain.gain.setValueAtTime(0.18, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.12);
+    }
+  } catch (_) {}
+  try {
+    if (navigator.vibrate) navigator.vibrate(80);
+  } catch (_) {}
+}
+
+function extractRegIdFromText(text) {
+  if (!text) return '';
+  const trimmed = text.trim();
+  const urlMatch = trimmed.match(/[?&](?:reg|registrationId|regId)=([A-Za-z0-9\-_]+)/i);
+  if (urlMatch && urlMatch[1]) {
+    return urlMatch[1].toUpperCase();
+  }
+  const codeMatch = trimmed.match(/(?:VJC|SRMU)[A-Za-z0-9\-_]+/i);
+  if (codeMatch && codeMatch[0]) {
+    return codeMatch[0].toUpperCase();
+  }
+  return trimmed.toUpperCase();
+}
+
+async function initScanner() {
+  const toggleBtn = document.getElementById('btnToggleCamera');
+  const toggleText = document.getElementById('btnCameraToggleText');
+  const liveIndicator = document.getElementById('cameraLiveIndicator');
+  const deviceSelect = document.getElementById('cameraDeviceSelect');
+  const manualInput = document.getElementById('manualPassIdInput');
+  const verifyManualBtn = document.getElementById('btnVerifyManualPass');
+
+  if (typeof Html5Qrcode !== 'undefined') {
+    try {
+      const devices = await Html5Qrcode.getCameras();
+      if (devices && devices.length && deviceSelect) {
+        deviceSelect.innerHTML = '';
+        devices.forEach((dev, idx) => {
+          const opt = document.createElement('option');
+          opt.value = dev.id;
+          opt.textContent = dev.label || `Camera ${idx + 1}`;
+          deviceSelect.appendChild(opt);
+        });
+        const backCam = devices.find(d => /back|rear|environment/i.test(d.label));
+        if (backCam) {
+          deviceSelect.value = backCam.id;
+          currentCameraId = backCam.id;
+        } else {
+          currentCameraId = devices[0].id;
+        }
+      }
+    } catch (err) {
+      console.warn('Camera enumeration note:', err);
+    }
+  }
+
+  deviceSelect?.addEventListener('change', async (e) => {
+    currentCameraId = e.target.value;
+    if (isCameraActive) {
+      await stopCameraScanner();
+      await startCameraScanner();
+    }
+  });
+
+  toggleBtn?.addEventListener('click', async () => {
+    if (isCameraActive) {
+      await stopCameraScanner();
+    } else {
+      await startCameraScanner();
+    }
+  });
+
+  verifyManualBtn?.addEventListener('click', () => {
+    const rawVal = manualInput?.value || '';
+    const cleanId = extractRegIdFromText(rawVal);
+    if (!cleanId) {
+      showToast('Please enter a Registration ID.');
+      return;
+    }
+    fetchAndDisplayPass(cleanId);
+  });
+
+  manualInput?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      verifyManualBtn?.click();
+    }
+  });
+}
+
+async function startCameraScanner() {
+  const toggleBtn = document.getElementById('btnToggleCamera');
+  const toggleText = document.getElementById('btnCameraToggleText');
+  const liveIndicator = document.getElementById('cameraLiveIndicator');
+  const statusText = document.getElementById('scannerStatusText');
+  const deviceSelect = document.getElementById('cameraDeviceSelect');
+
+  if (typeof Html5Qrcode === 'undefined') {
+    showToast('Camera scanner library loading. Please try again.');
+    return;
+  }
+
+  try {
+    if (!html5QrScannerInstance) {
+      html5QrScannerInstance = new Html5Qrcode('qrReaderView');
+    }
+
+    const cameraId = deviceSelect?.value || currentCameraId || { facingMode: 'environment' };
+
+    await html5QrScannerInstance.start(
+      cameraId,
+      {
+        fps: 15,
+        qrbox: { width: 220, height: 220 },
+        aspectRatio: 1.333333
+      },
+      (decodedText) => {
+        handleQrScanSuccess(decodedText);
+      },
+      () => {}
+    );
+
+    isCameraActive = true;
+    toggleBtn?.classList.add('active');
+    if (toggleText) toggleText.textContent = 'Stop Camera';
+    liveIndicator?.classList.add('active');
+    if (statusText) statusText.textContent = 'Camera active — point at student pass';
+  } catch (err) {
+    console.error('Failed to start camera scanner:', err);
+    showToast('Camera access denied or camera not found. Enter pass ID manually.');
+    if (statusText) statusText.textContent = 'Camera unavailable — enter ID manually below';
+  }
+}
+
+async function stopCameraScanner() {
+  const toggleBtn = document.getElementById('btnToggleCamera');
+  const toggleText = document.getElementById('btnCameraToggleText');
+  const liveIndicator = document.getElementById('cameraLiveIndicator');
+  const statusText = document.getElementById('scannerStatusText');
+
+  if (html5QrScannerInstance && isCameraActive) {
+    try {
+      await html5QrScannerInstance.stop();
+    } catch (err) {
+      console.warn('Error stopping scanner:', err);
+    }
+  }
+
+  isCameraActive = false;
+  toggleBtn?.classList.remove('active');
+  if (toggleText) toggleText.textContent = 'Start Camera';
+  liveIndicator?.classList.remove('active');
+  if (statusText) statusText.textContent = 'Camera paused';
+}
+
+function handleQrScanSuccess(decodedText) {
+  const regId = extractRegIdFromText(decodedText);
+  if (!regId) return;
+
+  if (regId === lastScannedPassId && scanCooldownTimer) {
+    return;
+  }
+
+  lastScannedPassId = regId;
+  clearTimeout(scanCooldownTimer);
+  scanCooldownTimer = setTimeout(() => {
+    lastScannedPassId = null;
+  }, 3000);
+
+  playScanSuccessTone();
+  showToast(`Pass Scanned: ${regId}`);
+  fetchAndDisplayPass(regId);
+}
+
+async function fetchAndDisplayPass(regId) {
+  const emptyState = document.getElementById('scannerEmptyState');
+  const activeResult = document.getElementById('scannerActiveResult');
+
+  if (!activeResult) return;
+
+  if (emptyState) emptyState.style.display = 'none';
+  activeResult.style.display = 'block';
+  activeResult.innerHTML = `
+    <div style="text-align: center; padding: 40px 20px;">
+      <div class="table-loading-spinner" style="margin: 0 auto 16px;"></div>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Verifying Pass ID <strong>${escapeHtml(regId)}</strong> with database...</p>
+    </div>
+  `;
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/admin/registrations/${encodeURIComponent(regId)}`, {
+      method: 'GET',
+      credentials: 'include'
+    });
+
+    const body = await res.json();
+
+    if (!res.ok || !body.success || !body.data) {
+      activeResult.innerHTML = `
+        <div class="verified-pass-card">
+          <div class="pass-status-banner status-unpaid">
+            <span>❌ INVALID PASS / NOT FOUND</span>
+            <span>ID: ${escapeHtml(regId)}</span>
+          </div>
+          <div style="padding: 24px; text-align: center; background: var(--bg-darker); border-radius: var(--radius-md); border: 1px solid var(--color-border);">
+            <p style="color: #F87171; font-weight: 600; margin-bottom: 8px;">No registered student found with ID: ${escapeHtml(regId)}</p>
+            <p style="color: var(--text-dim); font-size: 0.85rem;">Check if the student completed registration or re-scan the official pass QR code.</p>
+            <button type="button" class="btn-verify-manual" style="margin-top: 14px;" onclick="window.clearScannerResult()">Scan Another Pass</button>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    const reg = body.data;
+    const isPaid = reg.paymentStatus === 'paid';
+    const isPendingVer = reg.paymentStatus === 'payment_verification_pending';
+    const fee = reg.registrationFee || (Array.isArray(reg.selectedGames) ? reg.selectedGames.length * 5 : 5);
+    const student = reg.student || {};
+
+    let bannerClass = 'status-unpaid';
+    let bannerText = `PAYMENT PENDING &bull; ₹${fee}`;
+    if (isPaid) {
+      bannerClass = 'status-valid';
+      bannerText = '✓ PASS VALID &amp; PAYMENT VERIFIED';
+    } else if (isPendingVer) {
+      bannerClass = 'status-pending';
+      bannerText = `⚠ UTR VERIFICATION PENDING &bull; ₹${fee}`;
+    }
+
+    const gamesHtml = (reg.selectedGames || []).map(g => {
+      const type = g.participationType === 'team' ? `Team: ${escapeHtml(g.teamName || 'Squad')}` : 'Solo';
+      return `
+        <div class="pass-game-item">
+          <span class="pass-game-name">${escapeHtml(g.gameName || g.gameId)}</span>
+          <span class="pass-game-type">${type}</span>
+        </div>
+      `;
+    }).join('');
+
+    activeResult.innerHTML = `
+      <div class="verified-pass-card">
+        <div class="pass-status-banner ${bannerClass}">
+          <span>${bannerText}</span>
+          <span style="font-family: var(--font-mono); font-size: 0.85rem;">${escapeHtml(reg.registrationId)}</span>
+        </div>
+
+        <div class="pass-student-info">
+          <div class="pass-student-header">
+            <div>
+              <div class="pass-student-name">${escapeHtml(student.fullName || 'Student')}</div>
+              <div style="font-size: 0.8rem; color: var(--text-dim); margin-top: 2px;">Roll: <strong style="color: var(--text-main);">${escapeHtml(student.rollNumber || 'N/A')}</strong></div>
+            </div>
+            <span class="pass-reg-id">${escapeHtml(reg.registrationId)}</span>
+          </div>
+
+          <div class="pass-meta-grid">
+            <div class="pass-meta-item">
+              <span class="pass-meta-label">Course &amp; Branch</span>
+              <span class="pass-meta-value">${escapeHtml(student.course || '')} ${escapeHtml(student.branch || '')}</span>
+            </div>
+            <div class="pass-meta-item">
+              <span class="pass-meta-label">Academic Year</span>
+              <span class="pass-meta-value">Year ${escapeHtml(student.academicYear || '1')}</span>
+            </div>
+            <div class="pass-meta-item">
+              <span class="pass-meta-label">Contact Mobile</span>
+              <span class="pass-meta-value" style="color: var(--emerald-light);">${escapeHtml(student.mobileNumber || student.maskedMobile || 'N/A')}</span>
+            </div>
+            <div class="pass-meta-item">
+              <span class="pass-meta-label">Payment UTR / Ref</span>
+              <span class="pass-meta-value" style="font-family: var(--font-mono); font-size: 0.78rem;">${escapeHtml(reg.paymentReference || 'None')}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pass-games-section">
+          <div class="pass-section-heading">Registered Events (${(reg.selectedGames || []).length}) &bull; Fee ₹${fee}</div>
+          <div class="pass-games-list">
+            ${gamesHtml || '<p style=\"color: var(--text-dim); font-size: 0.8rem;\">No games listed</p>'}
+          </div>
+        </div>
+
+        <div class="pass-actions-bar">
+          <button type="button" class="btn-admit-pass" id="btnAdmitStudent" onclick="window.admitScannedStudent('${escapeHtml(reg.registrationId)}')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span>Admit &amp; Check In</span>
+          </button>
+
+          ${!isPaid ? `
+            <button type="button" class="btn-approve-payment-scanner" onclick="window.approveScannedPayment('${escapeHtml(reg.registrationId)}')">
+              💳 Mark Paid (₹${fee})
+            </button>
+          ` : ''}
+
+          <button type="button" class="btn-details-scanner" onclick="window.openRegistrationModal('${escapeHtml(reg.registrationId)}')">
+            View Profile
+          </button>
+        </div>
+      </div>
+    `;
+  } catch (err) {
+    console.error('Error fetching registration for scanner:', err);
+    activeResult.innerHTML = `
+      <div style="padding: 24px; text-align: center; color: #F87171;">
+        <p>Network error connecting to verification service.</p>
+        <button type="button" class="btn-verify-manual" style="margin-top: 10px;" onclick="window.clearScannerResult()">Try Again</button>
+      </div>
+    `;
+  }
+}
+
+window.clearScannerResult = function() {
+  const emptyState = document.getElementById('scannerEmptyState');
+  const activeResult = document.getElementById('scannerActiveResult');
+  if (emptyState) emptyState.style.display = 'block';
+  if (activeResult) {
+    activeResult.style.display = 'none';
+    activeResult.innerHTML = '';
+  }
+  const manualInput = document.getElementById('manualPassIdInput');
+  if (manualInput) {
+    manualInput.value = '';
+    manualInput.focus();
+  }
+};
+
+window.admitScannedStudent = async function(regId) {
+  const btn = document.getElementById('btnAdmitStudent');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="table-loading-spinner" style="width: 14px; height: 14px; display: inline-block;"></span> Admitting...';
+  }
+  try {
+    const csrfToken = getCsrfToken();
+    const res = await fetch(`${API_BASE_URL}/api/admin/certificates/verify-participation/${encodeURIComponent(regId)}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken || ''
+      },
+      credentials: 'include'
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      showToast(`Student ${regId} Admitted & Checked In!`);
+      if (btn) {
+        btn.style.background = '#059669';
+        btn.innerHTML = '✓ Admitted &amp; Checked In';
+      }
+    } else {
+      showToast(data.error || 'Failed to record admission.');
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = 'Admit &amp; Check In';
+      }
+    }
+  } catch (err) {
+    console.error('Admit error:', err);
+    showToast('Network error marking student admission.');
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = 'Admit &amp; Check In';
+    }
+  }
+};
+
+window.approveScannedPayment = async function(regId) {
+  try {
+    const csrfToken = getCsrfToken();
+    const res = await fetch(`${API_BASE_URL}/api/admin/registrations/${encodeURIComponent(regId)}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken || ''
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        paymentStatus: 'paid',
+        status: 'confirmed',
+        notes: 'Verified via Gate QR Pass Scanner'
+      })
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      showToast(`Payment Approved for ${regId}`);
+      fetchAndDisplayPass(regId);
+      refreshCurrentView();
+    } else {
+      showToast(data.error || 'Failed to update payment status.');
+    }
+  } catch (err) {
+    console.error('Approve payment error:', err);
+    showToast('Network error approving payment.');
+  }
+};
