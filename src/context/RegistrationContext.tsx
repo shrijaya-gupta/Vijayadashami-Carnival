@@ -53,8 +53,8 @@ const initialStudent: StudentDetails = {
 const RegistrationContext = createContext<RegistrationContextType | undefined>(undefined);
 
 export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [activeStep, setActiveStep] = useState<number>(1);
-  const [selectedGameIds, setSelectedGameIds] = useState<string[]>([]);
+  const [activeStep, setActiveStep] = useState<number>(2);
+  const [selectedGameIds, setSelectedGameIds] = useState<string[]>(() => GAMES_DATA.map(g => g.id));
   
   // Initialize game configs
   const [gameConfigs, setGameConfigs] = useState<Record<string, SelectedGameConfig>>(() => {
@@ -76,8 +76,8 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submissionResult, setSubmissionResult] = useState<RegistrationSubmissionResult | null>(null);
 
-  // Authoritative Fee calculation: Strictly count * 5
-  const totalFee = selectedGameIds.length * 5;
+  // Authoritative Flat ₹10 Registration Fee (All Games Included; legacy: selectedGameIds.length * 5)
+  const totalFee = 10;
 
   // Precision scroll helper to keep student focused directly on the active form card
   const scrollToWizard = () => {
@@ -244,13 +244,8 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         return false;
       }
 
-      // Check if any selected game has format set to team
-      const hasTeam = selectedGameIds.some(id => gameConfigs[id]?.participationType === 'team');
-      if (hasTeam) {
-        setActiveStep(3); // Team Setup
-      } else {
-        setActiveStep(5); // Direct to Payment! (Review summary eliminated as requested)
-      }
+      // Direct to Payment! (Flat ₹10 All-Access Pass)
+      setActiveStep(5);
       scrollToWizard();
       return true;
     }
@@ -266,7 +261,7 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
           }
         }
       }
-      setActiveStep(5); // Direct to Payment! (Review summary eliminated as requested)
+      setActiveStep(5); // Direct to Payment!
       scrollToWizard();
       return true;
     }
@@ -283,8 +278,7 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const prevStep = () => {
     setSubmitError(null);
     if (activeStep === 5) {
-      const hasTeam = selectedGameIds.some(id => gameConfigs[id]?.participationType === 'team');
-      setActiveStep(hasTeam ? 3 : 2);
+      setActiveStep(2);
       scrollToWizard();
       return;
     }
@@ -310,8 +304,8 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   };
 
   const resetRegistration = () => {
-    setActiveStep(1);
-    setSelectedGameIds([]);
+    setActiveStep(2);
+    setSelectedGameIds(GAMES_DATA.map(g => g.id));
     setStudent(initialStudent);
     setSubmissionResult(null);
     setSubmitError(null);

@@ -17,7 +17,8 @@ export const SelectionBar: React.FC<SelectionBarProps> = ({
 
   if (selectedGameIds.length === 0) return null;
 
-  const totalFee = selectedGameIds.length * 5;
+  const totalFee = 10; // selectedGameIds.length * 5
+  const isAllIncluded = true;
 
   return (
     <aside 
@@ -28,7 +29,7 @@ export const SelectionBar: React.FC<SelectionBarProps> = ({
       {isExpanded && (
         <div className="mb-2 p-3 rounded-2xl bg-[#1A040E]/95 backdrop-blur-xl border border-[#D4AF37]/50 shadow-2xl text-white animate-in fade-in slide-in-from-bottom-2 duration-200">
           <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/10 text-xs font-bold text-amber-200">
-            <span>{selectedGameIds.length === 1 ? '1 Game Selected' : `${selectedGameIds.length} Games Selected`}</span>
+            <span>All-Access Pass (All 6 Games)</span>
             <span className="text-amber-400 font-extrabold">Total: ₹{totalFee}</span>
           </div>
           <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto pr-1">
@@ -62,14 +63,14 @@ export const SelectionBar: React.FC<SelectionBarProps> = ({
         <button
           onClick={() => setIsExpanded(!isExpanded)}
           className="flex items-center gap-2 hover:opacity-90 transition-opacity cursor-pointer text-left"
-          title={isExpanded ? "Hide selected games" : "View selected games"}
+          title={isExpanded ? "Hide games" : "View included games"}
         >
           <span className="w-7 h-7 rounded-full bg-gradient-to-r from-[#9F1239] to-[#BE123C] text-[#FFE28A] font-black text-xs flex items-center justify-center shadow-[0_0_10px_rgba(212,175,55,0.4)] border border-[#D4AF37] shrink-0">
-            {selectedGameIds.length}
+            ₹10
           </span>
           <div className="hidden sm:flex flex-col pr-1">
             <span className="text-[11px] font-bold text-white leading-tight">
-              {selectedGameIds.length === 1 ? '1 Game Selected' : `${selectedGameIds.length} Games Selected`}
+              All-Access Pass (All Games)
             </span>
             <span className="text-[10px] text-amber-300 font-bold leading-tight">
               Total: ₹{totalFee}

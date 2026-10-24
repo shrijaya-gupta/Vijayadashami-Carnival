@@ -206,11 +206,11 @@ export const Hero: React.FC<HeroProps> = ({
               {/* Fee */}
               <div className="royal-glass-card flex items-center gap-2.5 p-3 rounded-2xl text-left">
                 <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#C2410C] via-[#EA580C] to-[#9A3412] border border-amber-300/60 text-white font-black text-sm flex items-center justify-center shrink-0 shadow-[0_0_14px_rgba(234,88,12,0.4)]">
-                  ₹5
+                  ₹10
                 </div>
                 <div className="min-w-0">
-                  <span className="block text-[9px] uppercase tracking-wider text-amber-300/80 font-bold">ENTRY FEE</span>
-                  <span className="font-bold text-amber-200 text-xs xl:text-sm truncate block">Per Selected Game</span>
+                  <span className="block text-[9px] uppercase tracking-wider text-amber-300/80 font-bold">ENTRY PASS</span>
+                  <span className="font-bold text-amber-200 text-xs xl:text-sm truncate block">All Games Included</span>
                 </div>
               </div>
             </div>
@@ -223,7 +223,7 @@ export const Hero: React.FC<HeroProps> = ({
                 className="shine-effect w-full py-4 px-6 rounded-full text-xs xl:text-sm font-bold bg-gradient-to-r from-[#881337] via-[#BE123C] to-[#881337] hover:from-[#9F1239] hover:to-[#BE123C] text-white flex items-center justify-center gap-2.5 border-2 border-[#FFE28A]/80 shadow-[0_12px_35px_rgba(159,18,57,0.65)] hover:scale-[1.02] active:scale-95 transition-all whitespace-nowrap cursor-pointer"
               >
                 <Flame className="w-4 h-4 text-amber-300 animate-pulse shrink-0" />
-                <span className="tracking-wide">Proceed to Registration</span>
+                <span className="tracking-wide">Get ₹10 Carnival Pass</span>
                 <ArrowRight className="w-4 h-4 text-amber-300 shrink-0" />
               </button>
 
@@ -324,11 +324,11 @@ export const Hero: React.FC<HeroProps> = ({
             {/* Fee */}
             <div className="royal-glass-card flex items-center gap-2 p-2.5 rounded-xl text-left">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#C2410C] to-[#EA580C] text-white font-black text-xs flex items-center justify-center shrink-0 shadow-xs">
-                ₹5
+                ₹10
               </div>
               <div className="min-w-0">
-                <span className="block text-[9px] uppercase tracking-wider text-amber-300/80 font-bold">ENTRY FEE</span>
-                <span className="font-bold text-amber-200 text-xs truncate block">Per Selected Game</span>
+                <span className="block text-[9px] uppercase tracking-wider text-amber-300/80 font-bold">ENTRY PASS</span>
+                <span className="font-bold text-amber-200 text-xs truncate block">All Games Included</span>
               </div>
             </div>
           </div>
@@ -341,7 +341,7 @@ export const Hero: React.FC<HeroProps> = ({
               className="shine-effect w-full py-3.5 px-6 rounded-full text-xs sm:text-sm font-bold bg-gradient-to-r from-[#881337] via-[#BE123C] to-[#881337] text-white flex items-center justify-center gap-2 border-2 border-[#FFE28A]/80 shadow-[0_8px_25px_rgba(159,18,57,0.6)] active:scale-95 transition-all"
             >
               <Flame className="w-4 h-4 text-amber-300" />
-              <span>Proceed to Registration</span>
+              <span>Get ₹10 Carnival Pass</span>
               <ArrowRight className="w-4 h-4 text-amber-300" />
             </button>
 

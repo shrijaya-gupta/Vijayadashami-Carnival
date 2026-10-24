@@ -49,42 +49,33 @@ export const Step2StudentDetails: React.FC = () => {
         </div>
       )}
 
-      {/* Selected Games Summary Banner */}
-      {selectedGameIds.length > 0 && (
-        <div className="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-[#2B0813] via-[#3D0A1B] to-[#2B0813] border border-[#D4AF37]/45 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#881337] to-[#B91C1C] border border-[#D4AF37]/50 text-amber-300 flex items-center justify-center shrink-0">
-              <Gamepad2 className="w-4 h-4 text-[#FFE28A]" />
-            </div>
-            <div className="min-w-0">
-              <span className="text-[11px] font-bold text-amber-300 uppercase tracking-wider block">
-                Selected Entries ({selectedGameIds.length} {selectedGameIds.length === 1 ? 'Game' : 'Games'} • ₹{selectedGameIds.length * 5})
-              </span>
-              <div className="flex flex-wrap gap-1.5 mt-1">
-                {selectedGameIds.map(id => {
-                  const g = GAMES_DATA.find(x => x.id === id);
-                  return (
-                    <span key={id} className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-black/50 border border-white/10 text-stone-200">
-                      {g?.name || id}
-                    </span>
-                  );
-                })}
-              </div>
-            </div>
+      {/* All-Access Carnival Pass Banner */}
+      <div className="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-[#2B0813] via-[#3D0A1B] to-[#2B0813] border border-[#D4AF37]/45 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#881337] to-[#B91C1C] border border-[#D4AF37]/50 text-amber-300 flex items-center justify-center shrink-0 shadow-md">
+            <Flame className="w-5 h-5 text-[#FFE28A]" />
           </div>
-
-          <button
-            type="button"
-            onClick={() => {
-              const el = document.getElementById('games');
-              if (el) el.scrollIntoView({ behavior: 'smooth' });
-            }}
-            className="self-start sm:self-auto px-3 py-1.5 rounded-lg text-xs font-bold text-amber-300 bg-black/40 hover:bg-black/60 border border-[#D4AF37]/40 hover:border-[#D4AF37] transition-all whitespace-nowrap cursor-pointer shrink-0"
-          >
-            Change Games
-          </button>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-black text-amber-300 uppercase tracking-wider">
+                🎟️ All-Access Carnival Pass • Flat ₹10 Fee
+              </span>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">
+                All 6 Games Included
+              </span>
+            </div>
+            <p className="text-[11px] text-stone-300 mt-0.5">
+              Registration fee is flat ₹10 for the entire carnival. No need to select games individually — play them all!
+            </p>
+          </div>
         </div>
-      )}
+
+        <div className="text-right shrink-0">
+          <span className="text-xs font-bold text-amber-400 bg-black/40 px-3 py-1 rounded-lg border border-[#D4AF37]/30">
+            Pass Fee: ₹10
+          </span>
+        </div>
+      </div>
 
       {/* Hidden rollNumber fallback to maintain model compatibility without user input */}
       <input type="hidden" value={student.rollNumber || ''} />
@@ -242,11 +233,14 @@ export const Step2StudentDetails: React.FC = () => {
       <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
         <button
           type="button"
-          onClick={prevStep}
+          onClick={() => {
+            const el = document.getElementById('games');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+          }}
           className="w-full sm:w-auto px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold text-stone-300 hover:text-white bg-black/40 hover:bg-black/70 border border-white/10 transition-colors flex items-center justify-center gap-2 cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back to Games</span>
+          <span>View All 6 Activities</span>
         </button>
 
         <div className="flex flex-col sm:flex-row items-center gap-2.5 w-full sm:w-auto">
@@ -254,7 +248,7 @@ export const Step2StudentDetails: React.FC = () => {
             type="submit"
             className="w-full sm:w-auto px-7 py-3 rounded-full font-bold text-sm bg-gradient-to-r from-[#881337] via-[#B91C1C] to-[#881337] hover:from-[#9F1239] hover:to-[#B91C1C] text-white flex items-center justify-center gap-2 shadow-lg shadow-rose-950/60 hover:scale-[1.02] active:scale-[0.98] transition-all border border-[#E5C158]/70 cursor-pointer"
           >
-            <span>{hasTeamGame ? 'Continue to Team Setup' : 'Proceed to Payment & Verification'}</span>
+            <span>Proceed to Payment (₹10 Pass)</span>
             <ArrowRight className="w-4 h-4 text-amber-300" />
           </button>
         </div>

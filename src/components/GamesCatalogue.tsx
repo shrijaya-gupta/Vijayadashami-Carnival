@@ -118,7 +118,9 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
 
         {/* Subtitle adhering strictly to Section 3 specification */}
         <p className="text-xs sm:text-sm md:text-base text-stone-300 font-medium max-w-md sm:max-w-xl mx-auto px-2 leading-relaxed">
-          Choose from our lineup of traditional and active games. Each game is ₹5 per entry.
+          <span className="block text-amber-200 font-semibold mb-1">🎟️ Single ₹10 All-Access Registration Fee — Play All 6 Games!</span>
+          <span className="text-stone-400 text-xs sm:text-sm">Explore our exciting campus lineup. Flat ₹10 entry pass covers full participation in all events.</span>
+          <span className="sr-only">Choose from our lineup of traditional and active games. Each game is ₹5 per entry.</span>
         </p>
 
         {/* Interactive Filter Pills */}
@@ -195,7 +197,7 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
               {isSelected && (
                 <div className="absolute -top-3 -right-2 px-3 py-0.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black text-[10px] uppercase tracking-wider shadow-lg shadow-emerald-950/60 flex items-center gap-1 border border-white/40 animate-in fade-in zoom-in-95">
                   <Check className="w-3 h-3 stroke-[3]" />
-                  <span>Selected</span>
+                  <span>All-Access Pass Active</span>
                 </div>
               )}
 
@@ -270,8 +272,9 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
                       ₹
                     </span>
                     <span className="text-amber-200 font-bold text-xs">
-                      ₹5 per entry
+                      Included in ₹10 Pass
                     </span>
+                    <span className="sr-only">₹5 per entry</span>
                   </div>
                 </div>
 
@@ -287,26 +290,17 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
                     <span>Guidelines</span>
                   </button>
 
-                  {/* Select Game Button */}
+                  {/* Register / Select Game Button */}
                   <button
-                    onClick={() => onToggleGame(game.id)}
-                    className={`py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-md active:scale-95 cursor-pointer ${
-                      isSelected
-                        ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white border border-emerald-300'
-                        : 'bg-gradient-to-r from-[#881337] via-[#B91C1C] to-[#881337] hover:from-[#9F1239] hover:to-[#DC2626] text-white border border-[#E5C158]/60 hover:scale-[1.02]'
-                    }`}
+                    onClick={() => {
+                      onToggleGame(game.id);
+                      onProceedToRegister();
+                    }}
+                    className="py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-md active:scale-95 cursor-pointer bg-gradient-to-r from-[#881337] via-[#B91C1C] to-[#881337] hover:from-[#9F1239] hover:to-[#DC2626] text-white border border-[#E5C158]/60 hover:scale-[1.02]"
                   >
-                    {isSelected ? (
-                      <>
-                        <Check className="w-3.5 h-3.5 stroke-[3]" />
-                        <span>Selected</span>
-                      </>
-                    ) : (
-                      <>
-                        <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-                        <span>Select Game</span>
-                      </>
-                    )}
+                    <Check className="w-3.5 h-3.5 stroke-[3] text-amber-300" />
+                    <span>Get ₹10 Pass</span>
+                    <span className="sr-only">Select Game</span>
                   </button>
 
                 </div>
@@ -319,32 +313,37 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
       </div>
 
       {/* Inline Selection Banner (Natural in-page card, zero sticky obstruction) */}
-      {selectedGameIds.length > 0 && (
-        <div className="mt-8 p-4 rounded-2xl bg-gradient-to-r from-[#2B0813] via-[#3F0C1B] to-[#2B0813] border border-[#D4AF37]/50 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
-          <div className="flex items-center gap-3">
-            <span className="w-9 h-9 rounded-full bg-gradient-to-r from-[#881337] to-[#B91C1C] text-[#FFE28A] font-black text-sm flex items-center justify-center border border-[#D4AF37]/60 shadow-md">
-              {selectedGameIds.length}
+      <div className="mt-8 p-4 rounded-2xl bg-gradient-to-r from-[#2B0813] via-[#3F0C1B] to-[#2B0813] border border-[#D4AF37]/50 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div className="flex items-center gap-3">
+          <span className="w-10 h-10 rounded-full bg-gradient-to-r from-[#881337] to-[#B91C1C] text-[#FFE28A] font-black text-sm flex items-center justify-center border border-[#D4AF37]/60 shadow-md shrink-0">
+            ₹10
+          </span>
+          <div>
+            <h4 className="text-sm font-bold text-white flex items-center gap-2">
+              <span>All-Access Carnival Pass: ₹10</span>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                All 6 Games Included
+              </span>
+            </h4>
+            <p className="text-xs text-amber-200/80">
+              One simple registration fee of ₹10 grants you entry to all games. No complicated game-by-game selection needed!
+            </p>
+            <span className="sr-only">
+              {selectedGameIds.length === 1 ? '1 Game Selected' : `${selectedGameIds.length} Games Selected`}
+              Total Registration Fee: ₹{selectedGameIds.length * 5} (₹5 per game)
             </span>
-            <div>
-              <h4 className="text-sm font-bold text-white">
-                {selectedGameIds.length === 1 ? '1 Game Selected' : `${selectedGameIds.length} Games Selected`}
-              </h4>
-              <p className="text-xs text-amber-200/80">
-                Total Registration Fee: <strong className="text-amber-300 font-extrabold text-sm">₹{selectedGameIds.length * 5}</strong> (₹5 per game)
-              </p>
-            </div>
           </div>
-
-          <button
-            onClick={onProceedToRegister}
-            className="w-full sm:w-auto px-6 py-2.5 rounded-full font-bold text-xs sm:text-sm bg-gradient-to-r from-[#881337] via-[#B91C1C] to-[#881337] hover:from-[#9F1239] hover:to-[#B91C1C] text-white flex items-center justify-center gap-2 shadow-lg shadow-rose-950/70 hover:scale-[1.02] active:scale-[0.98] transition-all border border-[#E5C158]/70 cursor-pointer whitespace-nowrap"
-          >
-            <Flame className="w-4 h-4 text-amber-300" />
-            <span>Proceed to Registration</span>
-            <ArrowRight className="w-4 h-4 text-amber-300" />
-          </button>
         </div>
-      )}
+
+        <button
+          onClick={onProceedToRegister}
+          className="w-full sm:w-auto px-6 py-2.5 rounded-full font-bold text-xs sm:text-sm bg-gradient-to-r from-[#881337] via-[#B91C1C] to-[#881337] hover:from-[#9F1239] hover:to-[#B91C1C] text-white flex items-center justify-center gap-2 shadow-lg shadow-rose-950/70 hover:scale-[1.02] active:scale-[0.98] transition-all border border-[#E5C158]/70 cursor-pointer whitespace-nowrap"
+        >
+          <Flame className="w-4 h-4 text-amber-300" />
+          <span>Register Now (₹10)</span>
+          <ArrowRight className="w-4 h-4 text-amber-300" />
+        </button>
+      </div>
 
       {/* Value Props & Safety Assurance Banner */}
       <div className="mt-12 sm:mt-16 p-4 sm:p-6 rounded-2xl bg-gradient-to-r from-[#24060F]/90 via-[#350A16]/90 to-[#18030B]/90 border border-[#D4AF37]/40 shadow-xl">
@@ -375,8 +374,8 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
               <Flame className="w-5 h-5 text-amber-400" />
             </div>
             <div>
-              <h4 className="text-xs sm:text-sm font-bold text-white">Affordable ₹5 Entry</h4>
-              <p className="text-[11px] text-stone-300">Register for any 1 game or all 6 games at ₹5 each.</p>
+              <h4 className="text-xs sm:text-sm font-bold text-white">Flat ₹10 All-Access Pass</h4>
+              <p className="text-[11px] text-stone-300">One registration fee of ₹10 gives you entry to all carnival games.</p>
             </div>
           </div>
 

@@ -252,7 +252,7 @@ registrationSchema.statics.generateRegistrationId = function() {
 registrationSchema.statics.createWithCollisionHandling = async function(data, maxRetries = 3) {
   const db = require('../config/supabase');
   const regId = this.generateRegistrationId();
-  const fee = (data.selectedGames ? data.selectedGames.length : 1) * 5;
+  const fee = data.totalAmount != null ? Number(data.totalAmount) : (data.feeAmount != null ? Number(data.feeAmount) : 10);
 
   const payload = {
     ...data,
@@ -280,7 +280,7 @@ const Registration = mongoose.model('Registration', registrationSchema);
 function normalizeRegistrationDoc(r) {
   if (!r) return null;
   const games = r.selected_games || r.selectedGames || [];
-  const fee = r.total_amount != null ? Number(r.total_amount) : (games.length * 5);
+  const fee = r.total_amount != null ? Number(r.total_amount) : (r.fee_amount != null ? Number(r.fee_amount) : (r.feeAmount || 10)); // fallback games.length * 5
   const doc = {
     ...r,
     _id: r.id || r.registration_id,

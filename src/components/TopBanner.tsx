@@ -71,12 +71,12 @@ export const TopBanner: React.FC<TopBannerProps> = ({ onProceedClick }) => {
               Closes 26 Oct
             </span>
             <span className="text-stone-200 font-bold text-[11px] px-1.5 py-0.5 rounded bg-black/40 border border-white/10">
-              ₹5/game
+              ₹10 All-Access
             </span>
           </div>
 
           {/* Mobile Right: High-contrast unified countdown pill (Numbers Only) */}
-          <div className="flex items-center gap-1 bg-[#3D0A17] border border-[#D4AF37]/50 px-2.5 py-0.5 rounded-full shadow-sm text-[11px] font-mono font-bold text-amber-200 shrink-0">
+          <div className="flex items-center gap-1 bg-[#3D0A1B] border border-[#D4AF37]/50 px-2.5 py-0.5 rounded-full shadow-sm text-[11px] font-mono font-bold text-amber-200 shrink-0">
             <span className="text-amber-400">⏳</span>
             <span className="text-white">{String(timeLeft.days).padStart(2, '0')}</span>
             <span className="text-amber-500">:</span>
@@ -99,7 +99,7 @@ export const TopBanner: React.FC<TopBannerProps> = ({ onProceedClick }) => {
             </div>
             <span className="text-amber-600/60">|</span>
             <span className="font-medium text-[#F7ECE1] text-xs sm:text-sm">
-              Registration closes Monday, 26 October 2026 • ₹5 fee per selected game
+              Registration closes Monday, 26 October 2026 • ₹10 Flat Registration Fee (All Games Included)
             </span>
           </div>
 

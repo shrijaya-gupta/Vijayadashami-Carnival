@@ -112,8 +112,8 @@ export const Step5Payment: React.FC = () => {
           </div>
 
           <div className="text-right">
-            <span className="text-[10px] uppercase tracking-wider text-stone-400 font-bold block">Selected Entries</span>
-            <span className="text-sm font-bold text-amber-300">{selectedGameIds.length} {selectedGameIds.length === 1 ? 'Game' : 'Games'} (₹{totalFee})</span>
+            <span className="text-[10px] uppercase tracking-wider text-stone-400 font-bold block">Access Pass</span>
+            <span className="text-sm font-bold text-amber-300">All 6 Games Included (₹{totalFee})</span>
           </div>
         </div>
 
@@ -126,10 +126,9 @@ export const Step5Payment: React.FC = () => {
             >
               <Trophy className="w-3 h-3 text-amber-400 shrink-0" />
               <span className="font-semibold text-white">{game.title}</span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded bg-white/10 text-amber-200 font-mono">
-                {game.format}
+              <span className="text-[10px] px-1.5 py-0.2 rounded bg-white/10 text-emerald-300 font-medium">
+                Included in ₹10 Pass
               </span>
-              <span className="text-[11px] font-bold text-amber-400">₹{game.fee}</span>
             </div>
           ))}
         </div>
@@ -211,12 +210,16 @@ export const Step5Payment: React.FC = () => {
           {/* Fee Summary Pill */}
           <div className="p-4 rounded-2xl bg-[#20050E]/90 border border-[#D4AF37]/35 space-y-2 text-xs">
             <div className="flex justify-between items-center text-stone-300">
-              <span>Selected Games:</span>
-              <span className="font-bold text-white">{selectedGameIds.length} games</span>
+              <span>Pass Type:</span>
+              <span className="font-bold text-emerald-400">All-Access Carnival Pass</span>
             </div>
             <div className="flex justify-between items-center text-stone-300">
-              <span>Rate Per Game:</span>
-              <span className="font-bold text-amber-300">₹5.00</span>
+              <span>Included Activities:</span>
+              <span className="font-bold text-white">All 6 Games</span>
+            </div>
+            <div className="flex justify-between items-center text-stone-300">
+              <span>Registration Fee:</span>
+              <span className="font-bold text-amber-300">Flat ₹{totalFee}.00</span>
             </div>
             <div className="pt-2 border-t border-white/10 flex justify-between items-center text-sm font-bold">
               <span className="text-white">Total Amount Due:</span>
@@ -263,7 +266,7 @@ export const Step5Payment: React.FC = () => {
           className="w-full sm:w-auto px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold text-stone-300 hover:text-white bg-black/40 hover:bg-black/70 border border-white/10 transition-colors flex items-center justify-center gap-2 cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>{hasTeamGame ? 'Back to Team Setup' : 'Back to Details'}</span>
+          <span>Back to Student Details</span>
           <span className="sr-only">Back to Review</span>
         </button>
 

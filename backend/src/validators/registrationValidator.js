@@ -175,8 +175,9 @@ function validateRegistrationPayload(body) {
 
         return entry;
       }),
-      feePerGame: 5,
-      feeAmount: selectedGames.length * 5,
+      feePerGame: 10,
+      feeAmount: body.feeAmount ? Number(body.feeAmount) : 10, // Flat ₹10 All-Access Pass (legacy selectedGames.length * 5)
+      totalAmount: body.totalAmount ? Number(body.totalAmount) : 10,
       feeCurrency: 'INR',
       paymentStatus: (body.paymentReference && typeof body.paymentReference === 'string' && body.paymentReference.trim())
         ? 'payment_verification_pending'

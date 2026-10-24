@@ -47,54 +47,54 @@ export const RegistrationWizard: React.FC = () => {
 
         {/* Subtitle */}
         <p className="text-xs sm:text-sm text-stone-300 font-medium max-w-lg mx-auto leading-relaxed">
-          Quick and streamlined registration for SRMU students. Select your games, enter enrollment details, and verify payment.
+          Quick and streamlined registration for SRMU students. Flat ₹10 All-Access Carnival Pass covering all 6 games — simply fill in your details and pay ₹10.
         </p>
 
         {/* 3 Quick Steps Roadmap */}
         <div className="pt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
           <div 
-            onClick={() => goToStep(1)}
+            onClick={() => goToStep(2)}
             className={`royal-glass-card p-3.5 rounded-2xl transition-all cursor-pointer ${
-              activeStep === 1 
+              activeStep === 2 
                 ? 'bg-[#3D0A1B] border-amber-400 shadow-lg shadow-rose-950/50 scale-[1.02]' 
                 : 'border-[#D4AF37]/30 hover:border-[#D4AF37]/60'
             }`}
           >
             <div className="flex items-center gap-2 text-xs font-bold text-amber-300 mb-1">
               <span className="w-5 h-5 rounded-full bg-gradient-to-r from-[#9F1239] to-[#BE123C] border border-[#FFE28A]/80 text-white flex items-center justify-center text-[10px] shadow-xs">1</span>
-              <span>1. Pick Games</span>
+              <span>1. Student Details</span>
             </div>
-            <p className="text-[11px] text-stone-300 line-clamp-1">1 to 6 games at ₹5 per entry</p>
+            <p className="text-[11px] text-stone-300 line-clamp-1">Name, Mobile, Course & Year</p>
           </div>
 
           <div 
-            onClick={() => goToStep(2)}
+            onClick={() => goToStep(5)}
             className={`royal-glass-card p-3.5 rounded-2xl transition-all cursor-pointer ${
-              activeStep === 2 || activeStep === 3 
+              activeStep === 5 
                 ? 'bg-[#3D0A1B] border-amber-400 shadow-lg shadow-rose-950/50 scale-[1.02]' 
                 : 'border-[#D4AF37]/30 hover:border-[#D4AF37]/60'
             }`}
           >
             <div className="flex items-center gap-2 text-xs font-bold text-amber-300 mb-1">
               <span className="w-5 h-5 rounded-full bg-gradient-to-r from-[#9F1239] to-[#BE123C] border border-[#FFE28A]/80 text-white flex items-center justify-center text-[10px] shadow-xs">2</span>
-              <span>2. Student Info</span>
+              <span>2. Pay ₹10 Pass</span>
             </div>
-            <p className="text-[11px] text-stone-300 line-clamp-1">Name, Course, Branch & Year</p>
+            <p className="text-[11px] text-stone-300 line-clamp-1">₹10 Flat Fee • All Games Included</p>
           </div>
 
           <div 
-            onClick={() => goToStep(5)}
+            onClick={() => goToStep(6)}
             className={`royal-glass-card p-3.5 rounded-2xl transition-all cursor-pointer ${
-              activeStep >= 4 
+              activeStep === 6 
                 ? 'bg-[#3D0A1B] border-amber-400 shadow-lg shadow-rose-950/50 scale-[1.02]' 
                 : 'border-[#D4AF37]/30 hover:border-[#D4AF37]/60'
             }`}
           >
             <div className="flex items-center gap-2 text-xs font-bold text-amber-300 mb-1">
               <span className="w-5 h-5 rounded-full bg-gradient-to-r from-[#9F1239] to-[#BE123C] border border-[#FFE28A]/80 text-white flex items-center justify-center text-[10px] shadow-xs">3</span>
-              <span>3. Pay & Get Pass</span>
+              <span>3. Get Pass & ID</span>
             </div>
-            <p className="text-[11px] text-stone-300 line-clamp-1">₹{totalFee || 5} UPI / Cash & Instant ID</p>
+            <p className="text-[11px] text-stone-300 line-clamp-1">Instant Pass & Scannable QR</p>
           </div>
         </div>
       </div>
