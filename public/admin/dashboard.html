@@ -251,9 +251,9 @@
             </button>
           </div>
 
-          <!-- Overview Primary Hero KPIs (Clean 4-Card Executive Grid) -->
+          <!-- Overview Primary Hero KPIs (Clean 4-Card Executive Grid Matching User-Side Pass Model) -->
           <div class="metrics-grid">
-            <!-- 1. Total Unique Registrations -->
+            <!-- 1. Total All-Access Passes Booked -->
             <div class="metric-card">
               <div class="metric-icon-wrap metric-icon-emerald" aria-hidden="true">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -264,27 +264,43 @@
                 </svg>
               </div>
               <div class="metric-info">
-                <span class="metric-label">Unique Students</span>
+                <span class="metric-label">All-Access Passes</span>
                 <span id="metricTotalRegistrations" class="metric-value">0</span>
-                <span class="metric-sub">Total student registrations</span>
+                <span class="metric-sub">Registered student participants</span>
               </div>
             </div>
 
-            <!-- 2. Total Selected Game Entries -->
+            <!-- 2. Verified Revenue (₹10 Pass Model) -->
             <div class="metric-card">
-              <div class="metric-icon-wrap metric-icon-blue" aria-hidden="true">
+              <div class="metric-icon-wrap metric-icon-amber" aria-hidden="true">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                  <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                  <line x1="2" y1="10" x2="22" y2="10"></line>
                 </svg>
               </div>
               <div class="metric-info">
-                <span class="metric-label">Game Selections</span>
-                <span id="metricTotalGameEntries" class="metric-value">0</span>
-                <span class="metric-sub">Across active event challenges</span>
+                <span class="metric-label">Verified Revenue</span>
+                <span id="metricTotalRevenueDisplay" class="metric-value" style="color: #FCD34D;">₹0</span>
+                <span class="metric-sub"><span id="metricPaidPayments">0</span> confirmed ₹10 passes</span>
               </div>
             </div>
 
-            <!-- 3. Verified Event Attendees -->
+            <!-- 3. Pending Payment Audits -->
+            <div class="metric-card">
+              <div class="metric-icon-wrap metric-icon-blue" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+              </div>
+              <div class="metric-info">
+                <span class="metric-label">Pending Audits</span>
+                <span id="metricPendingAuditsDisplay" class="metric-value" style="color: #93C5FD;">0</span>
+                <span class="metric-sub">Online UTRs &amp; Desk Cash</span>
+              </div>
+            </div>
+
+            <!-- 4. Gate Admitted Attendees -->
             <div class="metric-card">
               <div class="metric-icon-wrap metric-icon-purple" aria-hidden="true">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -293,69 +309,44 @@
                 </svg>
               </div>
               <div class="metric-info">
-                <span class="metric-label">Verified Attendees</span>
+                <span class="metric-label">Gate Admitted</span>
                 <span id="metricVerifiedAttendees" class="metric-value">0</span>
-                <span class="metric-sub">Checked-in at B5-408 desk</span>
-              </div>
-            </div>
-
-            <!-- 4. Payments Verified -->
-            <div class="metric-card">
-              <div class="metric-icon-wrap metric-icon-amber" aria-hidden="true">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                </svg>
-              </div>
-              <div class="metric-info">
-                <span class="metric-label">Payments Verified</span>
-                <span id="metricPaidPayments" class="metric-value">0</span>
-                <span class="metric-sub">Fee audit approved by desk</span>
+                <span class="metric-sub">Scanned at arena entrance</span>
               </div>
             </div>
           </div>
 
-          <!-- Secondary Metrics Ribbon (Compact, Non-Cluttered Indicators) -->
-          <div class="metrics-secondary-ribbon">
-            <div class="sec-stat-pill">
-              <span class="sec-stat-dot dot-solo"></span>
-              <span class="sec-stat-label">Solo Entries:</span>
-              <span id="metricIndividualEntries" class="sec-stat-val">0</span>
-            </div>
-            <div class="sec-stat-pill">
-              <span class="sec-stat-dot dot-team"></span>
-              <span class="sec-stat-label">Squad Entries:</span>
-              <span id="metricTeamEntries" class="sec-stat-val">0</span>
-              <span id="metricTeamMembersSub" class="metric-sub" style="display:none;">0 team members</span>
-            </div>
-            <div class="sec-stat-pill">
-              <span class="sec-stat-dot dot-pending-ver"></span>
-              <span class="sec-stat-label">UTR Audit Pending:</span>
-              <span id="metricPendingVerPayments" class="sec-stat-val">0</span>
-            </div>
-            <div class="sec-stat-pill">
-              <span class="sec-stat-dot dot-pending-pay"></span>
-              <span class="sec-stat-label">Unpaid / Cash Pending:</span>
-              <span id="metricPendingPayments" class="sec-stat-val">0</span>
-            </div>
-            <div class="sec-stat-pill">
-              <span class="sec-stat-dot dot-certs"></span>
-              <span class="sec-stat-label">Certificates Issued:</span>
-              <span id="metricCertificatesIssued" class="sec-stat-val">0</span>
-            </div>
+          <!-- Screen-Reader & Legacy Test Element Parity -->
+          <div class="sr-only" aria-hidden="true">
+            <span id="metricTotalGameEntries">0</span>
+            <span id="metricIndividualEntries">0</span>
+            <span id="metricTeamEntries">0</span>
+            <span id="metricTeamMembersSub">0 team members</span>
+            <span id="metricPendingVerPayments">0</span>
+            <span id="metricPendingPayments">0</span>
+            <span id="metricCertificatesIssued">0</span>
           </div>
 
-          <!-- Per-Game Counts Section -->
+          <!-- Active Campus Carnival Games Lineup -->
           <div class="section-panel-header">
-            <h3 class="section-panel-title">Participation Across 6 Event Games</h3>
+            <div>
+              <h3 class="section-panel-title">Active Campus Carnival Games Lineup</h3>
+              <p style="font-size: 0.8rem; color: var(--text-dim); margin-top: 2px;">6 canonical challenges available to all students under the Flat ₹10 All-Access Pass.</p>
+            </div>
+            <button type="button" class="btn-table-action" onclick="switchView('gamesmanage')">
+              <span>Manage Games Catalogue &rarr;</span>
+            </button>
           </div>
           <div id="overviewGamesGrid" class="games-breakdown-grid">
             <!-- Dynamically populated via JS with real MongoDB data -->
           </div>
 
-          <!-- Recent Registrations Section -->
+          <!-- Recent Event Registrations Section -->
           <div class="section-panel-header">
-            <h3 class="section-panel-title">Recent Event Registrations</h3>
+            <div>
+              <h3 class="section-panel-title">Recent Passes Booked</h3>
+              <p style="font-size: 0.8rem; color: var(--text-dim); margin-top: 2px;">Live student registrations with gate status and contact shortcuts.</p>
+            </div>
             <button type="button" class="btn-table-action" onclick="document.getElementById('navRegistrations').click();">
               <span>View All Registrations &rarr;</span>
             </button>

@@ -356,6 +356,16 @@ async function loadOverviewData() {
     const pendingPaymentsEl = document.getElementById('metricPendingPayments');
     if (pendingPaymentsEl) pendingPaymentsEl.textContent = s.pendingPaymentCount || 0;
 
+    // Reconstructed Revenue & Audits Display (Flat ₹10 Pass model)
+    const paidCount = Number(s.paidPaymentsCount || 0);
+    const revenueDisplayEl = document.getElementById('metricTotalRevenueDisplay');
+    if (revenueDisplayEl) revenueDisplayEl.textContent = `₹${paidCount * 10}`;
+
+    const pendingVer = Number(s.pendingVerificationCount || 0);
+    const pendingPay = Number(s.pendingPaymentCount || 0);
+    const pendingAuditsEl = document.getElementById('metricPendingAuditsDisplay');
+    if (pendingAuditsEl) pendingAuditsEl.textContent = (pendingVer + pendingPay).toString();
+
     // 6 Games Breakdown
     renderOverviewGames(data.gameStats || []);
 
@@ -385,9 +395,7 @@ function renderOverviewGames(gameStats) {
           <div class="game-stat-bar" style="width: ${pct}%;"></div>
         </div>
         <div class="game-stat-counts-row">
-          <span>Entries: <span class="stat-count-pill">${game.totalEntries || 0}</span></span>
-          <span>Solo: <span class="stat-count-pill">${game.individualEntries || 0}</span></span>
-          <span>Team: <span class="stat-count-pill">${game.teamEntries || 0}</span></span>
+          <span>Pass Holders: <span class="stat-count-pill">${game.totalEntries || 0}</span></span>
         </div>
       </div>
     `;
