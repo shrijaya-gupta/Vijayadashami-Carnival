@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRegistration } from '../../context/RegistrationContext';
 import confetti from 'canvas-confetti';
+import QRCode from 'qrcode';
 import { 
   CheckCircle, 
   Copy, 
@@ -12,7 +13,8 @@ import {
   Award,
   AlertCircle,
   Loader2,
-  Sparkles
+  Sparkles,
+  Printer
 } from 'lucide-react';
 
 export const Step6Confirmation: React.FC = () => {
@@ -20,6 +22,9 @@ export const Step6Confirmation: React.FC = () => {
   const [postUtr, setPostUtr] = useState('');
   const [copiedId, setCopiedId] = useState(false);
   const [utrSuccess, setUtrSuccess] = useState(false);
+  const [qrDataUrl, setQrDataUrl] = useState<string>('');
+
+  const regId = submissionResult?.registrationReference || submissionResult?.registrationId || 'SRMU-VJ-PENDING';
 
   useEffect(() => {
     // Fire celebratory confetti on mounting Step 6
@@ -33,11 +38,24 @@ export const Step6Confirmation: React.FC = () => {
     } catch (e) {
       // Graceful fallback
     }
-  }, []);
+
+    // Generate scannable QR code for event marshals at B5-408
+    if (regId) {
+      QRCode.toDataURL(regId, {
+        width: 140,
+        margin: 1,
+        color: {
+          dark: '#120207',
+          light: '#FFFDF9'
+        }
+      })
+      .then(url => setQrDataUrl(url))
+      .catch(() => {});
+    }
+  }, [regId]);
 
   if (!submissionResult) return null;
 
-  const regId = submissionResult.registrationReference || submissionResult.registrationId || 'SRMU-VJ-PENDING';
   const isPaid = submissionResult.paymentStatus === 'paid';
   const isPendingVerification = submissionResult.paymentStatus === 'payment_verification_pending';
 
@@ -45,6 +63,10 @@ export const Step6Confirmation: React.FC = () => {
     navigator.clipboard.writeText(regId);
     setCopiedId(true);
     setTimeout(() => setCopiedId(false), 2000);
+  };
+
+  const handlePrintPass = () => {
+    window.print();
   };
 
   const handleShareWhatsApp = () => {
@@ -86,7 +108,7 @@ export const Step6Confirmation: React.FC = () => {
         </p>
       </div>
 
-      {/* Confirmed Registration Reference Card */}
+      {/* Confirmed Registration Digital Pass Card */}
       <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-[#24060F] to-[#120207] border-2 border-[#D4AF37]/60 shadow-xl text-left space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/10">
           <div>
@@ -128,23 +150,33 @@ export const Step6Confirmation: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 text-xs">
-          <div>
-            <span className="text-stone-400 block">Roll Number</span>
-            <span className="font-bold text-white">{submissionResult.rollNumber}</span>
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="grid grid-cols-2 gap-4 text-xs flex-1 w-full">
+            <div>
+              <span className="text-stone-400 block">Roll Number</span>
+              <span className="font-bold text-white">{submissionResult.rollNumber}</span>
+            </div>
+            <div>
+              <span className="text-stone-400 block">Total Entry Fee</span>
+              <span className="font-bold text-amber-300">₹{submissionResult.totalAmount}.00</span>
+            </div>
+            <div>
+              <span className="text-stone-400 block">Selected Games</span>
+              <span className="font-bold text-white">{submissionResult.selectedGamesCount} Games</span>
+            </div>
+            <div>
+              <span className="text-stone-400 block">Venue & Time</span>
+              <span className="font-bold text-white">B5-408 • 11:00 AM</span>
+            </div>
           </div>
-          <div>
-            <span className="text-stone-400 block">Total Entry Fee</span>
-            <span className="font-bold text-amber-300">₹{submissionResult.totalAmount}.00</span>
-          </div>
-          <div>
-            <span className="text-stone-400 block">Selected Games</span>
-            <span className="font-bold text-white">{submissionResult.selectedGamesCount} Games</span>
-          </div>
-          <div>
-            <span className="text-stone-400 block">Venue & Time</span>
-            <span className="font-bold text-white">B5-408 • 11:00 AM</span>
-          </div>
+
+          {/* Entry Verification QR Code */}
+          {qrDataUrl && (
+            <div className="flex flex-col items-center justify-center p-2 rounded-xl bg-white/5 border border-white/10 shrink-0">
+              <img src={qrDataUrl} alt="Entry Pass QR" className="w-20 h-20 rounded-lg shadow-sm" />
+              <span className="text-[9px] text-amber-300/80 font-semibold mt-1">Scan at B5-408</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -192,8 +224,17 @@ export const Step6Confirmation: React.FC = () => {
         </div>
       )}
 
-      {/* Share & Certificate Links */}
+      {/* Share, Print & Certificate Links */}
       <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+        <button
+          type="button"
+          onClick={handlePrintPass}
+          className="px-5 py-2.5 rounded-full font-bold text-xs sm:text-sm bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white flex items-center gap-2 shadow-md transition-all cursor-pointer border border-[#FFE28A]/60"
+        >
+          <Printer className="w-4 h-4" />
+          <span>Save / Print Entry Pass</span>
+        </button>
+
         <button
           type="button"
           onClick={handleShareWhatsApp}

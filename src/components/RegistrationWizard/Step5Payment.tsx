@@ -5,11 +5,12 @@ import {
   ShieldCheck, 
   AlertCircle, 
   Loader2, 
-  HelpCircle,
-  Copy,
-  Check,
-  Sparkles,
-  QrCode
+  HelpCircle, 
+  Copy, 
+  Check, 
+  Sparkles, 
+  QrCode,
+  Smartphone
 } from 'lucide-react';
 
 export const Step5Payment: React.FC = () => {
@@ -100,7 +101,16 @@ export const Step5Payment: React.FC = () => {
             </div>
           )}
 
-          <div className="w-full space-y-2 text-xs">
+          <div className="w-full space-y-2.5 text-xs">
+            {/* 1-Click Mobile UPI App Launch (GPay, PhonePe, Paytm, BHIM) */}
+            <a
+              href={`upi://pay?pa=${encodeURIComponent(receiverUpi)}&pn=SRMU%20Carnival%20B5-408&am=${totalFee}&cu=INR&tn=Vijayadashami%20Carnival%20Entry`}
+              className="w-full py-2.5 px-3 rounded-xl font-bold text-xs bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white flex items-center justify-center gap-2 border border-emerald-400 shadow-md shadow-emerald-950/40 active:scale-95 transition-all text-center"
+            >
+              <Smartphone className="w-3.5 h-3.5" />
+              <span>Pay ₹{totalFee} via UPI App (PhonePe / GPay)</span>
+            </a>
+
             <div className="flex items-center justify-between p-2.5 rounded-xl bg-black/40 border border-white/10 text-stone-200">
               <span className="font-semibold text-stone-400">UPI ID:</span>
               <div className="flex items-center gap-1.5">

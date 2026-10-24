@@ -11,7 +11,8 @@ import {
   Building2, 
   Calendar, 
   Sparkles,
-  Zap
+  Zap,
+  Check
 } from 'lucide-react';
 
 const COURSES = ['B.Tech', 'BCA', 'MCA', 'BBA', 'MBA', 'Other'];
@@ -20,6 +21,8 @@ const YEARS = ['1st Year', '2nd Year', '3rd Year', '4th Year', '5th Year'];
 
 export const Step2StudentDetails: React.FC = () => {
   const { student, updateStudent, nextStep, prevStep, goToStep, selectedGameIds, submitError } = useRegistration();
+
+  const isMobileValid = /^(?:\+91|0)?[6-9]\d{9}$/.test(student.mobileNumber.replace(/[\s\-\(\)]/g, ''));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,19 +67,46 @@ export const Step2StudentDetails: React.FC = () => {
 
         {/* Mobile Number */}
         <div>
-          <label className="block text-xs font-bold text-amber-200 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-            <Phone className="w-3.5 h-3.5 text-amber-400" />
-            10-Digit Mobile Number <span className="text-rose-400">*</span>
-          </label>
-          <input
-            type="tel"
-            required
-            maxLength={13}
-            placeholder="e.g., 9876543210"
-            value={student.mobileNumber}
-            onChange={(e) => updateStudent({ mobileNumber: e.target.value })}
-            className="w-full px-4 py-3 rounded-xl border border-[#D4AF37]/35 bg-black/50 text-white placeholder-stone-500 text-sm focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] focus:outline-hidden transition-all shadow-inner"
-          />
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-xs font-bold text-amber-200 uppercase tracking-wider flex items-center gap-1.5">
+              <Phone className="w-3.5 h-3.5 text-amber-400" />
+              10-Digit Mobile Number <span className="text-rose-400">*</span>
+            </label>
+            {student.mobileNumber && (
+              isMobileValid ? (
+                <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-1">
+                  <Check className="w-3 h-3 stroke-[3]" /> Valid Number
+                </span>
+              ) : (
+                <span className="text-[10px] font-bold text-amber-400">
+                  Must be 10 digits (6–9)
+                </span>
+              )
+            )}
+          </div>
+          <div className="relative">
+            <input
+              type="tel"
+              required
+              maxLength={13}
+              placeholder="e.g., 9876543210"
+              value={student.mobileNumber}
+              onChange={(e) => {
+                const val = e.target.value.replace(/[^0-9+\s\-]/g, '');
+                updateStudent({ mobileNumber: val });
+              }}
+              className={`w-full px-4 py-3 rounded-xl border bg-black/50 text-white placeholder-stone-500 text-sm focus:outline-hidden transition-all shadow-inner ${
+                student.mobileNumber && isMobileValid
+                  ? 'border-emerald-500/80 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400'
+                  : 'border-[#D4AF37]/35 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]'
+              }`}
+            />
+            {student.mobileNumber && isMobileValid && (
+              <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-emerald-400 pointer-events-none">
+                <Check className="w-4 h-4 stroke-[3]" />
+              </div>
+            )}
+          </div>
           <p className="text-[11px] text-stone-400 mt-1">
             Indian mobile numbers starting with 6–9.
           </p>

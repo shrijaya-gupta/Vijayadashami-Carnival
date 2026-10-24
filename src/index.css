@@ -159,6 +159,17 @@
   pointer-events: none;
   animation: buttonShine 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
-
-
-
+/* Clean Print Styles for Participant Entry Pass */
+@media print {
+  header, footer, nav, aside, .pointer-events-none, button, a {
+    display: none !important;
+  }
+  body {
+    background: #ffffff !important;
+    color: #111111 !important;
+  }
+  #register {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+}
