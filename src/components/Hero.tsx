@@ -128,12 +128,7 @@ export const Hero: React.FC<HeroProps> = ({
           <div className="lg:col-span-5 xl:col-span-5 text-left space-y-5">
             
             {/* Grand Hero Title */}
-            <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-[11px] font-bold bg-gradient-to-r from-amber-500/15 via-rose-500/10 to-amber-500/15 border border-[#D4AF37]/40 text-amber-200 shadow-xs">
-                <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse shrink-0" />
-                <span className="tracking-widest uppercase">Annual Cultural & Sports Spectacle</span>
-              </div>
-
+            <div className="space-y-1.5">
               <h1 className="text-4xl xl:text-5xl 2xl:text-6xl font-black font-decorative tracking-[0.02em] leading-[1.08]">
                 <span className="block text-[#FFFDF9] drop-shadow-[0_4px_18px_rgba(0,0,0,0.9)]">
                   Vijayadashami
@@ -255,11 +250,6 @@ export const Hero: React.FC<HeroProps> = ({
           
           {/* Grand Hero Title */}
           <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[10px] font-bold bg-gradient-to-r from-amber-500/15 to-rose-500/15 border border-[#D4AF37]/40 text-amber-200 shadow-xs mx-auto">
-              <Sparkles className="w-3 h-3 text-amber-400 animate-pulse shrink-0" />
-              <span className="tracking-wider uppercase">SRMU Grand Campus Carnival</span>
-            </div>
-
             <h1 className="text-3xl xs:text-4xl sm:text-5xl font-black font-decorative tracking-[0.02em] leading-[1.12]">
               <span className="block text-[#FFFDF9] drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
                 Vijayadashami
