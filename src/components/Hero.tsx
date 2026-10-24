@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   Calendar, 
   Clock, 
@@ -26,6 +26,16 @@ export const Hero: React.FC<HeroProps> = ({
   onWatchIntroClick 
 }) => {
   const [showVideoModal, setShowVideoModal] = useState(false);
+  const mobileVideoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (mobileVideoRef.current) {
+      mobileVideoRef.current.muted = true;
+      mobileVideoRef.current.play().catch(() => {
+        // Handled silently if power saver or browser policy defers autoplay
+      });
+    }
+  }, []);
 
   const handleWatchIntro = () => {
     if (onWatchIntroClick) {
@@ -71,20 +81,37 @@ export const Hero: React.FC<HeroProps> = ({
       </div>
 
       {/* =========================================================================
-          MOBILE VIEW (< 1024px): IMAGE AT THE VERY TOP
-          Displays the full Dussehra spectacle at the top, seamlessly melting into #100308
+          MOBILE VIEW (< 1024px): CONTINUOUS AMBIENT VIDEO AT THE TOP
+          Displays the continuous festive Dussehra video seamlessly melting into #100308
           ========================================================================= */}
-      <div className="block lg:hidden relative w-full aspect-[4/3] xs:aspect-[16/10] sm:aspect-[16/9] overflow-hidden">
-        <img 
-          src="/assets/hero-mobile.jpg" 
-          alt="Vijayadashami Dussehra Carnival at SRMU B5-408" 
-          className="w-full h-full object-cover object-top"
-        />
+      <div className="block lg:hidden relative w-full aspect-[4/3] xs:aspect-[16/10] sm:aspect-[16/9] overflow-hidden bg-[#100308]">
+        <video 
+          ref={mobileVideoRef}
+          autoPlay 
+          loop 
+          muted 
+          playsInline 
+          preload="auto"
+          poster="/assets/hero-mobile.jpg" 
+          className="w-full h-full object-cover object-center pointer-events-none"
+        >
+          <source src="/assets/hero-mobile.mp4" type="video/mp4" />
+          {/* Fallback image if video is not supported or low power mode is active */}
+          <img 
+            src="/assets/hero-mobile.jpg" 
+            alt="Vijayadashami Dussehra Carnival at SRMU B5-408" 
+            className="w-full h-full object-cover object-top"
+          />
+        </video>
+
+        {/* Subtle festive ambient tint overlay to harmonize colors with page backdrop */}
+        <div className="absolute inset-0 bg-[#100308]/15 mix-blend-multiply pointer-events-none" />
+
         {/* Seamless downward, side and top feathering into background #100308 */}
-        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#100308] via-[#100308]/85 to-transparent pointer-events-none" />
-        <div className="absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-[#100308]/60 to-transparent pointer-events-none" />
-        <div className="absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-[#100308]/60 to-transparent pointer-events-none" />
-        <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-[#100308]/60 to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#100308] via-[#100308]/90 via-35% to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 top-0 h-14 bg-gradient-to-b from-[#100308]/75 to-transparent pointer-events-none" />
+        <div className="absolute inset-y-0 left-0 w-10 sm:w-14 bg-gradient-to-r from-[#100308]/75 to-transparent pointer-events-none" />
+        <div className="absolute inset-y-0 right-0 w-10 sm:w-14 bg-gradient-to-l from-[#100308]/75 to-transparent pointer-events-none" />
       </div>
 
       {/* =========================================================================
