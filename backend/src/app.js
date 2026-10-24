@@ -60,10 +60,10 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/certificates', certificateRoutes);
 app.use('/api/config', configRoutes);
 
-// Direct QR Scan Redirect: /verify-certificate/:token -> /verify.html?token=...
+// Direct QR Scan Redirect: /verify-certificate/:token -> /?token=...
 app.get('/verify-certificate/:token', (req, res) => {
   const token = req.params.token;
-  res.redirect(`/verify.html?token=${encodeURIComponent(token)}`);
+  res.redirect(`/?token=${encodeURIComponent(token)}`);
 });
 
 // 6. Serve static frontend files (checks dist, monorepo root, backend/public, or local directory)

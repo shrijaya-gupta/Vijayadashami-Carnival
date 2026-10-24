@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import { RegistrationProvider, useRegistration } from './context/RegistrationContext';
 import { TopBanner } from './components/TopBanner';
@@ -15,6 +15,13 @@ const CarnivalApp: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'home' | 'games' | 'register' | 'verify'>('home');
   const [isScoreboardOpen, setIsScoreboardOpen] = useState<boolean>(false);
   const { selectedGameIds, toggleGameSelection, goToStep, activeStep } = useRegistration();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('token') || window.location.pathname.startsWith('/verify')) {
+      setActiveTab('verify');
+    }
+  }, []);
 
   const handleRegisterClick = () => {
     setActiveTab('register');

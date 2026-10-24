@@ -1,5 +1,8 @@
 {
-  "version": 2,
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
   "rewrites": [
     {
       "source": "/api/(.*)",
@@ -8,6 +11,18 @@
     {
       "source": "/verify-certificate/(.*)",
       "destination": "/api/index.js"
+    },
+    {
+      "source": "/admin",
+      "destination": "/admin/login.html"
+    },
+    {
+      "source": "/admin/",
+      "destination": "/admin/login.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
