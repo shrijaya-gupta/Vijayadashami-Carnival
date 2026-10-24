@@ -184,17 +184,17 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
           return (
             <div
               key={game.id}
-              className={`group relative rounded-2xl p-5 sm:p-6 flex flex-col justify-between transition-all duration-300 ${
+              className={`group relative rounded-3xl p-5 sm:p-6 flex flex-col justify-between transition-all duration-300 ${
                 !isVisible ? 'opacity-30 scale-95 pointer-events-none hidden' : ''
               } ${
                 isSelected
-                  ? 'bg-gradient-to-b from-[#132A1C] via-[#0E2015] to-[#0A170F] border-2 border-emerald-400 shadow-xl shadow-emerald-950/40 scale-[1.01]'
-                  : 'bg-gradient-to-b from-[#24060F]/95 via-[#1A040B]/95 to-[#120207]/95 hover:from-[#2E0B16] hover:to-[#17040C] border border-[#D4AF37]/30 hover:border-[#D4AF37]/70 shadow-md hover:shadow-xl hover:shadow-rose-950/20 hover:-translate-y-1'
+                  ? 'bg-gradient-to-b from-[#0C2417] via-[#081B10] to-[#040F08] border-2 border-emerald-400 shadow-[0_15px_40px_-5px_rgba(16,185,129,0.35)] scale-[1.01] backdrop-blur-xl'
+                  : 'bg-gradient-to-b from-[#24060F]/95 via-[#18030B]/95 to-[#0E0207] hover:from-[#2E0914] hover:to-[#14030A] border border-[#D4AF37]/35 hover:border-[#F5D372]/90 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.8)] hover:shadow-[0_20px_45px_-8px_rgba(212,175,55,0.25)] hover:-translate-y-1.5 backdrop-blur-xl'
               }`}
             >
               {/* Selected VIP Badge */}
               {isSelected && (
-                <div className="absolute -top-3 -right-2 px-3 py-0.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black text-[10px] uppercase tracking-wider shadow-md flex items-center gap-1 border border-white/30 animate-in fade-in zoom-in-95">
+                <div className="absolute -top-3 -right-2 px-3 py-0.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black text-[10px] uppercase tracking-wider shadow-lg shadow-emerald-950/60 flex items-center gap-1 border border-white/40 animate-in fade-in zoom-in-95">
                   <Check className="w-3 h-3 stroke-[3]" />
                   <span>Selected</span>
                 </div>
@@ -208,7 +208,7 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
                   
                   {/* Category & Format Chips */}
                   <div className="space-y-1.5">
-                    <span className="inline-block text-[11px] px-2.5 py-0.5 rounded-full font-bold bg-[#380E17] text-[#E5C158] border border-[#D4AF37]/40 shadow-xs">
+                    <span className="inline-block text-[11px] px-2.5 py-0.5 rounded-full font-bold bg-[#380E17] text-[#E5C158] border border-[#D4AF37]/50 shadow-xs">
                       {game.category}
                     </span>
 
@@ -228,10 +228,10 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
                   </div>
 
                   {/* Stylized Visual Festive Game Emblem */}
-                  <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 border transition-transform duration-300 group-hover:scale-110 shadow-md ${
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border-2 transition-transform duration-300 group-hover:scale-110 shadow-md ${
                     isSelected 
-                      ? 'bg-gradient-to-br from-emerald-600 to-teal-700 border-emerald-400 text-white' 
-                      : 'bg-gradient-to-br from-[#400B1B] via-[#2A0712] to-[#1A030A] border-[#D4AF37]/50 text-[#E5C158]'
+                      ? 'bg-gradient-to-br from-emerald-600 to-teal-700 border-emerald-300 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)]' 
+                      : 'bg-gradient-to-br from-[#4A0D1F] via-[#2F0815] to-[#1A030A] border-[#D4AF37]/60 text-[#E5C158] shadow-[0_0_15px_rgba(212,175,55,0.2)]'
                   }`}>
                     {getGameEmblem(game.id)}
                   </div>

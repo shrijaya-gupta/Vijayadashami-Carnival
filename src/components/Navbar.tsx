@@ -110,7 +110,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenS
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-[#18040C]/90 backdrop-blur-md border-b border-[#3D0A17] text-stone-200 shadow-md transition-colors">
+    <header className="sticky top-0 z-50 w-full bg-[#120208]/90 backdrop-blur-xl border-b border-[#D4AF37]/30 text-stone-200 shadow-[0_10px_35px_rgba(0,0,0,0.7)] transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-18 flex items-center justify-between gap-3 sm:gap-4">
         
         {/* Brand / Logo with authentic Vijayadashami Dhanush-Baan icon */}
@@ -118,20 +118,21 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenS
           onClick={() => handleNavClick('home')}
           className="flex items-center gap-2.5 sm:gap-3 text-left group focus:outline-hidden shrink-0"
         >
-          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#881337] to-[#4C0519] text-[#E5C158] flex items-center justify-center shadow-md group-hover:scale-105 transition-transform border border-[#D4AF37]/40 shrink-0">
-            <VijayadashamiBowIcon className="w-5 h-5 sm:w-6 sm:h-6 text-amber-300" />
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#9F1239] via-[#630B22] to-[#2E040E] text-[#E5C158] flex items-center justify-center shadow-[0_0_20px_rgba(212,175,55,0.35)] group-hover:scale-105 transition-all border border-[#D4AF37]/60 shrink-0">
+            <VijayadashamiBowIcon className="w-5 h-5 sm:w-6 sm:h-6 text-amber-300 drop-shadow-md" />
           </div>
           <div className="shrink-0">
             <div className="flex items-center gap-1.5 sm:gap-2">
-              <span className="font-heading font-black text-base sm:text-lg tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-[#FFFDF9] via-[#FCE7B0] to-[#E5C158] whitespace-nowrap">
+              <span className="font-heading font-black text-base sm:text-lg tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-[#FFFDF9] via-[#FCE7B0] to-[#E5C158] whitespace-nowrap drop-shadow-sm">
                 VIJAYADASHAMI
               </span>
-              <span className="text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold bg-[#E5C158]/20 text-[#E5C158] border border-[#E5C158]/40 whitespace-nowrap">
+              <span className="text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold bg-amber-500/20 text-amber-300 border border-[#E5C158]/50 shadow-xs whitespace-nowrap">
                 SRMU B5-408
               </span>
             </div>
-            <p className="text-[10px] sm:text-[11px] text-amber-200/80 font-medium whitespace-nowrap">
-              Campus Carnival 2026
+            <p className="text-[10px] sm:text-[11px] text-amber-200/90 font-medium whitespace-nowrap flex items-center gap-1">
+              <Sparkles className="w-2.5 h-2.5 text-amber-400" />
+              <span>Campus Carnival 2026</span>
             </p>
           </div>
         </button>
@@ -142,7 +143,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenS
             onClick={() => handleNavClick('home')}
             className={`px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 whitespace-nowrap transition-all ${
               activeTab === 'home'
-                ? 'bg-[#881337] text-white shadow-xs border border-[#E5C158]/40'
+                ? 'bg-gradient-to-r from-[#881337] via-[#9F1239] to-[#881337] text-white shadow-md border border-[#E5C158]/60'
                 : 'text-stone-300 hover:bg-white/10 hover:text-white'
             }`}
           >

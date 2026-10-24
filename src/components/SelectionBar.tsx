@@ -56,7 +56,7 @@ export const SelectionBar: React.FC<SelectionBarProps> = ({
       )}
 
       {/* Main Compact Floating Pill */}
-      <div className="flex items-center gap-2 p-1.5 pl-3 rounded-full bg-[#18040C]/95 backdrop-blur-xl border border-[#D4AF37]/60 shadow-2xl shadow-black/80 text-white">
+      <div className="flex items-center gap-2 p-1.5 pl-3 rounded-full bg-[#120208]/95 backdrop-blur-2xl border-2 border-[#D4AF37]/70 shadow-[0_12px_36px_rgba(0,0,0,0.85)] text-white">
         
         {/* Count & Fee Display */}
         <button
@@ -64,7 +64,7 @@ export const SelectionBar: React.FC<SelectionBarProps> = ({
           className="flex items-center gap-2 hover:opacity-90 transition-opacity cursor-pointer text-left"
           title={isExpanded ? "Hide selected games" : "View selected games"}
         >
-          <span className="w-6 h-6 rounded-full bg-gradient-to-r from-[#881337] to-[#B91C1C] text-[#FFE28A] font-black text-xs flex items-center justify-center shadow-md border border-[#D4AF37]/60 shrink-0">
+          <span className="w-7 h-7 rounded-full bg-gradient-to-r from-[#9F1239] to-[#BE123C] text-[#FFE28A] font-black text-xs flex items-center justify-center shadow-[0_0_10px_rgba(212,175,55,0.4)] border border-[#D4AF37] shrink-0">
             {selectedGameIds.length}
           </span>
           <div className="hidden sm:flex flex-col pr-1">
@@ -97,7 +97,7 @@ export const SelectionBar: React.FC<SelectionBarProps> = ({
         {/* Proceed Action Button */}
         <button
           onClick={onProceed}
-          className="px-4 py-2 rounded-full font-bold text-xs bg-gradient-to-r from-[#881337] via-[#B91C1C] to-[#881337] hover:from-[#9F1239] hover:to-[#B91C1C] text-white flex items-center gap-1.5 shadow-md shadow-rose-950/70 hover:scale-105 active:scale-95 transition-all border border-[#E5C158]/70 cursor-pointer whitespace-nowrap"
+          className="shine-effect px-4 py-2 rounded-full font-bold text-xs bg-gradient-to-r from-[#881337] via-[#BE123C] to-[#881337] hover:from-[#9F1239] hover:to-[#BE123C] text-white flex items-center gap-1.5 shadow-md shadow-rose-950/70 hover:scale-105 active:scale-95 transition-all border border-[#FFE28A]/80 cursor-pointer whitespace-nowrap"
         >
           <Sparkles className="w-3.5 h-3.5 text-amber-300 shrink-0" />
           <span>Proceed to Registration</span>

@@ -52,16 +52,16 @@ const VijayadashamiBowIcon: React.FC<{ className?: string }> = ({ className = "w
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="w-full bg-[#0B0205] text-stone-300 border-t border-[#D4AF37]/30 pt-12 pb-10 mt-8 text-white">
+    <footer className="w-full bg-gradient-to-b from-[#140209] via-[#0A0105] to-[#040002] text-stone-300 border-t-2 border-[#D4AF37]/40 pt-16 pb-12 mt-12 text-white shadow-[0_-20px_50px_rgba(0,0,0,0.9)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-12 border-b border-white/10">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-12 border-b border-[#D4AF37]/20">
           
           {/* Brand Info */}
           <div className="md:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#380E17] to-[#1C050D] text-amber-300 flex items-center justify-center border border-[#D4AF37]/60 shadow-md">
-                <VijayadashamiBowIcon className="w-7 h-7" />
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#9F1239] via-[#5C0A1E] to-[#25030C] text-amber-300 flex items-center justify-center border-2 border-[#D4AF37]/70 shadow-[0_0_20px_rgba(212,175,55,0.35)]">
+                <VijayadashamiBowIcon className="w-8 h-8" />
               </div>
               <div>
                 <span className="font-heading font-black text-xl text-white tracking-wide block">

@@ -128,87 +128,92 @@ export const Hero: React.FC<HeroProps> = ({
           <div className="lg:col-span-5 xl:col-span-5 text-left space-y-5">
             
             {/* Grand Hero Title */}
-            <div className="space-y-1.5">
-              <h1 className="text-4xl xl:text-5xl 2xl:text-6xl font-bold font-decorative tracking-[0.02em] leading-[1.12]">
-                <span className="block text-[#FFFDF9] drop-shadow-md">
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-[11px] font-bold bg-gradient-to-r from-amber-500/15 via-rose-500/10 to-amber-500/15 border border-[#D4AF37]/40 text-amber-200 shadow-xs">
+                <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse shrink-0" />
+                <span className="tracking-widest uppercase">Annual Cultural & Sports Spectacle</span>
+              </div>
+
+              <h1 className="text-4xl xl:text-5xl 2xl:text-6xl font-black font-decorative tracking-[0.02em] leading-[1.08]">
+                <span className="block text-[#FFFDF9] drop-shadow-[0_4px_18px_rgba(0,0,0,0.9)]">
                   Vijayadashami
                 </span>
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#ECC665] via-[#FFE494] to-[#C99824] drop-shadow-lg">
+                <span className="block gold-gradient-text drop-shadow-[0_6px_28px_rgba(212,175,55,0.5)]">
                   Carnival
                 </span>
               </h1>
 
               {/* Traditional Golden Lotus Ornament with wings matching mobile */}
-              <div className="pt-1.5 flex items-center gap-2.5">
-                <span className="h-[1px] w-10 bg-gradient-to-r from-transparent to-[#D4AF37]/80" />
-                <svg width="36" height="16" viewBox="0 0 36 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#D4AF37] drop-shadow-xs">
-                  <path d="M18 1C15 6 9 9 3 9C6 11 12 11 16 7L18 15L20 7C24 11 30 11 33 9C27 9 21 6 18 1Z" fill="#D4AF37" opacity="0.9"/>
+              <div className="pt-1 flex items-center gap-2.5">
+                <span className="h-[1.5px] w-12 bg-gradient-to-r from-transparent via-[#D4AF37] to-[#D4AF37]" />
+                <svg width="40" height="18" viewBox="0 0 36 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#D4AF37] drop-shadow-[0_0_8px_rgba(212,175,55,0.6)]">
+                  <path d="M18 1C15 6 9 9 3 9C6 11 12 11 16 7L18 15L20 7C24 11 30 11 33 9C27 9 21 6 18 1Z" fill="#D4AF37" opacity="0.95"/>
                   <circle cx="18" cy="4" r="1.5" fill="#FFE28A" />
                   <circle cx="12" cy="8" r="1" fill="#D4AF37" />
                   <circle cx="24" cy="8" r="1" fill="#D4AF37" />
                 </svg>
-                <span className="h-[1px] w-10 bg-gradient-to-l from-transparent to-[#D4AF37]/80" />
+                <span className="h-[1.5px] w-12 bg-gradient-to-l from-transparent via-[#D4AF37] to-[#D4AF37]" />
               </div>
             </div>
 
             {/* Subtitle */}
-            <p className="text-stone-300 text-sm xl:text-base font-medium leading-relaxed max-w-lg">
-              Join the SRMU campus celebration featuring 6 exciting competitions, team challenges and festive carnival rewards.
+            <p className="text-stone-300 text-sm xl:text-base font-normal leading-relaxed max-w-lg">
+              Join the SRMU campus celebration featuring 6 exciting competitions, team challenges, agility arenas, and festive carnival rewards.
             </p>
 
-            {/* Event Badges 2x2 VIP Ticket Grid matching mobile */}
+            {/* Event Badges 2x2 VIP Ticket Grid */}
             <div className="grid grid-cols-2 gap-3 text-xs max-w-lg pt-1">
               {/* Date */}
-              <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-gradient-to-br from-[#24060F]/90 to-[#14030A]/95 border border-[#D4AF37]/40 shadow-sm backdrop-blur-md hover:border-[#D4AF37]/70 transition-all text-left">
-                <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/30 text-[#E5C158] flex items-center justify-center shrink-0">
+              <div className="royal-glass-card flex items-center gap-2.5 p-3 rounded-2xl text-left">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#5A0E22] to-[#25040D] border border-[#D4AF37]/60 text-amber-300 flex items-center justify-center shrink-0 shadow-[0_0_12px_rgba(212,175,55,0.25)]">
                   <Calendar className="w-4 h-4" />
                 </div>
                 <div className="min-w-0">
-                  <span className="block text-[10px] uppercase tracking-wider text-amber-300/70 font-bold">DATE</span>
+                  <span className="block text-[9px] uppercase tracking-wider text-amber-300/80 font-bold">DATE</span>
                   <span className="font-bold text-white text-xs xl:text-sm truncate block">29 Oct 2026</span>
                 </div>
               </div>
 
               {/* Time */}
-              <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-gradient-to-br from-[#24060F]/90 to-[#14030A]/95 border border-[#D4AF37]/40 shadow-sm backdrop-blur-md hover:border-[#D4AF37]/70 transition-all text-left">
-                <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/30 text-[#E5C158] flex items-center justify-center shrink-0">
+              <div className="royal-glass-card flex items-center gap-2.5 p-3 rounded-2xl text-left">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#5A0E22] to-[#25040D] border border-[#D4AF37]/60 text-amber-300 flex items-center justify-center shrink-0 shadow-[0_0_12px_rgba(212,175,55,0.25)]">
                   <Clock className="w-4 h-4" />
                 </div>
                 <div className="min-w-0">
-                  <span className="block text-[10px] uppercase tracking-wider text-amber-300/70 font-bold">TIMING</span>
+                  <span className="block text-[9px] uppercase tracking-wider text-amber-300/80 font-bold">TIMING</span>
                   <span className="font-bold text-white text-xs xl:text-sm truncate block">11:00 AM</span>
                 </div>
               </div>
 
               {/* Venue */}
-              <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-gradient-to-br from-[#24060F]/90 to-[#14030A]/95 border border-[#D4AF37]/40 shadow-sm backdrop-blur-md hover:border-[#D4AF37]/70 transition-all text-left">
-                <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/30 text-[#E5C158] flex items-center justify-center shrink-0">
+              <div className="royal-glass-card flex items-center gap-2.5 p-3 rounded-2xl text-left">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#5A0E22] to-[#25040D] border border-[#D4AF37]/60 text-amber-300 flex items-center justify-center shrink-0 shadow-[0_0_12px_rgba(212,175,55,0.25)]">
                   <MapPin className="w-4 h-4" />
                 </div>
                 <div className="min-w-0">
-                  <span className="block text-[10px] uppercase tracking-wider text-amber-300/70 font-bold">VENUE</span>
+                  <span className="block text-[9px] uppercase tracking-wider text-amber-300/80 font-bold">VENUE</span>
                   <span className="font-bold text-white text-xs xl:text-sm truncate block">SRMU Campus, B5-408</span>
                 </div>
               </div>
 
               {/* Fee */}
-              <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-gradient-to-br from-[#270710]/95 to-[#16030B]/95 border border-[#D4AF37]/45 shadow-sm backdrop-blur-md hover:border-[#D4AF37]/70 transition-all text-left">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#C2410C] to-[#EA580C] text-white font-black text-sm flex items-center justify-center shrink-0 shadow-xs">
+              <div className="royal-glass-card flex items-center gap-2.5 p-3 rounded-2xl text-left">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#C2410C] via-[#EA580C] to-[#9A3412] border border-amber-300/60 text-white font-black text-sm flex items-center justify-center shrink-0 shadow-[0_0_14px_rgba(234,88,12,0.4)]">
                   ₹5
                 </div>
                 <div className="min-w-0">
-                  <span className="block text-[10px] uppercase tracking-wider text-amber-300/70 font-bold">ENTRY FEE</span>
+                  <span className="block text-[9px] uppercase tracking-wider text-amber-300/80 font-bold">ENTRY FEE</span>
                   <span className="font-bold text-amber-200 text-xs xl:text-sm truncate block">Per Selected Game</span>
                 </div>
               </div>
             </div>
 
             {/* 3 Action CTAs */}
-            <div className="space-y-2.5 pt-2 max-w-lg">
+            <div className="space-y-3 pt-2 max-w-lg">
               {/* Primary CTA - Full-width single-line prominent button */}
               <button
                 onClick={onRegisterClick}
-                className="w-full py-3.5 px-6 rounded-full text-xs xl:text-sm font-bold bg-gradient-to-r from-[#881337] via-[#B91C1C] to-[#881337] hover:from-[#9F1239] hover:to-[#B91C1C] text-white flex items-center justify-center gap-2.5 border border-[#E5C158]/70 shadow-lg shadow-rose-950/70 hover:scale-[1.02] active:scale-95 transition-all whitespace-nowrap cursor-pointer"
+                className="shine-effect w-full py-4 px-6 rounded-full text-xs xl:text-sm font-bold bg-gradient-to-r from-[#881337] via-[#BE123C] to-[#881337] hover:from-[#9F1239] hover:to-[#BE123C] text-white flex items-center justify-center gap-2.5 border-2 border-[#FFE28A]/80 shadow-[0_12px_35px_rgba(159,18,57,0.65)] hover:scale-[1.02] active:scale-95 transition-all whitespace-nowrap cursor-pointer"
               >
                 <Sparkles className="w-4 h-4 text-amber-300 animate-pulse shrink-0" />
                 <span className="tracking-wide">Proceed to Registration</span>
@@ -216,10 +221,10 @@ export const Hero: React.FC<HeroProps> = ({
               </button>
 
               {/* Secondary & Tertiary CTAs - Balanced 2-column grid */}
-              <div className="grid grid-cols-2 gap-2.5">
+              <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={onExploreGamesClick}
-                  className="py-3 px-4 rounded-full text-xs xl:text-sm font-bold bg-black/60 hover:bg-black/80 text-white flex items-center justify-center gap-2 border border-[#D4AF37]/35 hover:border-[#D4AF37] backdrop-blur-md hover:scale-[1.02] active:scale-95 transition-all shadow-xs whitespace-nowrap cursor-pointer"
+                  className="py-3 px-4 rounded-full text-xs xl:text-sm font-bold bg-black/60 hover:bg-black/80 text-white flex items-center justify-center gap-2 border border-[#D4AF37]/45 hover:border-[#D4AF37] backdrop-blur-md hover:scale-[1.02] active:scale-95 transition-all shadow-[0_4px_16px_rgba(0,0,0,0.5)] whitespace-nowrap cursor-pointer"
                 >
                   <Gamepad2 className="w-4 h-4 text-[#E5C158] shrink-0" />
                   <span>Explore Games</span>
@@ -227,9 +232,9 @@ export const Hero: React.FC<HeroProps> = ({
 
                 <button
                   onClick={handleWatchIntro}
-                  className="py-3 px-4 rounded-full text-xs xl:text-sm font-bold bg-black/60 hover:bg-black/80 text-[#F5E6B3] flex items-center justify-center gap-2 border border-[#D4AF37]/35 hover:border-[#D4AF37] backdrop-blur-md hover:scale-[1.02] active:scale-95 transition-all shadow-xs whitespace-nowrap cursor-pointer"
+                  className="py-3 px-4 rounded-full text-xs xl:text-sm font-bold bg-black/60 hover:bg-black/80 text-[#F5E6B3] flex items-center justify-center gap-2 border border-[#D4AF37]/45 hover:border-[#D4AF37] backdrop-blur-md hover:scale-[1.02] active:scale-95 transition-all shadow-[0_4px_16px_rgba(0,0,0,0.5)] whitespace-nowrap cursor-pointer"
                 >
-                  <div className="w-4 h-4 rounded-full bg-[#E5C158] text-[#100308] flex items-center justify-center shrink-0">
+                  <div className="w-4 h-4 rounded-full bg-[#E5C158] text-[#100308] flex items-center justify-center shrink-0 shadow-xs">
                     <Play className="w-2 h-2 fill-current ml-0.5" />
                   </div>
                   <span>Watch Intro</span>
@@ -250,11 +255,16 @@ export const Hero: React.FC<HeroProps> = ({
           
           {/* Grand Hero Title */}
           <div className="space-y-1.5">
-            <h1 className="text-3xl xs:text-4xl sm:text-5xl font-bold font-decorative tracking-[0.02em] leading-[1.12]">
-              <span className="block text-[#FFFDF9] drop-shadow-md">
+            <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[10px] font-bold bg-gradient-to-r from-amber-500/15 to-rose-500/15 border border-[#D4AF37]/40 text-amber-200 shadow-xs mx-auto">
+              <Sparkles className="w-3 h-3 text-amber-400 animate-pulse shrink-0" />
+              <span className="tracking-wider uppercase">SRMU Grand Campus Carnival</span>
+            </div>
+
+            <h1 className="text-3xl xs:text-4xl sm:text-5xl font-black font-decorative tracking-[0.02em] leading-[1.12]">
+              <span className="block text-[#FFFDF9] drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
                 Vijayadashami
               </span>
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#ECC665] via-[#FFE494] to-[#C99824] drop-shadow-lg">
+              <span className="block gold-gradient-text drop-shadow-[0_4px_20px_rgba(212,175,55,0.45)]">
                 Carnival
               </span>
             </h1>
@@ -273,52 +283,52 @@ export const Hero: React.FC<HeroProps> = ({
           </div>
 
           {/* Subtitle */}
-          <p className="text-stone-300 text-xs sm:text-sm font-medium leading-relaxed max-w-sm sm:max-w-md mx-auto px-2">
-            Join the SRMU campus celebration featuring 6 exciting competitions, team challenges and festive carnival rewards.
+          <p className="text-stone-300 text-xs sm:text-sm font-normal leading-relaxed max-w-sm sm:max-w-md mx-auto px-2">
+            Join the SRMU campus celebration featuring 6 exciting competitions, team challenges, and festive carnival rewards.
           </p>
 
           {/* Mobile Event Badges 2x2 VIP Ticket Grid */}
-          <div className="grid grid-cols-2 gap-2 text-xs max-w-md mx-auto pt-2">
+          <div className="grid grid-cols-2 gap-2.5 text-xs max-w-md mx-auto pt-2">
             {/* Date */}
-            <div className="flex items-center gap-2 p-2 rounded-xl bg-gradient-to-br from-[#24060F]/90 to-[#14030A]/95 border border-[#D4AF37]/35 shadow-xs text-left">
-              <div className="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/30 text-[#E5C158] flex items-center justify-center shrink-0">
+            <div className="royal-glass-card flex items-center gap-2 p-2.5 rounded-xl text-left">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#5A0E22] to-[#25040D] border border-[#D4AF37]/50 text-amber-300 flex items-center justify-center shrink-0">
                 <Calendar className="w-3.5 h-3.5" />
               </div>
               <div className="min-w-0">
-                <span className="block text-[9px] uppercase tracking-wider text-amber-300/70 font-bold">DATE</span>
+                <span className="block text-[9px] uppercase tracking-wider text-amber-300/80 font-bold">DATE</span>
                 <span className="font-bold text-white text-xs truncate block">29 Oct 2026</span>
               </div>
             </div>
 
             {/* Time */}
-            <div className="flex items-center gap-2 p-2 rounded-xl bg-gradient-to-br from-[#24060F]/90 to-[#14030A]/95 border border-[#D4AF37]/35 shadow-xs text-left">
-              <div className="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/30 text-[#E5C158] flex items-center justify-center shrink-0">
+            <div className="royal-glass-card flex items-center gap-2 p-2.5 rounded-xl text-left">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#5A0E22] to-[#25040D] border border-[#D4AF37]/50 text-amber-300 flex items-center justify-center shrink-0">
                 <Clock className="w-3.5 h-3.5" />
               </div>
               <div className="min-w-0">
-                <span className="block text-[9px] uppercase tracking-wider text-amber-300/70 font-bold">TIMING</span>
+                <span className="block text-[9px] uppercase tracking-wider text-amber-300/80 font-bold">TIMING</span>
                 <span className="font-bold text-white text-xs truncate block">11:00 AM</span>
               </div>
             </div>
 
             {/* Venue */}
-            <div className="flex items-center gap-2 p-2 rounded-xl bg-gradient-to-br from-[#24060F]/90 to-[#14030A]/95 border border-[#D4AF37]/35 shadow-xs text-left">
-              <div className="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/30 text-[#E5C158] flex items-center justify-center shrink-0">
+            <div className="royal-glass-card flex items-center gap-2 p-2.5 rounded-xl text-left">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#5A0E22] to-[#25040D] border border-[#D4AF37]/50 text-amber-300 flex items-center justify-center shrink-0">
                 <MapPin className="w-3.5 h-3.5" />
               </div>
               <div className="min-w-0">
-                <span className="block text-[9px] uppercase tracking-wider text-amber-300/70 font-bold">VENUE</span>
+                <span className="block text-[9px] uppercase tracking-wider text-amber-300/80 font-bold">VENUE</span>
                 <span className="font-bold text-white text-xs truncate block">SRMU Campus, B5-408</span>
               </div>
             </div>
 
             {/* Fee */}
-            <div className="flex items-center gap-2 p-2 rounded-xl bg-gradient-to-br from-[#270710]/95 to-[#16030B]/95 border border-[#D4AF37]/45 shadow-xs text-left">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#C2410C] to-[#EA580C] text-white font-black text-xs flex items-center justify-center shrink-0 shadow-xs">
+            <div className="royal-glass-card flex items-center gap-2 p-2.5 rounded-xl text-left">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#C2410C] to-[#EA580C] text-white font-black text-xs flex items-center justify-center shrink-0 shadow-xs">
                 ₹5
               </div>
               <div className="min-w-0">
-                <span className="block text-[9px] uppercase tracking-wider text-amber-300/70 font-bold">ENTRY FEE</span>
+                <span className="block text-[9px] uppercase tracking-wider text-amber-300/80 font-bold">ENTRY FEE</span>
                 <span className="font-bold text-amber-200 text-xs truncate block">Per Selected Game</span>
               </div>
             </div>
@@ -329,7 +339,7 @@ export const Hero: React.FC<HeroProps> = ({
             {/* Primary CTA */}
             <button
               onClick={onRegisterClick}
-              className="w-full py-3.5 px-6 rounded-full text-xs sm:text-sm font-bold bg-gradient-to-r from-[#881337] via-[#B91C1C] to-[#881337] hover:from-[#9F1239] hover:to-[#B91C1C] active:from-[#9F1239] text-white flex items-center justify-center gap-2 border border-[#E5C158]/70 shadow-lg shadow-rose-950/60 active:scale-95 transition-all"
+              className="shine-effect w-full py-3.5 px-6 rounded-full text-xs sm:text-sm font-bold bg-gradient-to-r from-[#881337] via-[#BE123C] to-[#881337] text-white flex items-center justify-center gap-2 border-2 border-[#FFE28A]/80 shadow-[0_8px_25px_rgba(159,18,57,0.6)] active:scale-95 transition-all"
             >
               <Sparkles className="w-4 h-4 text-amber-300" />
               <span>Proceed to Registration</span>
@@ -340,7 +350,7 @@ export const Hero: React.FC<HeroProps> = ({
             <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={onExploreGamesClick}
-                className="py-3 px-3 rounded-full text-xs font-bold bg-black/60 hover:bg-black/80 active:bg-black text-white flex items-center justify-center gap-1.5 border border-[#D4AF37]/35 active:scale-95 transition-all shadow-xs"
+                className="py-3 px-3 rounded-full text-xs font-bold bg-black/60 hover:bg-black/80 active:bg-black text-white flex items-center justify-center gap-1.5 border border-[#D4AF37]/40 active:scale-95 transition-all shadow-xs"
               >
                 <Gamepad2 className="w-4 h-4 text-[#E5C158]" />
                 <span>Explore Games</span>
@@ -348,7 +358,7 @@ export const Hero: React.FC<HeroProps> = ({
 
               <button
                 onClick={handleWatchIntro}
-                className="py-3 px-3 rounded-full text-xs font-bold bg-black/60 hover:bg-black/80 active:bg-black text-[#F5E6B3] flex items-center justify-center gap-1.5 border border-[#D4AF37]/35 active:scale-95 transition-all shadow-xs"
+                className="py-3 px-3 rounded-full text-xs font-bold bg-black/60 hover:bg-black/80 active:bg-black text-[#F5E6B3] flex items-center justify-center gap-1.5 border border-[#D4AF37]/40 active:scale-95 transition-all shadow-xs"
               >
                 <div className="w-4 h-4 rounded-full bg-[#E5C158] text-[#100308] flex items-center justify-center">
                   <Play className="w-2 h-2 fill-current ml-0.5" />

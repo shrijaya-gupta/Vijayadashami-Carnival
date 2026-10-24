@@ -49,7 +49,14 @@ const CarnivalApp: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#100308] text-stone-100 transition-colors">
+    <div className="min-h-screen flex flex-col bg-[#0E0207] text-stone-100 transition-colors relative overflow-x-hidden selection:bg-amber-500 selection:text-black">
+      {/* Dynamic Background Ambient Aurora Orbs */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute top-[-10%] left-[-10%] w-[550px] h-[550px] rounded-full bg-gradient-to-br from-rose-900/20 via-amber-600/10 to-transparent blur-[120px] animate-aura-pulse" />
+        <div className="absolute top-[40%] right-[-10%] w-[600px] h-[600px] rounded-full bg-gradient-to-bl from-amber-600/15 via-rose-950/20 to-transparent blur-[140px] animate-aura-pulse" style={{ animationDelay: '3s' }} />
+        <div className="absolute bottom-[-10%] left-[20%] w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-rose-950/25 via-yellow-600/10 to-transparent blur-[130px] animate-aura-pulse" style={{ animationDelay: '5s' }} />
+      </div>
+
       {/* Top Ribbon Notice with Bunting Flags & Countdown */}
       <TopBanner onProceedClick={handleRegisterClick} />
 

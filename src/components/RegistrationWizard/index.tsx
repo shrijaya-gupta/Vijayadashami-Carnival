@@ -54,14 +54,14 @@ export const RegistrationWizard: React.FC = () => {
         <div className="pt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
           <div 
             onClick={() => goToStep(1)}
-            className={`p-3 rounded-xl border transition-all cursor-pointer ${
+            className={`royal-glass-card p-3.5 rounded-2xl transition-all cursor-pointer ${
               activeStep === 1 
-                ? 'bg-[#350A16] border-[#D4AF37] shadow-md shadow-rose-950/40' 
-                : 'bg-black/40 border-[#D4AF37]/25 hover:border-[#D4AF37]/50'
+                ? 'bg-[#3D0A1B] border-amber-400 shadow-lg shadow-rose-950/50 scale-[1.02]' 
+                : 'border-[#D4AF37]/30 hover:border-[#D4AF37]/60'
             }`}
           >
             <div className="flex items-center gap-2 text-xs font-bold text-amber-300 mb-1">
-              <span className="w-5 h-5 rounded-full bg-[#881337] border border-[#D4AF37]/60 text-white flex items-center justify-center text-[10px]">1</span>
+              <span className="w-5 h-5 rounded-full bg-gradient-to-r from-[#9F1239] to-[#BE123C] border border-[#FFE28A]/80 text-white flex items-center justify-center text-[10px] shadow-xs">1</span>
               <span>1. Pick Games</span>
             </div>
             <p className="text-[11px] text-stone-300 line-clamp-1">1 to 6 games at ₹5 per entry</p>
@@ -69,14 +69,14 @@ export const RegistrationWizard: React.FC = () => {
 
           <div 
             onClick={() => goToStep(2)}
-            className={`p-3 rounded-xl border transition-all cursor-pointer ${
+            className={`royal-glass-card p-3.5 rounded-2xl transition-all cursor-pointer ${
               activeStep === 2 || activeStep === 3 
-                ? 'bg-[#350A16] border-[#D4AF37] shadow-md shadow-rose-950/40' 
-                : 'bg-black/40 border-[#D4AF37]/25 hover:border-[#D4AF37]/50'
+                ? 'bg-[#3D0A1B] border-amber-400 shadow-lg shadow-rose-950/50 scale-[1.02]' 
+                : 'border-[#D4AF37]/30 hover:border-[#D4AF37]/60'
             }`}
           >
             <div className="flex items-center gap-2 text-xs font-bold text-amber-300 mb-1">
-              <span className="w-5 h-5 rounded-full bg-[#881337] border border-[#D4AF37]/60 text-white flex items-center justify-center text-[10px]">2</span>
+              <span className="w-5 h-5 rounded-full bg-gradient-to-r from-[#9F1239] to-[#BE123C] border border-[#FFE28A]/80 text-white flex items-center justify-center text-[10px] shadow-xs">2</span>
               <span>2. Student Info</span>
             </div>
             <p className="text-[11px] text-stone-300 line-clamp-1">Name, Roll Number & Phone</p>
@@ -84,14 +84,14 @@ export const RegistrationWizard: React.FC = () => {
 
           <div 
             onClick={() => goToStep(5)}
-            className={`p-3 rounded-xl border transition-all cursor-pointer ${
+            className={`royal-glass-card p-3.5 rounded-2xl transition-all cursor-pointer ${
               activeStep >= 4 
-                ? 'bg-[#350A16] border-[#D4AF37] shadow-md shadow-rose-950/40' 
-                : 'bg-black/40 border-[#D4AF37]/25 hover:border-[#D4AF37]/50'
+                ? 'bg-[#3D0A1B] border-amber-400 shadow-lg shadow-rose-950/50 scale-[1.02]' 
+                : 'border-[#D4AF37]/30 hover:border-[#D4AF37]/60'
             }`}
           >
             <div className="flex items-center gap-2 text-xs font-bold text-amber-300 mb-1">
-              <span className="w-5 h-5 rounded-full bg-[#881337] border border-[#D4AF37]/60 text-white flex items-center justify-center text-[10px]">3</span>
+              <span className="w-5 h-5 rounded-full bg-gradient-to-r from-[#9F1239] to-[#BE123C] border border-[#FFE28A]/80 text-white flex items-center justify-center text-[10px] shadow-xs">3</span>
               <span>3. Pay & Get Pass</span>
             </div>
             <p className="text-[11px] text-stone-300 line-clamp-1">₹{totalFee || 5} UPI / Cash & Instant ID</p>
@@ -103,7 +103,7 @@ export const RegistrationWizard: React.FC = () => {
       <WizardProgress />
 
       {/* Dynamic Step Panes in Royal Velvet Theme */}
-      <div className="bg-gradient-to-b from-[#1C050E]/95 via-[#14030A]/95 to-[#0E0207]/95 rounded-3xl p-5 sm:p-8 md:p-10 border border-[#D4AF37]/45 shadow-2xl shadow-black/80 backdrop-blur-xl transition-all">
+      <div className="relative rounded-3xl p-6 sm:p-8 md:p-10 bg-gradient-to-b from-[#1E0510]/95 via-[#14030A]/95 to-[#0C0206] border-2 border-[#D4AF37]/45 shadow-[0_20px_60px_rgba(0,0,0,0.9),inset_0_1px_1px_rgba(255,240,190,0.15)] backdrop-blur-2xl transition-all">
         {activeStep === 1 && <Step1GamesSelection />}
         {activeStep === 2 && <Step2StudentDetails />}
         {activeStep === 3 && <Step3TeamRoster />}

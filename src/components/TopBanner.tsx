@@ -32,7 +32,7 @@ export const TopBanner: React.FC<TopBannerProps> = ({ onProceedClick }) => {
   }, []);
 
   return (
-    <div className="w-full relative z-40 bg-[#24060E] border-b border-[#440D1B] text-white">
+    <div className="w-full relative z-40 bg-gradient-to-r from-[#1A030A] via-[#2D0613] to-[#1A030A] border-b border-[#D4AF37]/30 text-white shadow-lg backdrop-blur-md">
       {/* Decorative Traditional Indian Bunting / Toran Banner */}
       <div className="w-full h-2.5 sm:h-3 overflow-hidden flex items-center">
         <svg 
