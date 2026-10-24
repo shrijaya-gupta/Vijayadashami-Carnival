@@ -11,7 +11,8 @@ import {
   AlertTriangle,
   Target,
   Users,
-  Clock
+  Clock,
+  Plus
 } from 'lucide-react';
 
 interface GameGuidelinesModalProps {

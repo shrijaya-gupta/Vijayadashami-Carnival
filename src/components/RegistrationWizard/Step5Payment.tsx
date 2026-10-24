@@ -26,7 +26,7 @@ export const Step5Payment: React.FC = () => {
 
   const hasTeamGame = selectedGameIds.some(id => {
     const g = GAMES_DATA.find(item => item.id === id);
-    return g && g.maxTeamSize > 1;
+    return g && g.participationType.toLowerCase().includes('team');
   });
 
   const selectedGamesList = selectedGameIds.map(id => {
@@ -34,8 +34,8 @@ export const Step5Payment: React.FC = () => {
     const config = gameConfigs[id];
     return {
       id,
-      title: found?.title || id,
-      format: config?.format === 'team' ? 'Team Squad' : 'Individual',
+      title: found?.name || id,
+      format: config?.participationType === 'team' ? 'Team Squad' : 'Individual',
       fee: 5
     };
   });

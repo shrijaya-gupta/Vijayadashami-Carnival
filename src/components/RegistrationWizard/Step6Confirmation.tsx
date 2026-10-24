@@ -49,7 +49,7 @@ export const Step6Confirmation: React.FC = () => {
           light: '#FFFDF9'
         }
       })
-      .then(url => setQrDataUrl(url))
+      .then((url: string) => setQrDataUrl(url))
       .catch(() => {});
     }
   }, [regId]);

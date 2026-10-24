@@ -12,7 +12,8 @@ import {
   Calendar, 
   Zap,
   Check,
-  Gamepad2
+  Gamepad2,
+  Flame
 } from 'lucide-react';
 import { GAMES_DATA } from '../../data/games';
 
