@@ -41,6 +41,20 @@
   .font-rozha {
     font-family: 'Rozha One', serif;
   }
+
+  .font-runethia {
+    font-family: 'Runethia', 'Playfair Display', cursive, sans-serif;
+  }
+}
+
+@font-face {
+  font-family: 'Runethia';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Runethia'),
+       url('/Runethia.woff') format('woff'),
+       url('https://fonts.cdnfonts.com/s/143538/Runethia-3lGPy.woff') format('woff');
+  font-display: swap;
 }
 
 /* Custom Festive Scrollbars */

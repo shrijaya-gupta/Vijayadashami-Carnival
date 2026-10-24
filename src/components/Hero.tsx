@@ -265,16 +265,16 @@ export const Hero: React.FC<HeroProps> = ({
             <h1 className="flex flex-col items-center justify-center select-none space-y-0.5">
               {/* Vijayadashami */}
               <span 
-                className="block text-center text-3xl xs:text-4xl sm:text-5xl font-bold tracking-tight text-[#FFFDF9] drop-shadow-[0_4px_18px_rgba(0,0,0,0.95)]"
-                style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic" }}
+                className="block text-center text-4xl xs:text-5xl sm:text-6xl font-normal tracking-wide text-[#FFFDF9] drop-shadow-[0_4px_18px_rgba(0,0,0,0.95)]"
+                style={{ fontFamily: "'Runethia', 'Playfair Display', cursive" }}
               >
                 Vijayadashami
               </span>
               
               {/* Carnival */}
               <span 
-                className="block text-center text-3xl xs:text-4xl sm:text-5xl font-black gold-gradient-text drop-shadow-[0_4px_24px_rgba(212,175,55,0.45)]"
-                style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic" }}
+                className="block text-center text-4xl xs:text-5xl sm:text-6xl font-normal gold-gradient-text drop-shadow-[0_4px_24px_rgba(212,175,55,0.45)] -mt-1 xs:-mt-2"
+                style={{ fontFamily: "'Runethia', 'Playfair Display', cursive" }}
               >
                 Carnival
               </span>

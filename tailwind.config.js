@@ -27,6 +27,7 @@ module.exports = {
         decorative: ['"Cinzel Decorative"', 'Cinzel', 'serif'],
         rozha: ['"Rozha One"', 'serif'],
         outfit: ['Outfit', 'sans-serif'],
+        runethia: ['Runethia', '"Playfair Display"', 'cursive', 'sans-serif'],
       },
       boxShadow: {
         'festive-gold': '0 8px 30px rgba(212, 175, 55, 0.25)',
