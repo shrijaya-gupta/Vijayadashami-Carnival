@@ -180,7 +180,7 @@ export const Hero: React.FC<HeroProps> = ({
           Desktop: Text is on Left 5 cols, Right 7 cols is open to let background artwork shine
           Mobile: Content sits below the top image, seamlessly flowing
           ========================================================================= */}
-      <div className="relative z-30 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-3 xs:-mt-4 sm:-mt-5 lg:mt-0 pt-0 lg:pt-14 pb-14 sm:pb-22">
+      <div className="relative z-30 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 xs:-mt-7 sm:-mt-8 lg:mt-0 pt-0 lg:pt-14 pb-14 sm:pb-22">
         
         {/* ================= DESKTOP LAYOUT (>= 1024px) ================= */}
         <div className="hidden lg:grid lg:grid-cols-12 lg:gap-10 xl:gap-12 items-center">
@@ -309,14 +309,14 @@ export const Hero: React.FC<HeroProps> = ({
 
         {/* ================= MOBILE / TABLET LAYOUT (< 1024px) ================= */}
         {/* Visual artwork is positioned at the top of the section; content flows cleanly below */}
-        <div className="block lg:hidden text-center space-y-3">
+        <div className="block lg:hidden text-center space-y-2.5">
           
           {/* Grand Hero Title (Mobile / Tablet) - Stylish Readable Cursive Centered Layout */}
-          <div className="relative max-w-sm sm:max-w-md mx-auto pt-1 pb-0.5 text-center">
-            <h1 className="flex flex-col items-center justify-center select-none space-y-1">
+          <div className="relative max-w-sm sm:max-w-md mx-auto pt-0 pb-0 text-center">
+            <h1 className="flex flex-col items-center justify-center select-none space-y-0.5">
               {/* Vijayadashami - shifted slightly left */}
               <span 
-                className="block text-center text-4xl xs:text-5xl sm:text-6xl font-normal tracking-wide text-[#FFFDF9] drop-shadow-[0_4px_18px_rgba(0,0,0,0.95)] -translate-x-2.5 sm:-translate-x-4 pt-1.5 leading-[1.25]"
+                className="block text-center text-4xl xs:text-5xl sm:text-6xl font-normal tracking-wide text-[#FFFDF9] drop-shadow-[0_4px_18px_rgba(0,0,0,0.95)] -translate-x-2.5 sm:-translate-x-4 pt-1 leading-[1.22]"
                 style={{ fontFamily: "'Runethia', 'Playfair Display', cursive" }}
               >
                 Vijayadashami
@@ -324,7 +324,7 @@ export const Hero: React.FC<HeroProps> = ({
               
               {/* Carnival - shifted slightly right */}
               <span 
-                className="block text-center text-4xl xs:text-5xl sm:text-6xl font-normal gold-gradient-text drop-shadow-[0_4px_24px_rgba(212,175,55,0.45)] translate-x-2.5 sm:translate-x-4 leading-[1.25]"
+                className="block text-center text-4xl xs:text-5xl sm:text-6xl font-normal gold-gradient-text drop-shadow-[0_4px_24px_rgba(212,175,55,0.45)] translate-x-2.5 sm:translate-x-4 leading-[1.22]"
                 style={{ fontFamily: "'Runethia', 'Playfair Display', cursive" }}
               >
                 Carnival
@@ -333,7 +333,7 @@ export const Hero: React.FC<HeroProps> = ({
           </div>
 
           {/* Mobile Event Badges 2x2 VIP Ticket Grid */}
-          <div className="grid grid-cols-2 gap-2 text-xs max-w-md mx-auto pt-1">
+          <div className="grid grid-cols-2 gap-2 text-xs max-w-md mx-auto pt-0.5">
             {/* Date */}
             <div className="royal-glass-card flex items-center gap-2 p-2.5 rounded-xl text-left">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#5A0E22] to-[#25040D] border border-[#D4AF37]/50 text-amber-300 flex items-center justify-center shrink-0">
