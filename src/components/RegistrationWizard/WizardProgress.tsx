@@ -43,7 +43,7 @@ export const WizardProgress: React.FC = () => {
         {/* Dynamic Fee Pill */}
         <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#2E0914] to-[#18030B] border border-[#D4AF37]/50 text-amber-200 text-xs font-bold shadow-xs">
           <Trophy className="w-3.5 h-3.5 text-amber-400" />
-          <span>All 6 Carnival Games Included • ₹{totalFee} Fee</span>
+          <span>All-Access Carnival Pass • ₹{totalFee} Fee</span>
           <span className="sr-only">{selectedGameIds.length} {selectedGameIds.length === 1 ? 'Game' : 'Games'}</span>
         </div>
       </div>

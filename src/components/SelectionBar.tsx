@@ -29,7 +29,7 @@ export const SelectionBar: React.FC<SelectionBarProps> = ({
       {isExpanded && (
         <div className="mb-2 p-3 rounded-2xl bg-[#1A040E]/95 backdrop-blur-xl border border-[#D4AF37]/50 shadow-2xl text-white animate-in fade-in slide-in-from-bottom-2 duration-200">
           <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/10 text-xs font-bold text-amber-200">
-            <span>All-Access Pass (All 6 Games)</span>
+            <span>All-Access Carnival Pass</span>
             <span className="text-amber-400 font-extrabold">Total: ₹{totalFee}</span>
           </div>
           <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto pr-1">

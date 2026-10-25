@@ -54,12 +54,12 @@ export const Step5Payment: React.FC = () => {
             Pass Payment
           </h3>
           <span className="text-xs font-bold text-amber-300 bg-black/50 px-2.5 py-1 rounded-full border border-[#D4AF37]/40 shadow-xs shrink-0 whitespace-nowrap">
-            Pay: ₹10
+            Pay: ₹{totalFee}
           </span>
         </div>
         <div className="flex flex-wrap items-center gap-2 text-xs text-stone-300">
           <span className="inline-flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-semibold whitespace-nowrap">
-            ✓ Flat ₹10 All-Access Pass
+            ✓ Flat ₹{totalFee} All-Access Pass
           </span>
           <span className="text-stone-400 text-[11px]">
             Scan UPI QR or pay to UPI ID and submit UTR
@@ -105,7 +105,7 @@ export const Step5Payment: React.FC = () => {
 
           <div className="text-right">
             <span className="text-[10px] uppercase tracking-wider text-stone-400 font-bold block">All-Access Pass</span>
-            <span className="text-xs sm:text-sm font-bold text-amber-300">₹{totalFee} (All 6 Games)</span>
+            <span className="text-xs sm:text-sm font-bold text-amber-300">₹{totalFee} (All-Access Pass)</span>
           </div>
         </div>
       </div>
@@ -169,7 +169,7 @@ export const Step5Payment: React.FC = () => {
             </div>
             <div className="flex justify-between items-center text-stone-300">
               <span>Included Activities:</span>
-              <span className="font-bold text-white">All 6 Games</span>
+              <span className="font-bold text-white">Full Festival Access</span>
             </div>
             <div className="flex justify-between items-center text-stone-300">
               <span>Registration Fee:</span>

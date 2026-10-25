@@ -72,13 +72,13 @@ export const Step6Confirmation: React.FC = () => {
   const handleShareWhatsApp = () => {
     const siteUrl = window.location.origin;
     const text = encodeURIComponent(
-      `🎯 *VIJAYADASHAMI CARNIVAL 2026 — 6 Exciting Campus Games & Competitions!*\n\n` +
-      `🔥 6 Thrilling Games & Challenges | Cash Prizes & Exciting Rewards\n` +
-      `🎟️ All-Access Pass: Only ₹10 (All Games Included)\n` +
+      `🎯 *VIJAYADASHAMI CARNIVAL 2026 — Campus Games & Competitions!*\n\n` +
+      `🔥 Thrilling Games & Challenges | Cash Prizes & Exciting Rewards\n` +
+      `🎟️ All-Access Pass: Only ₹10 (All Events Included)\n` +
       `📅 Date: Thursday, 29 October 2026 • 11:00 AM\n` +
       `📍 Venue: SRMU B5-408\n\n` +
       `🎉 I have registered! (Registration ID: ${regId} — ${submissionResult.studentName})\n\n` +
-      `👉 Register now & check out the games:\n${siteUrl}`
+      `👉 Register now & check out the festival:\n${siteUrl}`
     );
     window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
   };

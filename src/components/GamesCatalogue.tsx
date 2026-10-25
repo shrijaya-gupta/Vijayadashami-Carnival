@@ -383,7 +383,7 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
 
         {/* Subtitle adhering strictly to Section 3 specification */}
         <p className="text-xs sm:text-sm md:text-base text-stone-300 font-medium max-w-md sm:max-w-xl mx-auto px-2 leading-relaxed">
-          <span className="block text-amber-200 font-semibold mb-1">🎟️ Single ₹10 All-Access Registration Fee — Play All 6 Games!</span>
+          <span className="block text-amber-200 font-semibold mb-1">🎟️ Single ₹10 All-Access Registration Fee — Full Festival Access!</span>
           <span className="text-stone-400 text-xs sm:text-sm">Explore our exciting campus lineup. Flat ₹10 entry pass covers full participation in all events.</span>
           <span className="sr-only">Choose from our lineup of traditional and active games. Each game is ₹5 per entry.</span>
         </p>

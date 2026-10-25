@@ -184,7 +184,7 @@ export const Step3TeamRoster: React.FC = () => {
                             <input
                               type="text"
                               required
-                              placeholder="Teammate Full Name"
+                              placeholder="Enter member's full name"
                               value={member.name}
                               onChange={(e) => updateTeamMember(gameId, mIdx, 'name', e.target.value)}
                               className="w-full sm:flex-1 px-3 py-1.5 rounded-lg border border-[#D4AF37]/30 bg-black/50 text-white placeholder-stone-500"
@@ -192,7 +192,7 @@ export const Step3TeamRoster: React.FC = () => {
 
                             <input
                               type="text"
-                              placeholder="Roll Number (Optional)"
+                              placeholder="Enter roll number (optional)"
                               value={member.roll}
                               onChange={(e) => updateTeamMember(gameId, mIdx, 'roll', e.target.value)}
                               className="w-full sm:w-40 px-3 py-1.5 rounded-lg border border-[#D4AF37]/30 bg-black/50 text-white placeholder-stone-500"
@@ -200,7 +200,7 @@ export const Step3TeamRoster: React.FC = () => {
 
                             <input
                               type="tel"
-                              placeholder="Contact (Optional)"
+                              placeholder="Enter mobile number (optional)"
                               value={member.contact}
                               onChange={(e) => updateTeamMember(gameId, mIdx, 'contact', e.target.value)}
                               className="w-full sm:w-36 px-3 py-1.5 rounded-lg border border-[#D4AF37]/30 bg-black/50 text-white placeholder-stone-500"

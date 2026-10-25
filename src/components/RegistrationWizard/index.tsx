@@ -7,7 +7,7 @@ import { Step3TeamRoster } from './Step3TeamRoster';
 import { Step4ReviewSummary } from './Step4ReviewSummary';
 import { Step5Payment } from './Step5Payment';
 import { Step6Confirmation } from './Step6Confirmation';
-import { Gamepad2, UserCheck, CreditCard, Zap, ShieldCheck, ArrowRight } from 'lucide-react';
+import { Gamepad2, UserCheck, CreditCard, Zap, ShieldCheck, ArrowRight, Ticket, Sparkles } from 'lucide-react';
 
 export const RegistrationWizard: React.FC = () => {
   const { activeStep, goToStep, selectedGameIds, totalFee } = useRegistration();
@@ -17,6 +17,31 @@ export const RegistrationWizard: React.FC = () => {
       
       {/* Decorative Background Ambient Glow */}
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-96 h-96 bg-rose-950/20 rounded-full blur-3xl pointer-events-none" />
+
+      {/* Clean, Elegant Registration Form Heading */}
+      <div className="text-center space-y-2 mb-6 sm:mb-8">
+        <span className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs uppercase tracking-widest font-bold text-amber-300 bg-black/50 px-3.5 py-1 rounded-full border border-[#D4AF37]/35 shadow-xs">
+          <Ticket className="w-3.5 h-3.5 text-amber-400" />
+          <span>Campus Carnival Pass</span>
+        </span>
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold font-heading text-white tracking-wide">
+          Registration Form
+        </h2>
+        
+        {/* Subtle Golden Lotus Ornament Divider */}
+        <div className="pt-0.5 flex items-center justify-center gap-2.5">
+          <span className="h-[1px] w-12 bg-gradient-to-r from-transparent to-[#D4AF37]/80" />
+          <svg width="28" height="12" viewBox="0 0 36 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#D4AF37] opacity-90">
+            <path d="M18 1C15 6 9 9 3 9C6 11 12 11 16 7L18 15L20 7C24 11 30 11 33 9C27 9 21 6 18 1Z" fill="#D4AF37"/>
+            <circle cx="18" cy="4" r="1.5" fill="#FFE28A" />
+          </svg>
+          <span className="h-[1px] w-12 bg-gradient-to-l from-transparent to-[#D4AF37]/80" />
+        </div>
+
+        <p className="text-xs sm:text-sm text-stone-300 max-w-md mx-auto leading-relaxed">
+          Fill in your details below to obtain your official carnival entry pass.
+        </p>
+      </div>
 
       {/* Hidden WizardProgress for test suite assertions */}
       <div className="sr-only" aria-hidden="true">

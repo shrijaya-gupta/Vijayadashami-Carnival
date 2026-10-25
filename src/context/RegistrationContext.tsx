@@ -100,10 +100,21 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         }
       })
       .catch(() => {});
+
+    // Sync authoritative event config (pass fee, deadlines) from admin/server
+    fetch('/api/config')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.success && data.data && typeof data.data.allAccessPassFee === 'number') {
+          setPassFee(data.data.allAccessPassFee);
+        }
+      })
+      .catch(() => {});
   }, []);
 
-  // Authoritative Flat ₹10 Registration Fee (All Games Included; legacy: selectedGameIds.length * 5)
-  const totalFee = 10;
+  // Authoritative dynamic registration pass fee (synced with admin event configuration; defaults to 10)
+  const [passFee, setPassFee] = useState<number>(10);
+  const totalFee = passFee;
 
   // Precision scroll helper to keep student focused directly on the active form card
   const scrollToWizard = () => {

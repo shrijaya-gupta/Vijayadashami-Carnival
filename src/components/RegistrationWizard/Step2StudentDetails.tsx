@@ -22,7 +22,7 @@ const BRANCHES = ['CSE', 'IT', 'ECE', 'ME', 'Civil', 'Other'];
 const YEARS = ['1st Year', '2nd Year', '3rd Year', '4th Year', '5th Year'];
 
 export const Step2StudentDetails: React.FC = () => {
-  const { student, updateStudent, nextStep, prevStep, goToStep, selectedGameIds, gameConfigs, submitError } = useRegistration();
+  const { student, updateStudent, nextStep, prevStep, goToStep, selectedGameIds, gameConfigs, submitError, totalFee } = useRegistration();
   const hasTeamGame = selectedGameIds.some(id => gameConfigs[id]?.participationType === 'team');
 
   const isMobileValid = /^(?:\+91|0)?[6-9]\d{9}$/.test(student.mobileNumber.replace(/[\s\-\(\)]/g, ''));
@@ -38,18 +38,18 @@ export const Step2StudentDetails: React.FC = () => {
       <div className="pb-3 border-b border-white/10 space-y-1.5">
         <div className="flex items-center justify-between gap-2">
           <h3 className="text-base sm:text-xl font-bold font-heading text-white tracking-wide">
-            Student Registration
+            Student Information
           </h3>
           <span className="text-xs font-bold text-amber-300 bg-black/50 px-2.5 py-1 rounded-full border border-[#D4AF37]/40 shadow-xs shrink-0 whitespace-nowrap">
-            Pass Fee: ₹10
+            Pass Fee: ₹{totalFee}
           </span>
         </div>
         <div className="flex flex-wrap items-center gap-2 text-xs text-stone-300">
           <span className="inline-flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-semibold whitespace-nowrap">
-            ✓ All 6 Games Included
+            ✓ All-Access Pass
           </span>
           <span className="text-stone-400 text-[11px]">
-            Fill details to get your ₹10 carnival pass
+            Please enter your university enrollment details to claim your pass
           </span>
         </div>
         <span className="sr-only">Step 2: Participant & Student Information Provide your official Shri Ramswaroop Memorial University enrollment details.</span>
@@ -76,7 +76,7 @@ export const Step2StudentDetails: React.FC = () => {
           <input
             type="text"
             required
-            placeholder="Full Name"
+            placeholder="Enter your full name"
             value={student.fullName}
             onChange={(e) => updateStudent({ fullName: e.target.value })}
             className="w-full px-3.5 py-2.5 rounded-xl border border-[#D4AF37]/35 bg-black/50 text-white placeholder-stone-500 text-sm focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] focus:outline-hidden transition-all shadow-inner"
@@ -107,7 +107,7 @@ export const Step2StudentDetails: React.FC = () => {
               type="tel"
               required
               maxLength={13}
-              placeholder="e.g., 9876543210"
+              placeholder="Enter 10-digit mobile number"
               value={student.mobileNumber}
               onChange={(e) => {
                 const val = e.target.value.replace(/[^0-9+\s\-]/g, '');
@@ -147,7 +147,7 @@ export const Step2StudentDetails: React.FC = () => {
             <input
               type="text"
               required
-              placeholder="Specify Course"
+              placeholder="Enter degree / course name"
               value={student.courseOther}
               onChange={(e) => updateStudent({ courseOther: e.target.value })}
               className="w-full mt-2 px-3 py-2 rounded-xl border border-[#D4AF37]/35 bg-black/50 text-white text-sm"
@@ -172,7 +172,7 @@ export const Step2StudentDetails: React.FC = () => {
             <input
               type="text"
               required
-              placeholder="Specify Branch"
+              placeholder="Enter branch / department name"
               value={student.branchOther}
               onChange={(e) => updateStudent({ branchOther: e.target.value })}
               className="w-full mt-2 px-3 py-2 rounded-xl border border-[#D4AF37]/35 bg-black/50 text-white text-sm"
@@ -219,7 +219,7 @@ export const Step2StudentDetails: React.FC = () => {
           className="w-full sm:w-auto px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold text-stone-300 hover:text-white bg-black/40 hover:bg-black/70 border border-white/10 transition-colors flex items-center justify-center gap-2 cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>View All 6 Activities</span>
+          <span>Explore Games</span>
         </button>
 
         <div className="flex flex-col sm:flex-row items-center gap-2.5 w-full sm:w-auto">
@@ -227,7 +227,7 @@ export const Step2StudentDetails: React.FC = () => {
             type="submit"
             className="w-full sm:w-auto px-7 py-3 rounded-full font-bold text-sm bg-gradient-to-r from-[#881337] via-[#B91C1C] to-[#881337] hover:from-[#9F1239] hover:to-[#B91C1C] text-white flex items-center justify-center gap-2 shadow-lg shadow-rose-950/60 hover:scale-[1.02] active:scale-[0.98] transition-all border border-[#E5C158]/70 cursor-pointer"
           >
-            <span>Proceed to Payment (₹10 Pass)</span>
+            <span>Proceed to Payment (₹{totalFee} Pass)</span>
             <ArrowRight className="w-4 h-4 text-amber-300" />
           </button>
         </div>
