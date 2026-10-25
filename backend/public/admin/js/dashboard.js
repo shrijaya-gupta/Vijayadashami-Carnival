@@ -696,7 +696,7 @@ async function loadRegistrationsData(isSilent = false) {
 
     // Render Table Rows
     if (!registrations || registrations.length === 0) {
-      tbody.innerHTML = `<tr class="table-state-row"><td colspan="7" style="text-align: center; color: var(--text-dim); padding: 40px;">No registrations match your search or filter criteria.</td></tr>`;
+      tbody.innerHTML = `<tr class="table-state-row"><td colspan="6" style="text-align: center; color: var(--text-dim); padding: 40px;">No registrations match your search or filter criteria.</td></tr>`;
       tbody.style.opacity = '1';
       return;
     }
@@ -706,22 +706,12 @@ async function loadRegistrationsData(isSilent = false) {
       const statusClass = `status-${reg.status || 'confirmed'}`;
       const dateStr = formatDate(reg.createdAt);
 
-      const gamesChips = (reg.selectedGames || []).map(g => {
-        const isTeam = g.participationType === 'team';
-        return `<span class="game-chip">
-          <span class="game-chip-dot"></span>
-          <span>${escapeHtml(g.gameName || g.gameId)}</span>
-          ${isTeam ? '<span class="team-chip-tag">Team</span>' : ''}
-        </span>`;
-      }).join('');
-
       const fee = reg.feeAmount != null ? reg.feeAmount : 10;
       const isPaid = reg.paymentStatus === 'paid';
       const isPendingVer = reg.paymentStatus === 'payment_verification_pending';
       const isFailed = reg.paymentStatus === 'payment_failed';
       const paymentLabel = isPaid ? 'Verified' : (isPendingVer ? 'Audit Needed' : (isFailed ? 'Failed' : 'Pending'));
       const paymentClass = isPaid ? 'status-paid' : (isPendingVer ? 'status-payment_verification_pending' : (isFailed ? 'status-payment_failed' : 'status-payment_pending'));
-      const gamesCount = (reg.selectedGames || []).length;
 
       const subInfo = [
         student.course || '',
@@ -734,26 +724,19 @@ async function loadRegistrationsData(isSilent = false) {
             <span class="reg-id-badge cursor-pointer" onclick="openRegistrationModal('${escapeHtml(reg.registrationId)}')">${escapeHtml(reg.registrationId)}</span>
           </td>
           <td data-label="Student">
-            <div class="participant-name">${escapeHtml(student.fullName || 'Anonymous')}</div>
-            <div class="participant-meta">${escapeHtml(subInfo || 'SRMU Student')}</div>
-          </td>
-          <td data-label="Games">
-            <div class="games-count-label">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-              <span>${gamesCount} Game${gamesCount !== 1 ? 's' : ''} Selected</span>
-            </div>
-            <div class="games-chips-wrap">
-              ${gamesChips || '<span style="color: var(--text-dim); font-size: 0.75rem;">None</span>'}
+            <div class="participant-cell-inline">
+              <span class="participant-name">${escapeHtml(student.fullName || 'Anonymous')}</span>
+              ${subInfo ? `<span class="participant-meta-inline">${escapeHtml(subInfo)}</span>` : ''}
             </div>
           </td>
           <td data-label="Fee">
-            <div class="fee-badge-container">
+            <div class="fee-badge-inline">
               <span class="fee-amount-badge">₹${fee}</span>
               <span class="fee-badge-sub">Pass</span>
             </div>
           </td>
           <td data-label="Payment">
-            <div class="payment-cell-wrap">
+            <div class="payment-cell-inline">
               <span class="status-pill ${paymentClass}">${escapeHtml(paymentLabel)}</span>
               ${reg.paymentReference ? `
                 <div class="payment-ref-box" title="Submitted UTR: ${escapeHtml(reg.paymentReference)}">
@@ -763,13 +746,15 @@ async function loadRegistrationsData(isSilent = false) {
               ` : ''}
             </div>
           </td>
-          <td data-label="Status"><span class="status-pill ${statusClass}">${escapeHtml(reg.status || 'confirmed')}</span></td>
+          <td data-label="Status">
+            <span class="status-pill ${statusClass}">${escapeHtml(reg.status || 'confirmed')}</span>
+          </td>
           <td data-label="Action">
             <div class="action-btn-group">
               <button type="button" class="btn-table-details" onclick="openRegistrationModal('${escapeHtml(reg.registrationId)}')" title="View complete details">
                 <span>Details</span>
               </button>
-              <button type="button" class="btn-table-delete" onclick="window.deleteRegistrationQuick('${escapeHtml(reg.registrationId)}', '${escapeHtml(student.fullName)}')" title="Delete participant">
+              <button type="button" class="btn-table-delete" onclick="window.deleteRegistrationQuick('${escapeHtml(reg.registrationId)}', '${escapeHtml(student.fullName || '')}')" title="Delete participant">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                 <span>Delete</span>
               </button>
