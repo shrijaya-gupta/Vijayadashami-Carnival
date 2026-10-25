@@ -169,7 +169,7 @@ export const Hero: React.FC<HeroProps> = ({
         <div className="absolute inset-0 z-20 bg-[#100308]/15 mix-blend-multiply pointer-events-none" />
 
         {/* Seamless downward, side and top feathering into background #100308 */}
-        <div className="absolute inset-x-0 bottom-0 z-20 h-32 bg-gradient-to-t from-[#100308] via-[#100308]/90 via-35% to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 z-20 h-20 bg-gradient-to-t from-[#100308] via-[#100308]/85 via-40% to-transparent pointer-events-none" />
         <div className="absolute inset-x-0 top-0 z-20 h-14 bg-gradient-to-b from-[#100308]/75 to-transparent pointer-events-none" />
         <div className="absolute inset-y-0 left-0 z-20 w-10 sm:w-14 bg-gradient-to-r from-[#100308]/75 to-transparent pointer-events-none" />
         <div className="absolute inset-y-0 right-0 z-20 w-10 sm:w-14 bg-gradient-to-l from-[#100308]/75 to-transparent pointer-events-none" />
@@ -180,7 +180,7 @@ export const Hero: React.FC<HeroProps> = ({
           Desktop: Text is on Left 5 cols, Right 7 cols is open to let background artwork shine
           Mobile: Content sits below the top image, seamlessly flowing
           ========================================================================= */}
-      <div className="relative z-30 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-2 sm:mt-3 lg:mt-0 pt-2 lg:pt-14 pb-14 sm:pb-22">
+      <div className="relative z-30 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-3 xs:-mt-4 sm:-mt-5 lg:mt-0 pt-0 lg:pt-14 pb-14 sm:pb-22">
         
         {/* ================= DESKTOP LAYOUT (>= 1024px) ================= */}
         <div className="hidden lg:grid lg:grid-cols-12 lg:gap-10 xl:gap-12 items-center">
@@ -312,7 +312,7 @@ export const Hero: React.FC<HeroProps> = ({
         <div className="block lg:hidden text-center space-y-4">
           
           {/* Grand Hero Title (Mobile / Tablet) - Stylish Readable Cursive Centered Layout */}
-          <div className="relative max-w-sm sm:max-w-md mx-auto pt-3 pb-1 text-center">
+          <div className="relative max-w-sm sm:max-w-md mx-auto pt-1 pb-1 text-center">
             <h1 className="flex flex-col items-center justify-center select-none space-y-1">
               {/* Vijayadashami - shifted slightly left */}
               <span 
