@@ -23,7 +23,7 @@ async function startServer() {
     }
 
     // 2. Start HTTP server
-    server = app.listen(PORT, () => {
+    server = app.listen(PORT, '0.0.0.0', () => {
       console.log(`\nServer listening on: http://localhost:${PORT}`);
       console.log(`Health check: http://localhost:${PORT}/api/health`);
       console.log(`Payment QR Config: http://localhost:${PORT}/api/config/payment-qr`);
