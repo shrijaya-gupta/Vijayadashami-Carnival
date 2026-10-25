@@ -136,7 +136,10 @@ const CarnivalApp: React.FC = () => {
       {/* Floating Register CTA Pill */}
       <FloatingRegisterPill onRegisterClick={handleRegisterClick} />
 
-      <Footer />
+      <Footer 
+        onRegisterClick={handleRegisterClick} 
+        onOpenScoreboard={() => setIsScoreboardOpen(true)} 
+      />
     </div>
   );
 };
