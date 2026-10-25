@@ -2545,6 +2545,10 @@ function extractRegIdFromText(text) {
   return trimmed.toUpperCase();
 }
 
+let detectedCameras = [];
+let currentCameraIndex = 0;
+let isTorchActive = false;
+
 async function initScanner() {
   const toggleBtn = document.getElementById('btnToggleCamera');
   const toggleText = document.getElementById('btnCameraToggleText');
@@ -2552,24 +2556,29 @@ async function initScanner() {
   const deviceSelect = document.getElementById('cameraDeviceSelect');
   const manualInput = document.getElementById('manualPassIdInput');
   const verifyManualBtn = document.getElementById('btnVerifyManualPass');
+  const flipBtn = document.getElementById('btnFlipCamera');
+  const torchBtn = document.getElementById('btnToggleTorch');
 
   if (typeof Html5Qrcode !== 'undefined') {
     try {
-      const devices = await Html5Qrcode.getCameras();
-      if (devices && devices.length && deviceSelect) {
+      detectedCameras = await Html5Qrcode.getCameras() || [];
+      if (detectedCameras.length && deviceSelect) {
         deviceSelect.innerHTML = '';
-        devices.forEach((dev, idx) => {
+        detectedCameras.forEach((dev, idx) => {
           const opt = document.createElement('option');
           opt.value = dev.id;
           opt.textContent = dev.label || `Camera ${idx + 1}`;
           deviceSelect.appendChild(opt);
         });
-        const backCam = devices.find(d => /back|rear|environment/i.test(d.label));
-        if (backCam) {
-          deviceSelect.value = backCam.id;
-          currentCameraId = backCam.id;
+
+        const backIdx = detectedCameras.findIndex(d => /back|rear|environment|primary/i.test(d.label));
+        if (backIdx !== -1) {
+          currentCameraIndex = backIdx;
+          currentCameraId = detectedCameras[backIdx].id;
+          deviceSelect.value = currentCameraId;
         } else {
-          currentCameraId = devices[0].id;
+          currentCameraIndex = 0;
+          currentCameraId = detectedCameras[0].id;
         }
       }
     } catch (err) {
@@ -2579,9 +2588,46 @@ async function initScanner() {
 
   deviceSelect?.addEventListener('change', async (e) => {
     currentCameraId = e.target.value;
+    const foundIdx = detectedCameras.findIndex(d => d.id === currentCameraId);
+    if (foundIdx !== -1) currentCameraIndex = foundIdx;
     if (isCameraActive) {
       await stopCameraScanner();
       await startCameraScanner();
+    }
+  });
+
+  flipBtn?.addEventListener('click', async () => {
+    if (detectedCameras.length > 1) {
+      currentCameraIndex = (currentCameraIndex + 1) % detectedCameras.length;
+      currentCameraId = detectedCameras[currentCameraIndex].id;
+      if (deviceSelect) deviceSelect.value = currentCameraId;
+      showToast(`Switched to: ${detectedCameras[currentCameraIndex].label || 'Camera ' + (currentCameraIndex + 1)}`);
+      if (isCameraActive) {
+        await stopCameraScanner();
+        await startCameraScanner();
+      }
+    } else {
+      showToast('Camera flip: Using device camera');
+    }
+  });
+
+  torchBtn?.addEventListener('click', async () => {
+    if (!html5QrScannerInstance || !isCameraActive) {
+      showToast('Start camera first to turn on flashlight.');
+      return;
+    }
+    try {
+      isTorchActive = !isTorchActive;
+      await html5QrScannerInstance.applyVideoConstraints({
+        advanced: [{ torch: isTorchActive }]
+      });
+      torchBtn.classList.toggle('active', isTorchActive);
+      const label = document.getElementById('torchBtnLabel');
+      if (label) label.textContent = isTorchActive ? 'Torch ON' : 'Torch';
+      showToast(isTorchActive ? 'Flashlight ON' : 'Flashlight OFF');
+    } catch (err) {
+      console.warn('Torch constraint error:', err);
+      showToast('Torch flashlight is not supported by this camera hardware.');
     }
   });
 
@@ -2617,6 +2663,9 @@ async function startCameraScanner() {
   const liveIndicator = document.getElementById('cameraLiveIndicator');
   const statusText = document.getElementById('scannerStatusText');
   const deviceSelect = document.getElementById('cameraDeviceSelect');
+  const idleOverlay = document.getElementById('cameraIdleOverlay');
+  const scannerOverlay = document.getElementById('scannerOverlay');
+  const wrapper = document.getElementById('cameraViewfinderWrapper');
 
   if (typeof Html5Qrcode === 'undefined') {
     showToast('Camera scanner library loading. Please try again.');
@@ -2633,8 +2682,11 @@ async function startCameraScanner() {
     await html5QrScannerInstance.start(
       cameraId,
       {
-        fps: 15,
-        qrbox: { width: 220, height: 220 },
+        fps: 20,
+        qrbox: (viewfinderWidth, viewfinderHeight) => {
+          const edge = Math.min(viewfinderWidth, viewfinderHeight) * 0.72;
+          return { width: Math.round(edge), height: Math.round(edge) };
+        },
         aspectRatio: 1.333333
       },
       (decodedText) => {
@@ -2647,11 +2699,17 @@ async function startCameraScanner() {
     toggleBtn?.classList.add('active');
     if (toggleText) toggleText.textContent = 'Stop Camera';
     liveIndicator?.classList.add('active');
-    if (statusText) statusText.textContent = 'Camera active — point at student pass';
+    if (statusText) statusText.textContent = 'Scanner ready &bull; Point at student pass';
+    if (idleOverlay) idleOverlay.style.display = 'none';
+    if (scannerOverlay) scannerOverlay.style.display = 'flex';
+    wrapper?.classList.add('camera-running');
   } catch (err) {
     console.error('Failed to start camera scanner:', err);
     showToast('Camera access denied or camera not found. Enter pass ID manually.');
     if (statusText) statusText.textContent = 'Camera unavailable — enter ID manually below';
+    if (idleOverlay) idleOverlay.style.display = 'flex';
+    if (scannerOverlay) scannerOverlay.style.display = 'none';
+    wrapper?.classList.remove('camera-running');
   }
 }
 
@@ -2660,9 +2718,19 @@ async function stopCameraScanner() {
   const toggleText = document.getElementById('btnCameraToggleText');
   const liveIndicator = document.getElementById('cameraLiveIndicator');
   const statusText = document.getElementById('scannerStatusText');
+  const idleOverlay = document.getElementById('cameraIdleOverlay');
+  const scannerOverlay = document.getElementById('scannerOverlay');
+  const wrapper = document.getElementById('cameraViewfinderWrapper');
+  const torchBtn = document.getElementById('btnToggleTorch');
 
   if (html5QrScannerInstance && isCameraActive) {
     try {
+      if (isTorchActive) {
+        isTorchActive = false;
+        if (torchBtn) torchBtn.classList.remove('active');
+        const label = document.getElementById('torchBtnLabel');
+        if (label) label.textContent = 'Torch';
+      }
       await html5QrScannerInstance.stop();
     } catch (err) {
       console.warn('Error stopping scanner:', err);
@@ -2674,6 +2742,9 @@ async function stopCameraScanner() {
   if (toggleText) toggleText.textContent = 'Start Camera';
   liveIndicator?.classList.remove('active');
   if (statusText) statusText.textContent = 'Camera paused';
+  if (idleOverlay) idleOverlay.style.display = 'flex';
+  if (scannerOverlay) scannerOverlay.style.display = 'none';
+  wrapper?.classList.remove('camera-running');
 }
 
 function handleQrScanSuccess(decodedText) {
@@ -2688,7 +2759,7 @@ function handleQrScanSuccess(decodedText) {
   clearTimeout(scanCooldownTimer);
   scanCooldownTimer = setTimeout(() => {
     lastScannedPassId = null;
-  }, 3000);
+  }, 2500);
 
   playScanSuccessTone();
   showToast(`Pass Scanned: ${regId}`);
@@ -2704,11 +2775,18 @@ async function fetchAndDisplayPass(regId) {
   if (emptyState) emptyState.style.display = 'none';
   activeResult.style.display = 'block';
   activeResult.innerHTML = `
-    <div style="text-align: center; padding: 40px 20px;">
-      <div class="table-loading-spinner" style="margin: 0 auto 16px;"></div>
-      <p style="color: var(--text-muted); font-size: 0.9rem;">Verifying Pass ID <strong>${escapeHtml(regId)}</strong> with database...</p>
+    <div style="text-align: center; padding: 36px 16px;">
+      <div class="table-loading-spinner" style="margin: 0 auto 14px;"></div>
+      <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">Verifying Pass <strong style="color: var(--text-main); font-family: var(--font-mono);">${escapeHtml(regId)}</strong>...</p>
     </div>
   `;
+
+  // Auto-scroll on mobile to make result instantly visible
+  if (window.innerWidth <= 768) {
+    setTimeout(() => {
+      document.getElementById('scannerResultContainer')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
+  }
 
   try {
     const res = await fetch(`${API_BASE_URL}/api/admin/registrations/${encodeURIComponent(regId)}`, {
@@ -2723,12 +2801,12 @@ async function fetchAndDisplayPass(regId) {
         <div class="verified-pass-card">
           <div class="pass-status-banner status-unpaid">
             <span>❌ INVALID PASS / NOT FOUND</span>
-            <span>ID: ${escapeHtml(regId)}</span>
+            <span style="font-family: var(--font-mono); font-size: 0.85rem;">ID: ${escapeHtml(regId)}</span>
           </div>
-          <div style="padding: 24px; text-align: center; background: var(--bg-darker); border-radius: var(--radius-md); border: 1px solid var(--color-border);">
-            <p style="color: #F87171; font-weight: 600; margin-bottom: 8px;">No registered student found with ID: ${escapeHtml(regId)}</p>
-            <p style="color: var(--text-dim); font-size: 0.85rem;">Check if the student completed registration or re-scan the official pass QR code.</p>
-            <button type="button" class="btn-verify-manual" style="margin-top: 14px;" onclick="window.clearScannerResult()">Scan Another Pass</button>
+          <div style="padding: 24px; text-align: center; background: #FFF5F5; border-radius: var(--radius-md); border: 1px solid #FECDD3;">
+            <p style="color: #E11D48; font-weight: 700; margin-bottom: 6px; font-size: 1rem;">No Registered Student Found</p>
+            <p style="color: #64748B; font-size: 0.82rem; margin-bottom: 14px;">Identifier <strong style="font-family: monospace;">${escapeHtml(regId)}</strong> does not exist in the carnival database.</p>
+            <button type="button" class="btn-verify-manual" onclick="window.clearScannerResult()">Scan Another Pass</button>
           </div>
         </div>
       `;
@@ -2745,10 +2823,10 @@ async function fetchAndDisplayPass(regId) {
     let bannerText = `PAYMENT PENDING &bull; ₹${fee}`;
     if (isPaid) {
       bannerClass = 'status-valid';
-      bannerText = '✓ PASS VALID &amp; PAYMENT VERIFIED';
+      bannerText = '✓ VALID PASS &bull; ENTRY GRANTED';
     } else if (isPendingVer) {
       bannerClass = 'status-pending';
-      bannerText = `⚠ UTR VERIFICATION PENDING &bull; ₹${fee}`;
+      bannerText = `⚠ AUDIT NEEDED &bull; ₹${fee}`;
     }
 
     const gamesHtml = (reg.selectedGames || []).map(g => {
@@ -2765,51 +2843,53 @@ async function fetchAndDisplayPass(regId) {
       <div class="verified-pass-card">
         <div class="pass-status-banner ${bannerClass}">
           <span>${bannerText}</span>
-          <span style="font-family: var(--font-mono); font-size: 0.85rem;">${escapeHtml(reg.registrationId)}</span>
+          <span class="pass-badge-id">${escapeHtml(reg.registrationId)}</span>
         </div>
 
         <div class="pass-student-info">
           <div class="pass-student-header">
             <div>
               <div class="pass-student-name">${escapeHtml(student.fullName || 'Student')}</div>
-              <div style="font-size: 0.8rem; color: var(--text-dim); margin-top: 2px;">Roll: <strong style="color: var(--text-main);">${escapeHtml(student.rollNumber || 'N/A')}</strong></div>
+              <div class="pass-student-sub">${escapeHtml(student.course || 'SRMU')}${student.branch ? ` &bull; ${escapeHtml(student.branch)}` : ''}</div>
             </div>
-            <span class="pass-reg-id">${escapeHtml(reg.registrationId)}</span>
+            <span class="reg-id-badge cursor-pointer" onclick="openRegistrationModal('${escapeHtml(reg.registrationId)}')">${escapeHtml(reg.registrationId)}</span>
           </div>
 
           <div class="pass-meta-grid">
-            <div class="pass-meta-item">
-              <span class="pass-meta-label">Course &amp; Branch</span>
-              <span class="pass-meta-value">${escapeHtml(student.course || '')} ${escapeHtml(student.branch || '')}</span>
-            </div>
             <div class="pass-meta-item">
               <span class="pass-meta-label">Academic Year</span>
               <span class="pass-meta-value">Year ${escapeHtml(student.academicYear || '1')}</span>
             </div>
             <div class="pass-meta-item">
-              <span class="pass-meta-label">Contact Mobile</span>
-              <span class="pass-meta-value" style="color: var(--emerald-light);">${escapeHtml(student.mobileNumber || student.maskedMobile || 'N/A')}</span>
+              <span class="pass-meta-label">Pass Fee</span>
+              <span class="pass-meta-value" style="color: #92400E; font-weight: 800;">₹${fee} All-Access</span>
             </div>
             <div class="pass-meta-item">
-              <span class="pass-meta-label">Payment UTR / Ref</span>
+              <span class="pass-meta-label">Contact Mobile</span>
+              <span class="pass-meta-value">
+                ${student.mobileNumber ? `<a href="tel:${escapeHtml(student.mobileNumber)}" style="color: #059669; text-decoration: none; font-weight: 700;">📞 ${escapeHtml(student.mobileNumber)}</a>` : 'N/A'}
+              </span>
+            </div>
+            <div class="pass-meta-item">
+              <span class="pass-meta-label">UTR Reference</span>
               <span class="pass-meta-value" style="font-family: var(--font-mono); font-size: 0.78rem;">${escapeHtml(reg.paymentReference || 'None')}</span>
             </div>
           </div>
         </div>
 
         <div class="pass-games-section">
-          <div class="pass-section-heading">Registered Events (${(reg.selectedGames || []).length}) &bull; Fee ₹${fee}</div>
+          <div class="pass-section-heading">Selected Carnival Events (${(reg.selectedGames || []).length})</div>
           <div class="pass-games-list">
-            ${gamesHtml || '<p style=\"color: var(--text-dim); font-size: 0.8rem;\">No games listed</p>'}
+            ${gamesHtml || '<p style=\"color: var(--text-dim); font-size: 0.8rem;\">All-Access Pass Holder</p>'}
           </div>
         </div>
 
         <div class="pass-actions-bar">
           <button type="button" class="btn-admit-pass" id="btnAdmitStudent" onclick="window.admitScannedStudent('${escapeHtml(reg.registrationId)}')">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
-            <span>Admit &amp; Check In</span>
+            <span>✓ Admit &amp; Check In</span>
           </button>
 
           ${!isPaid ? `
@@ -2818,12 +2898,27 @@ async function fetchAndDisplayPass(regId) {
             </button>
           ` : ''}
 
+          <button type="button" class="btn-scan-next" onclick="window.clearScannerResult();" title="Scan next pass">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+            <span>Scan Next</span>
+          </button>
+
           <button type="button" class="btn-details-scanner" onclick="window.openRegistrationModal('${escapeHtml(reg.registrationId)}')">
-            View Profile
+            Profile
           </button>
         </div>
       </div>
     `;
+  } catch (err) {
+    console.error('Error fetching registration for scanner:', err);
+    activeResult.innerHTML = `
+      <div style="padding: 24px; text-align: center; color: #E11D48;">
+        <p style="font-weight: 700;">Network error connecting to verification service.</p>
+        <button type="button" class="btn-verify-manual" style="margin-top: 10px;" onclick="window.clearScannerResult()">Try Again</button>
+      </div>
+    `;
+  }
+}
   } catch (err) {
     console.error('Error fetching registration for scanner:', err);
     activeResult.innerHTML = `

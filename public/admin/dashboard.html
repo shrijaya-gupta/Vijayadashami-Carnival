@@ -938,7 +938,11 @@
         <section id="viewScanner" class="dashboard-view-section" aria-labelledby="scannerPageTitle">
           <div class="scanner-header-bar">
             <div>
-              <h2 id="scannerPageTitle" class="section-title">QR Pass Scanner &amp; Entry Verification</h2>
+              <div class="scanner-gate-badge">
+                <span class="gate-live-pulse"></span>
+                <span>Gate Entry &bull; B5 Check-In Station</span>
+              </div>
+              <h2 id="scannerPageTitle" class="section-title">QR Pass Scanner &amp; Verification</h2>
               <p class="section-subtitle">Scan student passes directly via device camera or enter pass ID to instantly verify payments and admit students.</p>
             </div>
             <div class="scanner-header-actions">
@@ -961,6 +965,18 @@
                   <h3>Live Viewfinder</h3>
                 </div>
                 <div class="camera-controls">
+                  <button type="button" id="btnFlipCamera" class="btn-camera-tool" title="Switch between front and back cameras" aria-label="Flip Camera">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                      <path d="M20 10c0-4.418-3.582-8-8-8s-8 3.582-8 8c0 2.21 0.895 4.21 2.343 5.657L4 18h6v-6l-2.343 2.343C6.602 13.284 6 11.716 6 10c0-3.314 2.686-6 6-6s6 2.686 6 6c0 1.716-0.602 3.284-1.657 4.343L14 12v6h6l-2.343-2.343C19.105 14.21 20 12.21 20 10z"/>
+                    </svg>
+                    <span>Flip</span>
+                  </button>
+                  <button type="button" id="btnToggleTorch" class="btn-camera-tool" title="Toggle camera flashlight" aria-label="Toggle Flashlight">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                    <span id="torchBtnLabel">Torch</span>
+                  </button>
                   <select id="cameraDeviceSelect" class="filter-select camera-select" aria-label="Select Camera Device">
                     <option value="">Default Camera</option>
                   </select>
@@ -968,9 +984,23 @@
               </div>
 
               <!-- Video Feed & Scanner Overlay -->
-              <div class="camera-viewfinder-wrapper">
+              <div class="camera-viewfinder-wrapper" id="cameraViewfinderWrapper">
                 <div id="qrReaderView" class="qr-reader-container"></div>
-                <div id="scannerOverlay" class="scanner-overlay-guide">
+                
+                <!-- Idle Touch-to-Start Prompt -->
+                <div id="cameraIdleOverlay" class="camera-idle-overlay" onclick="document.getElementById('btnToggleCamera').click()">
+                  <div class="camera-idle-icon-ring">
+                    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                      <circle cx="12" cy="13" r="4"></circle>
+                    </svg>
+                  </div>
+                  <span class="camera-idle-title">Tap to Activate Camera</span>
+                  <span class="camera-idle-subtitle">Uses your device camera for instant QR pass admission</span>
+                  <button type="button" class="btn-idle-start">Turn On Scanner</button>
+                </div>
+
+                <div id="scannerOverlay" class="scanner-overlay-guide" style="display: none;">
                   <div class="scanner-target-box">
                     <span class="scanner-corner top-left"></span>
                     <span class="scanner-corner top-right"></span>
@@ -986,8 +1016,11 @@
               <div class="scanner-manual-box">
                 <label for="manualPassIdInput" class="scanner-manual-label">Or enter Registration ID manually:</label>
                 <div class="scanner-manual-input-group">
-                  <input type="text" id="manualPassIdInput" class="filter-input uppercase-input" placeholder="e.g. VJC-2026-ABCD" autocomplete="off" />
-                  <button type="button" id="btnVerifyManualPass" class="btn-verify-manual">Verify Pass</button>
+                  <input type="text" id="manualPassIdInput" class="filter-input uppercase-input" placeholder="e.g. SRMU-2026-CSY3GF" autocomplete="off" />
+                  <button type="button" id="btnVerifyManualPass" class="btn-verify-manual">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <span>Verify Pass</span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -1320,6 +1353,16 @@
       <span>Registrations</span>
     </button>
 
+    <button type="button" class="bottom-nav-item bottom-nav-scanner" data-view="scanner" onclick="switchView('scanner')" aria-label="Go to QR Pass Scanner">
+      <div class="bottom-nav-scanner-glow">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+          <circle cx="12" cy="13" r="4"></circle>
+        </svg>
+      </div>
+      <span>Scanner</span>
+    </button>
+
     <button type="button" class="bottom-nav-item" data-view="payments" onclick="switchView('payments')" aria-label="Go to Payments">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <rect x="2" y="4" width="20" height="16" rx="2"></rect>
@@ -1328,23 +1371,12 @@
       <span>Payments</span>
     </button>
 
-    <button type="button" class="bottom-nav-item" data-view="gamewise" onclick="switchView('gamewise')" aria-label="Go to Games">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <circle cx="12" cy="12" r="10"></circle>
-        <polygon points="12 6 12 12 16 14"></polygon>
-      </svg>
-      <span>Roster</span>
-    </button>
-
     <button type="button" class="bottom-nav-item" data-view="gamesmanage" onclick="switchView('gamesmanage')" aria-label="Manage Games">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <rect x="2" y="6" width="20" height="12" rx="2"></rect>
         <path d="M6 12h4m-2-2v4m10-2h.01m-3 0h.01"></path>
       </svg>
-      <span>Catalogue</span>
-    </button>
-
-    <button type="button" class="bottom-nav-item" data-view="certificates" onclick="switchView('certificates')" aria-label="Go to Attendance & Certificates" style="display: none !important;" aria-hidden="true">
+      <span>Games</span>
     </button>
   </nav>
 
