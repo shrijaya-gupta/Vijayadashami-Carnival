@@ -316,50 +316,16 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
 
               </div>
 
-              {/* Fee & Action Buttons */}
-              <div className="pt-4 mt-4 border-t border-[#3D0A17] space-y-3 relative z-10">
-                
-                {/* Entry & Access Pill */}
-                <div className="flex items-center justify-between text-xs font-semibold">
-                  <span className="text-stone-300 flex items-center gap-1.5">
-                    <Ticket className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                    <span>Activity Entry</span>
-                  </span>
-                  
-                  {/* Included in Pass Tag (Festive Gold & Amber, No Green) */}
-                  <div className="px-3 py-1 rounded-lg bg-[#300813] border border-[#D4AF37]/40 text-[#FFE28A] font-bold text-xs flex items-center gap-1.5 shadow-xs">
-                    <Sparkles className="w-3 h-3 text-amber-400" />
-                    <span>Included in ₹10 Pass</span>
-                    <span className="sr-only">₹5 per entry</span>
-                  </div>
-                </div>
-
-                {/* 2 Action Buttons */}
-                <div className="grid grid-cols-2 gap-2.5">
-                  
-                  {/* Guidelines Button */}
-                  <button
-                    type="button"
-                    onClick={() => handleOpenGuidelines(game)}
-                    className="py-2.5 px-3 rounded-xl text-xs font-bold text-amber-200 bg-black/40 hover:bg-black/60 active:bg-black border border-[#D4AF37]/40 hover:border-[#D4AF37] flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-xs cursor-pointer hover:shadow-[0_0_12px_rgba(212,175,55,0.2)]"
-                  >
-                    <Info className="w-3.5 h-3.5 text-[#E5C158]" />
-                    <span>Guidelines</span>
-                  </button>
-
-                  {/* Register for Pass Button */}
-                  <button
-                    type="button"
-                    onClick={onProceedToRegister}
-                    className="py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-md active:scale-95 cursor-pointer bg-gradient-to-r from-[#881337] via-[#B91C1C] to-[#881337] hover:from-[#9F1239] hover:to-[#DC2626] text-white border border-[#E5C158]/70 shadow-rose-950/50 hover:scale-[1.02]"
-                  >
-                    <Ticket className="w-3.5 h-3.5 text-amber-300" />
-                    <span>Get ₹10 Pass</span>
-                    <span className="sr-only">Select Game</span>
-                  </button>
-
-                </div>
-
+              {/* Card Footer: Guidelines Button Only */}
+              <div className="pt-4 mt-4 border-t border-[#3D0A17] relative z-10">
+                <button
+                  type="button"
+                  onClick={() => handleOpenGuidelines(game)}
+                  className="w-full py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold text-amber-200 bg-black/40 hover:bg-black/60 active:bg-black border border-[#D4AF37]/40 hover:border-[#D4AF37] flex items-center justify-center gap-2 transition-all active:scale-95 shadow-xs cursor-pointer hover:shadow-[0_0_15px_rgba(212,175,55,0.25)]"
+                >
+                  <Info className="w-4 h-4 text-[#E5C158]" />
+                  <span>Guidelines</span>
+                </button>
               </div>
 
             </div>
