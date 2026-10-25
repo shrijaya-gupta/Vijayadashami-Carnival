@@ -234,7 +234,6 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
       {/* GAMES_DATA.map fallback compatibility */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
         {activeCatalog.map((game) => {
-          const isSelected = selectedGameIds.includes(game.id);
           const isTeam = game.participationType.toLowerCase().includes('team') || 
                          game.participationType.toLowerCase().includes('duo') ||
                          game.participationType.toLowerCase().includes('pairs') ||
@@ -246,17 +245,13 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
               key={game.id}
               className={`group relative rounded-3xl p-5 sm:p-6 flex flex-col justify-between transition-all duration-300 backdrop-blur-xl overflow-hidden ${
                 !isVisible ? 'opacity-30 scale-95 pointer-events-none hidden' : ''
-              } ${
-                isSelected
-                  ? 'bg-gradient-to-b from-[#2E0D1B] via-[#1B0610] to-[#0D0207] border-2 border-emerald-400/90 shadow-[0_15px_40px_rgba(16,185,129,0.25)] ring-1 ring-emerald-400/50'
-                  : 'bg-gradient-to-b from-[#24060F]/95 via-[#18030B]/95 to-[#0B0106]/98 hover:from-[#2E0814] hover:to-[#120208] border border-[#D4AF37]/35 hover:border-[#F5D372]/90 shadow-[0_12px_36px_rgba(0,0,0,0.85)] hover:shadow-[0_22px_50px_rgba(212,175,55,0.22)] hover:-translate-y-1.5'
-              }`}
+              } bg-gradient-to-b from-[#24060F]/95 via-[#18030B]/95 to-[#0B0106]/98 hover:from-[#2E0814] hover:to-[#120208] border border-[#D4AF37]/35 hover:border-[#F5D372]/85 shadow-[0_12px_36px_rgba(0,0,0,0.85)] hover:shadow-[0_22px_50px_rgba(212,175,55,0.22)] hover:-translate-y-1.5`}
             >
               {/* Top Golden Light Strip Accent */}
-              <div className="absolute top-0 inset-x-8 h-[1px] bg-gradient-to-r from-transparent via-[#F5D372]/60 to-transparent pointer-events-none" />
+              <div className="absolute top-0 inset-x-8 h-[1px] bg-gradient-to-r from-transparent via-[#F5D372]/50 to-transparent pointer-events-none" />
 
               {/* Subtle Ambient Radial Glow */}
-              <div className="absolute -top-10 -right-10 w-36 h-36 bg-amber-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-amber-500/20 transition-all duration-500" />
+              <div className="absolute -top-10 -right-10 w-36 h-36 bg-amber-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-amber-500/18 transition-all duration-500" />
 
               {/* Card Header & Content */}
               <div className="relative z-10">
@@ -278,28 +273,17 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
                           <span>{game.participationType}</span>
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-sky-500/10 border border-sky-500/30 text-sky-300 shadow-xs">
-                          <User className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-stone-200 shadow-xs">
+                          <User className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                           <span>{game.participationType}</span>
                         </span>
                       )}
                     </div>
                   </div>
 
-                  {/* Stylized Visual Festive Game Emblem Jewel */}
-                  <div className="relative shrink-0">
-                    <div className={`w-13 h-13 rounded-2xl flex items-center justify-center border-2 transition-all duration-300 group-hover:scale-105 shadow-md ${
-                      isSelected 
-                        ? 'bg-gradient-to-br from-emerald-500 via-teal-600 to-emerald-700 border-emerald-300 text-white shadow-[0_0_20px_rgba(16,185,129,0.5)]' 
-                        : 'bg-gradient-to-br from-[#4A0D1F] via-[#300815] to-[#1A030A] border-[#D4AF37]/70 text-[#FFE28A] shadow-[0_0_18px_rgba(212,175,55,0.25)]'
-                    }`}>
-                      {getGameEmblem(game.id, game.iconName)}
-                    </div>
-                    {isSelected && (
-                      <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-emerald-400 text-black flex items-center justify-center shadow-md animate-in zoom-in-50">
-                        <Check className="w-3.5 h-3.5 stroke-[3]" />
-                      </div>
-                    )}
+                  {/* Stylized Visual Festive Game Emblem Jewel (Warm Gold & Crimson, Zero Green) */}
+                  <div className="w-13 h-13 rounded-2xl flex items-center justify-center border-2 border-[#D4AF37]/70 bg-gradient-to-br from-[#4A0D1F] via-[#300815] to-[#1A030A] text-[#FFE28A] shadow-[0_0_18px_rgba(212,175,55,0.25)] group-hover:scale-105 transition-transform duration-300 shrink-0">
+                    {getGameEmblem(game.id, game.iconName)}
                   </div>
 
                 </div>
@@ -325,7 +309,7 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
                     <span>{eventVenue || 'SRMU B5-408 Arena'}</span>
                   </span>
                   <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/40 border border-white/10 text-stone-300">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <ShieldCheck className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                     <span>{game.approvalStatus || 'Official Rulebook'}</span>
                   </span>
                 </div>
@@ -342,16 +326,10 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
                     <span>Activity Entry</span>
                   </span>
                   
-                  {/* Free with Pass Tag */}
-                  <div className={`px-2.5 py-1 rounded-lg border shadow-xs flex items-center gap-1.5 transition-colors ${
-                    isSelected
-                      ? 'bg-emerald-500/20 border-emerald-400/60 text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.3)]'
-                      : 'bg-emerald-950/70 border-emerald-500/40 text-emerald-300'
-                  }`}>
-                    <Check className="w-3.5 h-3.5 stroke-[3] text-emerald-400" />
-                    <span className="font-bold text-xs">
-                      {isSelected ? 'Selected' : 'Free with Pass'}
-                    </span>
+                  {/* Included in Pass Tag (Festive Gold & Amber, No Green) */}
+                  <div className="px-3 py-1 rounded-lg bg-[#300813] border border-[#D4AF37]/40 text-[#FFE28A] font-bold text-xs flex items-center gap-1.5 shadow-xs">
+                    <Sparkles className="w-3 h-3 text-amber-400" />
+                    <span>Included in ₹10 Pass</span>
                     <span className="sr-only">₹5 per entry</span>
                   </div>
                 </div>
@@ -369,30 +347,14 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
                     <span>Guidelines</span>
                   </button>
 
-                  {/* Join Activity Button */}
+                  {/* Register for Pass Button */}
                   <button
                     type="button"
-                    onClick={() => {
-                      onToggleGame(game.id);
-                      onProceedToRegister();
-                    }}
-                    className={`py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-md active:scale-95 cursor-pointer hover:scale-[1.02] ${
-                      isSelected
-                        ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-500 hover:to-teal-600 text-white border border-emerald-400/80 shadow-[0_4px_16px_rgba(16,185,129,0.4)]'
-                        : 'bg-gradient-to-r from-[#881337] via-[#B91C1C] to-[#881337] hover:from-[#9F1239] hover:to-[#DC2626] text-white border border-[#E5C158]/70 shadow-[0_4px_16px_rgba(185,28,28,0.4)]'
-                    }`}
+                    onClick={onProceedToRegister}
+                    className="py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-md active:scale-95 cursor-pointer bg-gradient-to-r from-[#881337] via-[#B91C1C] to-[#881337] hover:from-[#9F1239] hover:to-[#DC2626] text-white border border-[#E5C158]/70 shadow-rose-950/50 hover:scale-[1.02]"
                   >
-                    {isSelected ? (
-                      <>
-                        <Check className="w-3.5 h-3.5 text-white stroke-[3]" />
-                        <span>✓ Selected</span>
-                      </>
-                    ) : (
-                      <>
-                        <Flame className="w-3.5 h-3.5 text-amber-300" />
-                        <span>Join Activity</span>
-                      </>
-                    )}
+                    <Ticket className="w-3.5 h-3.5 text-amber-300" />
+                    <span>Get ₹10 Pass</span>
                     <span className="sr-only">Select Game</span>
                   </button>
 

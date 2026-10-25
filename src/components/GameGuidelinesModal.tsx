@@ -12,7 +12,8 @@ import {
   Target,
   Users,
   Clock,
-  Plus
+  Plus,
+  Ticket
 } from 'lucide-react';
 
 interface GameGuidelinesModalProps {
@@ -55,9 +56,9 @@ export const GameGuidelinesModal: React.FC<GameGuidelinesModalProps> = ({
               <span className="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-black/50 text-stone-300 border border-white/10">
                 {game.participationType}
               </span>
-              <span className="text-xs px-2.5 py-0.5 rounded-full font-bold bg-emerald-950/70 text-emerald-300 border border-emerald-500/40 shadow-xs flex items-center gap-1">
-                <Check className="w-3.5 h-3.5 stroke-[3] text-emerald-400" />
-                <span>Free with Carnival Pass</span>
+              <span className="text-xs px-2.5 py-0.5 rounded-full font-bold bg-[#380E17] text-[#FFE28A] border border-[#D4AF37]/40 shadow-xs flex items-center gap-1.5">
+                <Ticket className="w-3.5 h-3.5 text-amber-400" />
+                <span>Included in ₹10 All-Access Pass</span>
                 <span className="sr-only">{game.registrationFee}</span>
               </span>
             </div>
@@ -233,14 +234,14 @@ export const GameGuidelinesModal: React.FC<GameGuidelinesModalProps> = ({
 
           <button
             onClick={() => {
-              onToggleSelect(game.id);
               onClose();
+              const el = document.getElementById('wizard-form-card') || document.getElementById('register');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
             }}
-            className="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all cursor-pointer shadow-md bg-gradient-to-r from-[#881337] via-[#B91C1C] to-[#881337] hover:from-[#9F1239] hover:to-[#B91C1C] text-white border border-[#E5C158]/70 shadow-rose-950/60"
+            className="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all cursor-pointer shadow-md bg-gradient-to-r from-[#881337] via-[#B91C1C] to-[#881337] hover:from-[#9F1239] hover:to-[#DC2626] text-white border border-[#E5C158]/70 shadow-rose-950/60"
           >
-            <Check className="w-4 h-4 stroke-[3]" />
-            <span>Register for Carnival (All Games Included)</span>
-            <span className="sr-only">Select this Game</span>
+            <Ticket className="w-4 h-4 text-amber-300" />
+            <span>Get ₹10 All-Access Pass</span>
           </button>
         </div>
 
