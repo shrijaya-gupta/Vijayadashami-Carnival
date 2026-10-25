@@ -57,14 +57,9 @@ export const Step5Payment: React.FC = () => {
             Pay: ₹{totalFee}
           </span>
         </div>
-        <div className="flex flex-wrap items-center gap-2 text-xs text-stone-300">
-          <span className="inline-flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-semibold whitespace-nowrap">
-            ✓ Flat ₹{totalFee} All-Access Pass
-          </span>
-          <span className="text-stone-400 text-[11px]">
-            Scan UPI QR or pay to UPI ID and submit UTR
-          </span>
-        </div>
+        <p className="text-stone-400 text-xs">
+          Scan UPI QR or pay to UPI ID and submit UTR
+        </p>
       </div>
 
       {submitError && (
