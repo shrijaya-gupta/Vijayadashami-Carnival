@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { GAMES_DATA } from '../data/games';
 import { Game } from '../types';
 import { GameGuidelinesModal } from './GameGuidelinesModal';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { 
   Gamepad2, 
   Check, 
@@ -280,6 +282,10 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
   const [eventVenue, setEventVenue] = useState<string>('SRMU Campus, B5-408');
   const [eventDate, setEventDate] = useState<string>('Thursday, 29 October 2026');
 
+  const sectionRef = useRef<HTMLElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const cardsGridRef = useRef<HTMLDivElement>(null);
+
   // Fetch dynamic game updates and newly added games from backend API (Admin configured)
   useEffect(() => {
     fetch('/api/games')
@@ -321,6 +327,84 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
 
   const activeCatalog = gamesList.length > 0 ? gamesList : GAMES_DATA;
 
+  // GSAP Choreographed ScrollTrigger Entrance
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    const ctx = gsap.context(() => {
+      // Header staggered reveal
+      if (headerRef.current) {
+        gsap.from(headerRef.current.children, {
+          opacity: 0,
+          y: 28,
+          stagger: 0.1,
+          duration: 0.75,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: headerRef.current,
+            start: 'top 85%',
+            toggleActions: 'play none none none'
+          }
+        });
+      }
+
+      // Staggered cards reveal
+      if (cardsGridRef.current) {
+        const cards = cardsGridRef.current.querySelectorAll('.gsap-game-card:not(.hidden)');
+        gsap.fromTo(
+          cards,
+          { opacity: 0, y: 35, scale: 0.96 },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            stagger: 0.07,
+            duration: 0.7,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: cardsGridRef.current,
+              start: 'top 85%',
+              toggleActions: 'play none none none'
+            }
+          }
+        );
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, [activeCatalog, activeFilter]);
+
+  // Interactive 3D Card Tilt on Mouse Move
+  const handleCardMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = ((y - centerY) / centerY) * -5.5;
+    const rotateY = ((x - centerX) / centerX) * 5.5;
+
+    gsap.to(card, {
+      rotateX,
+      rotateY,
+      transformPerspective: 1000,
+      duration: 0.25,
+      ease: 'power1.out',
+      overwrite: 'auto'
+    });
+  };
+
+  const handleCardMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+    gsap.to(e.currentTarget, {
+      rotateX: 0,
+      rotateY: 0,
+      duration: 0.5,
+      ease: 'power2.out',
+      overwrite: 'auto'
+    });
+  };
+
   const handleOpenGuidelines = (game: Game) => {
     setSelectedGameForModal(game);
     setModalOpen(true);
@@ -347,14 +431,14 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
   const teamCount = activeCatalog.length - soloCount;
 
   return (
-    <section id="games" className="relative py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
+    <section ref={sectionRef} id="games" className="relative py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
       
       {/* Decorative Background Glows */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-rose-950/20 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-1/4 right-10 w-72 h-72 bg-amber-950/15 rounded-full blur-3xl pointer-events-none" />
 
       {/* Section Header */}
-      <div className="relative z-10 text-center max-w-3xl mx-auto mb-10 sm:mb-14 space-y-3.5">
+      <div ref={headerRef} className="relative z-10 text-center max-w-3xl mx-auto mb-10 sm:mb-14 space-y-3.5">
         
         {/* Category Pill Badge */}
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-[#380E17]/95 via-[#4A101E]/90 to-[#2A0812]/95 border border-[#D4AF37]/50 text-[#E5C158] shadow-md backdrop-blur-md">
@@ -439,7 +523,7 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
 
       {/* 6 Games Grid: 3 cols desktop, 2 cols tablet, 1 col mobile */}
       {/* GAMES_DATA.map fallback compatibility */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
+      <div ref={cardsGridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
         {activeCatalog.map((game) => {
           const isTeam = game.participationType.toLowerCase().includes('team') || 
                          game.participationType.toLowerCase().includes('duo') ||
@@ -450,9 +534,12 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
           return (
             <div
               key={game.id}
-              className={`group relative rounded-3xl p-5 sm:p-6 flex flex-col justify-between transition-all duration-300 backdrop-blur-xl overflow-hidden ${
+              onMouseMove={handleCardMouseMove}
+              onMouseLeave={handleCardMouseLeave}
+              style={{ transformStyle: 'preserve-3d', willChange: 'transform' }}
+              className={`gsap-game-card group relative rounded-3xl p-5 sm:p-6 flex flex-col justify-between transition-all duration-300 backdrop-blur-xl overflow-hidden ${
                 !isVisible ? 'opacity-30 scale-95 pointer-events-none hidden' : ''
-              } bg-gradient-to-b from-[#24060F]/95 via-[#18030B]/95 to-[#0B0106]/98 hover:from-[#2E0814] hover:to-[#120208] border border-[#D4AF37]/35 hover:border-[#F5D372]/85 shadow-[0_12px_36px_rgba(0,0,0,0.85)] hover:shadow-[0_22px_50px_rgba(212,175,55,0.22)] hover:-translate-y-1.5`}
+              } bg-gradient-to-b from-[#24060F]/95 via-[#18030B]/95 to-[#0B0106]/98 hover:from-[#2E0814] hover:to-[#120208] border border-[#D4AF37]/35 hover:border-[#F5D372]/85 shadow-[0_12px_36px_rgba(0,0,0,0.85)] hover:shadow-[0_22px_50px_rgba(212,175,55,0.22)]`}
             >
               {/* Top Golden Light Strip Accent */}
               <div className="absolute top-0 inset-x-8 h-[1px] bg-gradient-to-r from-transparent via-[#F5D372]/50 to-transparent pointer-events-none" />

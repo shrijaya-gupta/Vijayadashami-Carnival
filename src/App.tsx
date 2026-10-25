@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ThemeProvider } from './context/ThemeContext';
+import { SmoothScrollProvider, useSmoothScroll } from './context/SmoothScrollContext';
 import { RegistrationProvider, useRegistration } from './context/RegistrationContext';
 import { TopBanner } from './components/TopBanner';
 import { Navbar } from './components/Navbar';
@@ -23,32 +26,55 @@ const CarnivalApp: React.FC = () => {
     }
   });
   const { selectedGameIds, toggleGameSelection, goToStep, activeStep } = useRegistration();
+  const { scrollTo, stopScroll, startScroll } = useSmoothScroll();
+
+  // Manage Lenis scroll locking when modals are open
+  useEffect(() => {
+    if (isScoreboardOpen || showIntro) {
+      stopScroll();
+    } else {
+      startScroll();
+    }
+  }, [isScoreboardOpen, showIntro, stopScroll, startScroll]);
+
+  // Synchronize Navbar activeTab indicator with actual scroll position
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      ScrollTrigger.create({
+        trigger: '#hero',
+        start: 'top 50%',
+        end: 'bottom 50%',
+        onEnter: () => setActiveTab('home'),
+        onEnterBack: () => setActiveTab('home')
+      });
+
+      ScrollTrigger.create({
+        trigger: '#games',
+        start: 'top 50%',
+        end: 'bottom 50%',
+        onEnter: () => setActiveTab('games'),
+        onEnterBack: () => setActiveTab('games')
+      });
+
+      ScrollTrigger.create({
+        trigger: '#register',
+        start: 'top 60%',
+        end: 'bottom 60%',
+        onEnter: () => setActiveTab('register'),
+        onEnterBack: () => setActiveTab('register')
+      });
+    });
+
+    return () => ctx.revert();
+  }, []);
 
   const handleRegisterClick = () => {
-    setActiveTab('home');
     goToStep(2);
-    setTimeout(() => {
-      const el = document.getElementById('wizard-form-card') || document.getElementById('register');
-      if (el) {
-        const y = Math.max(0, el.getBoundingClientRect().top + window.pageYOffset - 80);
-        window.scrollTo({ top: y, behavior: 'smooth' });
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    }, 50);
+    scrollTo('#wizard-form-card', { offset: -70, duration: 1.2 });
   };
 
   const handleExploreGamesClick = () => {
-    setActiveTab('games');
-    setTimeout(() => {
-      const el = document.getElementById('games');
-      if (el) {
-        const y = Math.max(0, el.getBoundingClientRect().top + window.pageYOffset - 80);
-        window.scrollTo({ top: y, behavior: 'smooth' });
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    }, 50);
+    scrollTo('#games', { offset: -70, duration: 1.2 });
   };
 
   const handleToggleGame = (gameId: string) => {
@@ -75,41 +101,21 @@ const CarnivalApp: React.FC = () => {
       <Navbar 
         activeTab={activeTab} 
         setActiveTab={setActiveTab} 
-        onOpenScoreboard={() => setIsScoreboardOpen(true)}
+        onOpenScoreboard={() => setIsScoreboardOpen(true)} 
       />
 
       <main className="flex-1 pb-10 sm:pb-12">
-        {activeTab === 'home' && (
-          <>
-            <Hero 
-              onRegisterClick={handleRegisterClick} 
-              onExploreGamesClick={handleExploreGamesClick} 
-              onWatchIntroClick={() => setShowIntro(true)}
-            />
-            <GamesCatalogue
-              selectedGameIds={selectedGameIds}
-              onToggleGame={handleToggleGame}
-              onProceedToRegister={handleProceedFromSelectionBar}
-            />
-            <RegistrationWizard />
-          </>
-        )}
-
-        {activeTab === 'games' && (
-          <div className="pt-6">
-            <GamesCatalogue
-              selectedGameIds={selectedGameIds}
-              onToggleGame={handleToggleGame}
-              onProceedToRegister={handleProceedFromSelectionBar}
-            />
-          </div>
-        )}
-
-        {activeTab === 'register' && (
-          <div className="pt-6">
-            <RegistrationWizard />
-          </div>
-        )}
+        <Hero 
+          onRegisterClick={handleRegisterClick} 
+          onExploreGamesClick={handleExploreGamesClick} 
+          onWatchIntroClick={() => setShowIntro(true)}
+        />
+        <GamesCatalogue
+          selectedGameIds={selectedGameIds}
+          onToggleGame={handleToggleGame}
+          onProceedToRegister={handleProceedFromSelectionBar}
+        />
+        <RegistrationWizard />
       </main>
 
       {/* SelectionBar hidden as ₹10 all-access pass covers all games without individual selection */}
@@ -147,9 +153,11 @@ const CarnivalApp: React.FC = () => {
 export const App: React.FC = () => {
   return (
     <ThemeProvider>
-      <RegistrationProvider>
-        <CarnivalApp />
-      </RegistrationProvider>
+      <SmoothScrollProvider>
+        <RegistrationProvider>
+          <CarnivalApp />
+        </RegistrationProvider>
+      </SmoothScrollProvider>
     </ThemeProvider>
   );
 };

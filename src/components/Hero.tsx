@@ -1,4 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useSmoothScroll } from '../context/SmoothScrollContext';
 import { 
   Calendar, 
   Clock, 
@@ -13,6 +16,8 @@ import {
   Flame,
   X
 } from 'lucide-react';
+
+gsap.registerPlugin(ScrollTrigger);
 
 interface HeroProps {
   onRegisterClick: () => void;
@@ -29,6 +34,8 @@ export const Hero: React.FC<HeroProps> = ({
   const [activeVideo, setActiveVideo] = useState<'A' | 'B'>('A');
   const videoRefA = useRef<HTMLVideoElement>(null);
   const videoRefB = useRef<HTMLVideoElement>(null);
+  const heroSectionRef = useRef<HTMLElement>(null);
+  const { scrollTo } = useSmoothScroll();
 
   useEffect(() => {
     const vidA = videoRefA.current;
@@ -82,6 +89,89 @@ export const Hero: React.FC<HeroProps> = ({
     };
   }, [activeVideo]);
 
+  // GSAP Orchestrated Entrance and Parallax Motion
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
+
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+      tl.from('.gsap-hero-title', {
+        y: 40,
+        opacity: 0,
+        stagger: 0.12,
+        duration: 1.1,
+        ease: 'power4.out',
+      })
+      .from('.gsap-hero-lotus', {
+        scale: 0.7,
+        opacity: 0,
+        duration: 0.7,
+        ease: 'back.out(1.7)',
+      }, '-=0.6')
+      .from('.gsap-hero-subtitle', {
+        y: 20,
+        opacity: 0,
+        duration: 0.8,
+      }, '-=0.5')
+      .from('.gsap-hero-badge', {
+        y: 20,
+        opacity: 0,
+        stagger: 0.08,
+        duration: 0.6,
+      }, '-=0.4')
+      .from('.gsap-hero-cta', {
+        y: 15,
+        scale: 0.95,
+        opacity: 0,
+        stagger: 0.1,
+        duration: 0.6,
+        ease: 'back.out(1.5)',
+      }, '-=0.3')
+      .from('.gsap-hero-countdown', {
+        y: 25,
+        opacity: 0,
+        duration: 0.7,
+        stagger: 0.06,
+      }, '-=0.3');
+
+      // Continuous floating breathing animation for scroll button
+      gsap.to('.gsap-scroll-bounce', {
+        y: 6,
+        repeat: -1,
+        yoyo: true,
+        duration: 1.2,
+        ease: 'power1.inOut',
+      });
+
+      // Ambient glowing embers floating animation
+      gsap.to('.gsap-ambient-spark', {
+        y: '-=15',
+        x: '+=8',
+        repeat: -1,
+        yoyo: true,
+        stagger: 0.4,
+        duration: 3.5,
+        ease: 'sine.inOut',
+      });
+
+      // Subtle scroll-driven parallax on desktop artwork
+      gsap.to('.gsap-hero-desktop-bg', {
+        yPercent: 12,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: heroSectionRef.current,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: true,
+        }
+      });
+    }, heroSectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
   const handleWatchIntro = () => {
     if (onWatchIntroClick) {
       onWatchIntroClick();
@@ -91,14 +181,11 @@ export const Hero: React.FC<HeroProps> = ({
   };
 
   const handleScrollDown = () => {
-    const el = document.getElementById('games');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
+    scrollTo('#games', { offset: -70, duration: 1.2 });
   };
 
   return (
-    <section className="relative w-full overflow-hidden bg-[#100308] text-white">
+    <section ref={heroSectionRef} className="relative w-full overflow-hidden bg-[#100308] text-white">
       
       {/* =========================================================================
           DESKTOP FULL PANORAMIC BACKGROUND LAYER (>= 1024px)
@@ -106,7 +193,7 @@ export const Hero: React.FC<HeroProps> = ({
           Left side has deep dark negative space with soft gradient overlay for text readability.
           ========================================================================= */}
       <div 
-        className="hidden lg:block absolute inset-0 z-0 bg-cover bg-right bg-no-repeat pointer-events-none"
+        className="hidden lg:block absolute inset-0 z-0 bg-cover bg-right bg-no-repeat pointer-events-none gsap-hero-desktop-bg"
         style={{ backgroundImage: "url('/assets/hero-desktop.jpg')" }}
       >
         {/* Left-to-right atmospheric dark gradient overlay so text on left is 100% crisp and readable without covering Rama */}
@@ -119,10 +206,10 @@ export const Hero: React.FC<HeroProps> = ({
 
       {/* Ambient Floating Embers / Sparks (Hidden on mobile to avoid overlapping text) */}
       <div className="hidden lg:block absolute inset-0 z-0 pointer-events-none">
-        <div className="absolute top-1/4 left-10 w-2 h-2 rounded-full bg-amber-400 blur-xs animate-ping" style={{ animationDuration: '3s' }} />
-        <div className="absolute top-1/3 left-1/3 w-1.5 h-1.5 rounded-full bg-orange-400 blur-xs animate-pulse" style={{ animationDuration: '4s' }} />
-        <div className="absolute top-1/2 left-20 w-1 h-1 rounded-full bg-yellow-300 blur-xs animate-ping" style={{ animationDuration: '5s' }} />
-        <div className="absolute top-1/4 right-1/4 w-2 h-2 rounded-full bg-amber-300 blur-xs animate-pulse" style={{ animationDuration: '3.5s' }} />
+        <div className="absolute top-1/4 left-10 w-2 h-2 rounded-full bg-amber-400 blur-xs animate-ping gsap-ambient-spark" style={{ animationDuration: '3s' }} />
+        <div className="absolute top-1/3 left-1/3 w-1.5 h-1.5 rounded-full bg-orange-400 blur-xs animate-pulse gsap-ambient-spark" style={{ animationDuration: '4s' }} />
+        <div className="absolute top-1/2 left-20 w-1 h-1 rounded-full bg-yellow-300 blur-xs animate-ping gsap-ambient-spark" style={{ animationDuration: '5s' }} />
+        <div className="absolute top-1/4 right-1/4 w-2 h-2 rounded-full bg-amber-300 blur-xs animate-pulse gsap-ambient-spark" style={{ animationDuration: '3.5s' }} />
       </div>
 
       {/* =========================================================================
@@ -193,16 +280,16 @@ export const Hero: React.FC<HeroProps> = ({
               {/* Subtle ambient golden backglow for title depth */}
               <div className="absolute -top-10 -left-10 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
               <h1 className="relative text-4xl xl:text-5xl 2xl:text-6xl font-black font-cinzel tracking-[0.04em] uppercase leading-[1.06]">
-                <span className="block text-[#FFFDF9] drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)]">
+                <span className="block text-[#FFFDF9] drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)] gsap-hero-title">
                   VIJAYADASHAMI
                 </span>
-                <span className="block gold-gradient-text drop-shadow-[0_6px_32px_rgba(212,175,55,0.45)]">
+                <span className="block gold-gradient-text drop-shadow-[0_6px_32px_rgba(212,175,55,0.45)] gsap-hero-title">
                   CARNIVAL
                 </span>
               </h1>
 
               {/* Traditional Golden Lotus Ornament with wings matching mobile */}
-              <div className="pt-1 flex items-center gap-2.5">
+              <div className="pt-1 flex items-center gap-2.5 gsap-hero-lotus">
                 <span className="h-[1.5px] w-12 bg-gradient-to-r from-transparent via-[#D4AF37] to-[#D4AF37]" />
                 <svg width="40" height="18" viewBox="0 0 36 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#D4AF37] drop-shadow-[0_0_8px_rgba(212,175,55,0.6)]">
                   <path d="M18 1C15 6 9 9 3 9C6 11 12 11 16 7L18 15L20 7C24 11 30 11 33 9C27 9 21 6 18 1Z" fill="#D4AF37" opacity="0.95"/>
@@ -215,14 +302,14 @@ export const Hero: React.FC<HeroProps> = ({
             </div>
 
             {/* Subtitle */}
-            <p className="text-stone-300 text-sm xl:text-base font-normal leading-relaxed max-w-lg">
-              Join the SRMU campus celebration featuring 6 exciting competitions, team challenges, agility arenas, and festive carnival rewards.
+            <p className="text-stone-300 text-sm xl:text-base font-normal leading-relaxed max-w-lg gsap-hero-subtitle">
+              Join the SRMU campus celebration featuring exciting competitions, team challenges, agility arenas, and festive carnival rewards.
             </p>
 
             {/* Event Badges 2x2 VIP Ticket Grid */}
             <div className="grid grid-cols-2 gap-3 text-xs max-w-lg pt-1">
               {/* Date */}
-              <div className="royal-glass-card flex items-center gap-2.5 p-3 rounded-2xl text-left">
+              <div className="royal-glass-card flex items-center gap-2.5 p-3 rounded-2xl text-left gsap-hero-badge">
                 <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#5A0E22] to-[#25040D] border border-[#D4AF37]/60 text-amber-300 flex items-center justify-center shrink-0 shadow-[0_0_12px_rgba(212,175,55,0.25)]">
                   <Calendar className="w-4 h-4" />
                 </div>
@@ -233,7 +320,7 @@ export const Hero: React.FC<HeroProps> = ({
               </div>
 
               {/* Time */}
-              <div className="royal-glass-card flex items-center gap-2.5 p-3 rounded-2xl text-left">
+              <div className="royal-glass-card flex items-center gap-2.5 p-3 rounded-2xl text-left gsap-hero-badge">
                 <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#5A0E22] to-[#25040D] border border-[#D4AF37]/60 text-amber-300 flex items-center justify-center shrink-0 shadow-[0_0_12px_rgba(212,175,55,0.25)]">
                   <Clock className="w-4 h-4" />
                 </div>
@@ -244,7 +331,7 @@ export const Hero: React.FC<HeroProps> = ({
               </div>
 
               {/* Venue */}
-              <div className="royal-glass-card flex items-center gap-2.5 p-3 rounded-2xl text-left">
+              <div className="royal-glass-card flex items-center gap-2.5 p-3 rounded-2xl text-left gsap-hero-badge">
                 <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#5A0E22] to-[#25040D] border border-[#D4AF37]/60 text-amber-300 flex items-center justify-center shrink-0 shadow-[0_0_12px_rgba(212,175,55,0.25)]">
                   <MapPin className="w-4 h-4" />
                 </div>
@@ -255,7 +342,7 @@ export const Hero: React.FC<HeroProps> = ({
               </div>
 
               {/* Fee */}
-              <div className="royal-glass-card flex items-center gap-2.5 p-3 rounded-2xl text-left">
+              <div className="royal-glass-card flex items-center gap-2.5 p-3 rounded-2xl text-left gsap-hero-badge">
                 <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#C2410C] via-[#EA580C] to-[#9A3412] border border-amber-300/60 text-white font-black text-sm flex items-center justify-center shrink-0 shadow-[0_0_14px_rgba(234,88,12,0.4)]">
                   ₹10
                 </div>
@@ -271,7 +358,7 @@ export const Hero: React.FC<HeroProps> = ({
               {/* Primary CTA - Full-width single-line prominent button */}
               <button
                 onClick={onRegisterClick}
-                className="shine-effect w-full py-4 px-6 rounded-full text-xs xl:text-sm font-bold bg-gradient-to-r from-[#881337] via-[#BE123C] to-[#881337] hover:from-[#9F1239] hover:to-[#BE123C] text-white flex items-center justify-center gap-2.5 border-2 border-[#FFE28A]/80 shadow-[0_12px_35px_rgba(159,18,57,0.65)] hover:scale-[1.02] active:scale-95 transition-all whitespace-nowrap cursor-pointer"
+                className="shine-effect w-full py-4 px-6 rounded-full text-xs xl:text-sm font-bold bg-gradient-to-r from-[#881337] via-[#BE123C] to-[#881337] hover:from-[#9F1239] hover:to-[#BE123C] text-white flex items-center justify-center gap-2.5 border-2 border-[#FFE28A]/80 shadow-[0_12px_35px_rgba(159,18,57,0.65)] hover:scale-[1.02] active:scale-95 transition-all whitespace-nowrap cursor-pointer gsap-hero-cta"
               >
                 <Flame className="w-4 h-4 text-amber-300 animate-pulse shrink-0" />
                 <span className="tracking-wide">Get ₹10 Carnival Pass</span>
@@ -279,7 +366,7 @@ export const Hero: React.FC<HeroProps> = ({
               </button>
 
               {/* Secondary & Tertiary CTAs - Balanced 2-column grid */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 gsap-hero-cta">
                 <button
                   onClick={onExploreGamesClick}
                   className="py-3 px-4 rounded-full text-xs xl:text-sm font-bold bg-black/60 hover:bg-black/80 text-white flex items-center justify-center gap-2 border border-[#D4AF37]/45 hover:border-[#D4AF37] backdrop-blur-md hover:scale-[1.02] active:scale-95 transition-all shadow-[0_4px_16px_rgba(0,0,0,0.5)] whitespace-nowrap cursor-pointer"
@@ -316,7 +403,7 @@ export const Hero: React.FC<HeroProps> = ({
             <h1 className="flex flex-col items-center justify-center select-none space-y-0.5">
               {/* Vijayadashami - shifted slightly left */}
               <span 
-                className="block text-center text-4xl xs:text-5xl sm:text-6xl font-normal tracking-wide text-[#FFFDF9] drop-shadow-[0_4px_18px_rgba(0,0,0,0.95)] -translate-x-2.5 sm:-translate-x-4 pt-1 leading-[1.22]"
+                className="block text-center text-4xl xs:text-5xl sm:text-6xl font-normal tracking-wide text-[#FFFDF9] drop-shadow-[0_4px_18px_rgba(0,0,0,0.95)] -translate-x-2.5 sm:-translate-x-4 pt-1 leading-[1.22] gsap-hero-title"
                 style={{ fontFamily: "'Runethia', 'Playfair Display', cursive" }}
               >
                 Vijayadashami
@@ -324,7 +411,7 @@ export const Hero: React.FC<HeroProps> = ({
               
               {/* Carnival - shifted slightly right */}
               <span 
-                className="block text-center text-4xl xs:text-5xl sm:text-6xl font-normal gold-gradient-text drop-shadow-[0_4px_24px_rgba(212,175,55,0.45)] translate-x-2.5 sm:translate-x-4 leading-[1.22]"
+                className="block text-center text-4xl xs:text-5xl sm:text-6xl font-normal gold-gradient-text drop-shadow-[0_4px_24px_rgba(212,175,55,0.45)] translate-x-2.5 sm:translate-x-4 leading-[1.22] gsap-hero-title"
                 style={{ fontFamily: "'Runethia', 'Playfair Display', cursive" }}
               >
                 Carnival
@@ -335,7 +422,7 @@ export const Hero: React.FC<HeroProps> = ({
           {/* Mobile Event Badges 2x2 VIP Ticket Grid */}
           <div className="grid grid-cols-2 gap-2 text-xs max-w-md mx-auto pt-0.5">
             {/* Date */}
-            <div className="royal-glass-card flex items-center gap-2 p-2.5 rounded-xl text-left">
+            <div className="royal-glass-card flex items-center gap-2 p-2.5 rounded-xl text-left gsap-hero-badge">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#5A0E22] to-[#25040D] border border-[#D4AF37]/50 text-amber-300 flex items-center justify-center shrink-0">
                 <Calendar className="w-3.5 h-3.5" />
               </div>
@@ -346,7 +433,7 @@ export const Hero: React.FC<HeroProps> = ({
             </div>
 
             {/* Time */}
-            <div className="royal-glass-card flex items-center gap-2 p-2.5 rounded-xl text-left">
+            <div className="royal-glass-card flex items-center gap-2 p-2.5 rounded-xl text-left gsap-hero-badge">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#5A0E22] to-[#25040D] border border-[#D4AF37]/50 text-amber-300 flex items-center justify-center shrink-0">
                 <Clock className="w-3.5 h-3.5" />
               </div>
@@ -357,7 +444,7 @@ export const Hero: React.FC<HeroProps> = ({
             </div>
 
             {/* Venue */}
-            <div className="royal-glass-card flex items-center gap-2 p-2.5 rounded-xl text-left">
+            <div className="royal-glass-card flex items-center gap-2.5 p-2.5 rounded-xl text-left gsap-hero-badge">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#5A0E22] to-[#25040D] border border-[#D4AF37]/50 text-amber-300 flex items-center justify-center shrink-0">
                 <MapPin className="w-3.5 h-3.5" />
               </div>
@@ -368,7 +455,7 @@ export const Hero: React.FC<HeroProps> = ({
             </div>
 
             {/* Fee */}
-            <div className="royal-glass-card flex items-center gap-2 p-2.5 rounded-xl text-left">
+            <div className="royal-glass-card flex items-center gap-2 p-2.5 rounded-xl text-left gsap-hero-badge">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#C2410C] to-[#EA580C] text-white font-black text-xs flex items-center justify-center shrink-0 shadow-xs">
                 ₹10
               </div>
@@ -382,7 +469,7 @@ export const Hero: React.FC<HeroProps> = ({
           {/* Mobile CTAs */}
           <div className="pt-2 max-w-md mx-auto">
             {/* Action Row */}
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2 gsap-hero-cta">
               <button
                 onClick={onExploreGamesClick}
                 className="py-3 px-3 rounded-full text-xs font-bold bg-black/60 hover:bg-black/80 active:bg-black text-white flex items-center justify-center gap-1.5 border border-[#D4AF37]/40 active:scale-95 transition-all shadow-xs"
@@ -457,7 +544,7 @@ export const Hero: React.FC<HeroProps> = ({
               <button 
                 onClick={handleScrollDown}
                 aria-label="Scroll to explore games"
-                className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#2E0B16] border-2 border-[#E5C158] text-[#E5C158] hover:bg-[#E5C158] hover:text-[#100308] flex items-center justify-center shadow-lg shadow-amber-950/50 hover:scale-110 active:scale-95 transition-all group"
+                className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#2E0B16] border-2 border-[#E5C158] text-[#E5C158] hover:bg-[#E5C158] hover:text-[#100308] flex items-center justify-center shadow-lg shadow-amber-950/50 hover:scale-110 active:scale-95 transition-all group gsap-scroll-bounce cursor-pointer"
               >
                 <ChevronDown className="w-5 h-5 group-hover:translate-y-0.5 transition-transform" />
               </button>

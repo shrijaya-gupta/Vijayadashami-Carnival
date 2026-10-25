@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRegistration } from '../context/RegistrationContext';
+import { useSmoothScroll } from '../context/SmoothScrollContext';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { 
   Menu, 
   X, 
@@ -90,26 +93,79 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenScoreboard }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { selectedGameIds, goToStep } = useRegistration();
+  const { scrollTo } = useSmoothScroll();
+  const headerRef = useRef<HTMLElement>(null);
+  const pillRef = useRef<HTMLDivElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    const ctx = gsap.context(() => {
+      // Dynamic navbar elevation & shadow as user scrolls down
+      ScrollTrigger.create({
+        start: 'top -30',
+        end: 99999,
+        onUpdate: (self) => {
+          if (pillRef.current) {
+            if (self.progress > 0) {
+              gsap.to(pillRef.current, {
+                backgroundColor: 'rgba(15, 2, 8, 0.96)',
+                borderColor: 'rgba(212, 175, 55, 0.7)',
+                boxShadow: '0 20px 45px rgba(0, 0, 0, 0.92), 0 0 25px rgba(212, 175, 55, 0.2)',
+                duration: 0.3,
+                overwrite: 'auto'
+              });
+            } else {
+              gsap.to(pillRef.current, {
+                backgroundColor: 'rgba(20, 2, 10, 0.92)',
+                borderColor: 'rgba(212, 175, 55, 0.5)',
+                boxShadow: '0 14px 40px rgba(0, 0, 0, 0.85), 0 0 20px rgba(212, 175, 55, 0.1)',
+                duration: 0.3,
+                overwrite: 'auto'
+              });
+            }
+          }
+        }
+      });
+    }, headerRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  // Smooth drawer entrance when mobileMenuOpen changes
+  useEffect(() => {
+    if (mobileMenuOpen && drawerRef.current) {
+      gsap.fromTo(
+        drawerRef.current,
+        { opacity: 0, y: -12, scale: 0.98 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.28, ease: 'power2.out' }
+      );
+    }
+  }, [mobileMenuOpen]);
 
   const handleProceedToRegister = () => {
     setActiveTab('register');
     goToStep(2);
     setMobileMenuOpen(false);
-    const el = document.getElementById('register');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
+    scrollTo('#wizard-form-card', { offset: -70, duration: 1.2 });
   };
 
   const handleNavClick = (tab: 'home' | 'games' | 'register') => {
     setActiveTab(tab);
     setMobileMenuOpen(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (tab === 'home') {
+      scrollTo(0, { duration: 1.2 });
+    } else if (tab === 'games') {
+      scrollTo('#games', { offset: -70, duration: 1.2 });
+    } else if (tab === 'register') {
+      scrollTo('#wizard-form-card', { offset: -70, duration: 1.2 });
+    }
   };
 
   return (
-    <header className="sticky top-2 sm:top-3 z-50 w-full px-3 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-1 transition-all pointer-events-auto">
-      <div className="max-w-7xl mx-auto rounded-full bg-[#14020A]/92 backdrop-blur-2xl border border-[#D4AF37]/50 ring-1 ring-white/10 text-stone-200 shadow-[0_14px_40px_rgba(0,0,0,0.85),0_0_20px_rgba(212,175,55,0.1)] h-16 sm:h-[4.25rem] px-5 sm:px-7 lg:px-8 flex items-center justify-between gap-2 sm:gap-3 lg:gap-4 transition-all">
+    <header ref={headerRef} className="sticky top-2 sm:top-3 z-50 w-full px-3 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-1 transition-all pointer-events-auto">
+      <div ref={pillRef} className="max-w-7xl mx-auto rounded-full bg-[#14020A]/92 backdrop-blur-2xl border border-[#D4AF37]/50 ring-1 ring-white/10 text-stone-200 shadow-[0_14px_40px_rgba(0,0,0,0.85),0_0_20px_rgba(212,175,55,0.1)] h-16 sm:h-[4.25rem] px-5 sm:px-7 lg:px-8 flex items-center justify-between gap-2 sm:gap-3 lg:gap-4 transition-all">
         
         {/* Brand / Logo with authentic Vijayadashami Dhanush-Baan icon */}
         <button 
@@ -211,7 +267,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenS
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden max-w-7xl mx-auto mt-2.5 p-4 rounded-2xl border border-[#D4AF37]/45 bg-[#14030A]/98 backdrop-blur-2xl shadow-2xl space-y-2">
+        <div ref={drawerRef} className="md:hidden max-w-7xl mx-auto mt-2.5 p-4 rounded-2xl border border-[#D4AF37]/45 bg-[#14030A]/98 backdrop-blur-2xl shadow-2xl space-y-2">
           {selectedGameIds.length > 0 && (
             <button
               onClick={handleProceedToRegister}
