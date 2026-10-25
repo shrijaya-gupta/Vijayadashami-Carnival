@@ -31,34 +31,241 @@ interface GamesCatalogueProps {
   onProceedToRegister: () => void;
 }
 
-// Map each canonical or custom game ID / iconName to a stylized visual festive emblem
+// 1. Target Shooting Emblem SVG
+const TargetShootingIcon: React.FC<{ className?: string }> = ({ className = "w-full h-full" }) => (
+  <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} aria-hidden="true">
+    <defs>
+      <radialGradient id="targetGlow" cx="50" cy="50" r="45" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.35" />
+        <stop offset="100%" stopColor="#881337" stopOpacity="0" />
+      </radialGradient>
+      <linearGradient id="targetGold" x1="20" y1="20" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#FFF2B2" />
+        <stop offset="50%" stopColor="#D4AF37" />
+        <stop offset="100%" stopColor="#996515" />
+      </linearGradient>
+      <linearGradient id="targetArrow" x1="10" y1="90" x2="70" y2="30" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#DC2626" />
+        <stop offset="60%" stopColor="#F59E0B" />
+        <stop offset="100%" stopColor="#FFFBEB" />
+      </linearGradient>
+    </defs>
+    <circle cx="50" cy="50" r="44" fill="url(#targetGlow)" />
+    <circle cx="50" cy="50" r="40" stroke="url(#targetGold)" strokeWidth="3" strokeDasharray="6 3" />
+    <circle cx="50" cy="50" r="32" stroke="#991B1B" strokeWidth="4" opacity="0.9" />
+    <circle cx="50" cy="50" r="23" stroke="url(#targetGold)" strokeWidth="3" />
+    <circle cx="50" cy="50" r="14" fill="#B91C1C" stroke="url(#targetGold)" strokeWidth="1.5" />
+    <circle cx="50" cy="50" r="6" fill="#FDE047" />
+    <circle cx="50" cy="50" r="2" fill="#FFFFFF" />
+    <line x1="16" y1="84" x2="48" y2="52" stroke="url(#targetArrow)" strokeWidth="4.5" strokeLinecap="round" />
+    <polygon points="53,47 43,49 49,55" fill="#FFEAA7" stroke="#D4AF37" strokeWidth="1" />
+    <path d="M14 86 L10 80 M18 90 L24 86 M18 82 L12 88" stroke="#F59E0B" strokeWidth="2.5" strokeLinecap="round" />
+    <polygon points="50,44 52,48 56,50 52,52 50,56 48,52 44,50 48,48" fill="#FFFBEB" />
+  </svg>
+);
+
+// 2. Lemon Race Emblem SVG
+const LemonRaceIcon: React.FC<{ className?: string }> = ({ className = "w-full h-full" }) => (
+  <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} aria-hidden="true">
+    <defs>
+      <linearGradient id="spoonMetal" x1="15" y1="75" x2="85" y2="35" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#94A3B8" />
+        <stop offset="35%" stopColor="#E2E8F0" />
+        <stop offset="70%" stopColor="#CBD5E1" />
+        <stop offset="100%" stopColor="#D4AF37" />
+      </linearGradient>
+      <linearGradient id="lemonYellow" x1="35" y1="20" x2="65" y2="55" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#FEF08A" />
+        <stop offset="40%" stopColor="#FACC15" />
+        <stop offset="80%" stopColor="#EAB308" />
+        <stop offset="100%" stopColor="#CA8A04" />
+      </linearGradient>
+      <linearGradient id="speedOrange" x1="10" y1="50" x2="50" y2="50" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#F59E0B" stopOpacity="0" />
+        <stop offset="100%" stopColor="#F59E0B" />
+      </linearGradient>
+    </defs>
+    <line x1="8" y1="36" x2="32" y2="36" stroke="url(#speedOrange)" strokeWidth="3" strokeLinecap="round" strokeDasharray="4 3" />
+    <line x1="12" y1="52" x2="38" y2="52" stroke="url(#speedOrange)" strokeWidth="3.5" strokeLinecap="round" />
+    <line x1="16" y1="68" x2="42" y2="68" stroke="url(#speedOrange)" strokeWidth="3" strokeLinecap="round" strokeDasharray="5 2" />
+    <path d="M18 84 C28 78 40 68 50 58 L54 54" stroke="url(#spoonMetal)" strokeWidth="5.5" strokeLinecap="round" />
+    <ellipse cx="62" cy="46" rx="22" ry="14" transform="rotate(-25 62 46)" fill="#1E070F" stroke="url(#spoonMetal)" strokeWidth="3.5" />
+    <ellipse cx="60" cy="36" rx="17" ry="12" transform="rotate(-15 60 36)" fill="url(#lemonYellow)" stroke="#A16207" strokeWidth="1.5" />
+    <path d="M44 38 Q42 35 45 33" stroke="#A16207" strokeWidth="2" strokeLinecap="round" />
+    <path d="M76 34 Q79 37 76 39" stroke="#A16207" strokeWidth="2" strokeLinecap="round" />
+    <path d="M60 24 C64 16 72 18 70 24 C68 28 62 26 60 24 Z" fill="#22C55E" stroke="#15803D" strokeWidth="1" />
+    <ellipse cx="56" cy="32" rx="7" ry="3.5" transform="rotate(-20 56 32)" fill="#FFFFFF" opacity="0.65" />
+  </svg>
+);
+
+// 3. Musical Chairs Emblem SVG
+const MusicalChairsIcon: React.FC<{ className?: string }> = ({ className = "w-full h-full" }) => (
+  <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} aria-hidden="true">
+    <defs>
+      <linearGradient id="chairGold" x1="20" y1="20" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#FFF2B2" />
+        <stop offset="45%" stopColor="#D4AF37" />
+        <stop offset="100%" stopColor="#996515" />
+      </linearGradient>
+      <linearGradient id="musicFlame" x1="40" y1="10" x2="90" y2="60" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#F59E0B" />
+        <stop offset="50%" stopColor="#EC4899" />
+        <stop offset="100%" stopColor="#8B5CF6" />
+      </linearGradient>
+    </defs>
+    <circle cx="50" cy="52" r="42" stroke="url(#chairGold)" strokeWidth="1.5" strokeDasharray="3 4" opacity="0.4" />
+    <path d="M22 36 A36 36 0 0 1 78 36" stroke="url(#chairGold)" strokeWidth="2.5" strokeLinecap="round" opacity="0.75" />
+    <path d="M28 68 A34 34 0 0 0 72 68" stroke="url(#chairGold)" strokeWidth="2.5" strokeLinecap="round" opacity="0.75" />
+    <rect x="38" y="24" width="24" height="26" rx="4" fill="#2A0813" stroke="url(#chairGold)" strokeWidth="2.5" />
+    <path d="M44 28 V44 M50 28 V44 M56 28 V44" stroke="url(#chairGold)" strokeWidth="1.5" strokeLinecap="round" opacity="0.7" />
+    <path d="M32 50 L68 50 L64 58 L36 58 Z" fill="#9F1239" stroke="url(#chairGold)" strokeWidth="2.5" strokeLinejoin="round" />
+    <line x1="36" y1="58" x2="32" y2="78" stroke="url(#chairGold)" strokeWidth="3" strokeLinecap="round" />
+    <line x1="64" y1="58" x2="68" y2="78" stroke="url(#chairGold)" strokeWidth="3" strokeLinecap="round" />
+    <line x1="42" y1="58" x2="41" y2="74" stroke="url(#chairGold)" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
+    <line x1="58" y1="58" x2="59" y2="74" stroke="url(#chairGold)" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
+    <path d="M68 26 C68 20 74 16 80 14 V32 M80 20 L68 24" stroke="url(#musicFlame)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+    <ellipse cx="66" cy="34" rx="4.5" ry="3.5" transform="rotate(-15 66 34)" fill="url(#musicFlame)" />
+    <ellipse cx="78" cy="31" rx="4.5" ry="3.5" transform="rotate(-15 78 31)" fill="url(#musicFlame)" />
+    <polygon points="50,14 52,18 56,20 52,22 50,26 48,22 44,20 48,18" fill="#FDE047" />
+  </svg>
+);
+
+// 4. Human Knot Challenge Emblem SVG
+const HumanKnotIcon: React.FC<{ className?: string }> = ({ className = "w-full h-full" }) => (
+  <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} aria-hidden="true">
+    <defs>
+      <linearGradient id="knotGold" x1="15" y1="15" x2="85" y2="85" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#FFF2B2" />
+        <stop offset="50%" stopColor="#F59E0B" />
+        <stop offset="100%" stopColor="#B45309" />
+      </linearGradient>
+    </defs>
+    <circle cx="50" cy="50" r="42" stroke="url(#knotGold)" strokeWidth="2" strokeDasharray="6 4" opacity="0.5" />
+    <path 
+      d="M50 20 C68 35 78 58 64 74 C52 86 32 76 36 60 C40 44 60 44 64 60 C68 76 48 86 36 74 C22 58 32 35 50 20 Z" 
+      stroke="url(#knotGold)" 
+      strokeWidth="5" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+    />
+    <path 
+      d="M50 36 C58 44 64 56 56 64 C48 72 38 66 40 56 C42 46 58 46 50 36 Z" 
+      stroke="#FFFBEB" 
+      strokeWidth="2.5" 
+      strokeLinecap="round" 
+    />
+    <circle cx="50" cy="18" r="6" fill="#F43F5E" stroke="#FFEAA7" strokeWidth="2" />
+    <circle cx="74" cy="64" r="6" fill="#F59E0B" stroke="#FFEAA7" strokeWidth="2" />
+    <circle cx="26" cy="64" r="6" fill="#38BDF8" stroke="#FFEAA7" strokeWidth="2" />
+    <polygon points="50,44 52,48 56,50 52,52 50,56 48,52 44,50 48,48" fill="#FFFFFF" />
+  </svg>
+);
+
+// 5. Cup & Balloon Pyramid Emblem SVG
+const CupBalloonPyramidIcon: React.FC<{ className?: string }> = ({ className = "w-full h-full" }) => (
+  <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} aria-hidden="true">
+    <defs>
+      <linearGradient id="cupGold" x1="20" y1="30" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#FFF2B2" />
+        <stop offset="45%" stopColor="#D4AF37" />
+        <stop offset="100%" stopColor="#854D0E" />
+      </linearGradient>
+      <linearGradient id="balloonRuby" x1="40" y1="10" x2="65" y2="40" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#FDA4AF" />
+        <stop offset="35%" stopColor="#E11D48" />
+        <stop offset="85%" stopColor="#881337" />
+        <stop offset="100%" stopColor="#4C0519" />
+      </linearGradient>
+    </defs>
+    <path d="M22 68 L25 84 L37 84 L40 68 Z" fill="#2A0813" stroke="url(#cupGold)" strokeWidth="2.5" strokeLinejoin="round" />
+    <path d="M44 68 L47 84 L59 84 L62 68 Z" fill="#2A0813" stroke="url(#cupGold)" strokeWidth="2.5" strokeLinejoin="round" />
+    <path d="M66 68 L69 84 L81 84 L84 68 Z" fill="#2A0813" stroke="url(#cupGold)" strokeWidth="2.5" strokeLinejoin="round" />
+    <path d="M33 50 L36 66 L48 66 L51 50 Z" fill="#4C0519" stroke="url(#cupGold)" strokeWidth="2.5" strokeLinejoin="round" />
+    <path d="M55 50 L58 66 L70 66 L73 50 Z" fill="#4C0519" stroke="url(#cupGold)" strokeWidth="2.5" strokeLinejoin="round" />
+    <path d="M44 32 L47 48 L59 48 L62 32 Z" fill="#881337" stroke="url(#cupGold)" strokeWidth="2.5" strokeLinejoin="round" />
+    <ellipse cx="53" cy="18" rx="14" ry="16" fill="url(#balloonRuby)" stroke="#FFEAA7" strokeWidth="1.5" />
+    <polygon points="53,34 50,38 56,38" fill="#E11D48" />
+    <path d="M53 38 C51 43 55 45 52 50" stroke="#F59E0B" strokeWidth="1.5" strokeLinecap="round" />
+    <ellipse cx="48" cy="13" rx="4.5" ry="6.5" transform="rotate(-25 48 13)" fill="#FFFFFF" opacity="0.6" />
+    <polygon points="26,44 28,47 31,48 28,49 26,52 24,49 21,48 24,47" fill="#FDE047" />
+    <polygon points="80,44 82,47 85,48 82,49 80,52 78,49 75,48 78,47" fill="#FDE047" />
+  </svg>
+);
+
+// 6. Balloon Dual Race Emblem SVG
+const BalloonDualRaceIcon: React.FC<{ className?: string }> = ({ className = "w-full h-full" }) => (
+  <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} aria-hidden="true">
+    <defs>
+      <linearGradient id="balloonOne" x1="25" y1="15" x2="45" y2="55" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#FDE047" />
+        <stop offset="45%" stopColor="#EAB308" />
+        <stop offset="100%" stopColor="#CA8A04" />
+      </linearGradient>
+      <linearGradient id="balloonTwo" x1="55" y1="15" x2="80" y2="55" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#FDA4AF" />
+        <stop offset="40%" stopColor="#E11D48" />
+        <stop offset="100%" stopColor="#881337" />
+      </linearGradient>
+      <linearGradient id="dualLightning" x1="30" y1="70" x2="70" y2="30" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#38BDF8" />
+        <stop offset="50%" stopColor="#FACC15" />
+        <stop offset="100%" stopColor="#FFFBEB" />
+      </linearGradient>
+    </defs>
+    <ellipse cx="36" cy="38" rx="16" ry="20" transform="rotate(-10 36 38)" fill="url(#balloonOne)" stroke="#FFF2B2" strokeWidth="1.5" />
+    <polygon points="34,58 31,63 38,62" fill="#CA8A04" />
+    <path d="M34 63 C33 72 28 78 32 86" stroke="#D4AF37" strokeWidth="2" strokeLinecap="round" />
+    <ellipse cx="31" cy="30" rx="4" ry="7" transform="rotate(-20 31 30)" fill="#FFFFFF" opacity="0.65" />
+    <ellipse cx="64" cy="36" rx="16" ry="20" transform="rotate(10 64 36)" fill="url(#balloonTwo)" stroke="#FFEAA7" strokeWidth="1.5" />
+    <polygon points="66,56 63,61 70,60" fill="#9F1239" />
+    <path d="M66 61 C67 70 72 76 68 86" stroke="#F43F5E" strokeWidth="2" strokeLinecap="round" />
+    <ellipse cx="59" cy="28" rx="4" ry="7" transform="rotate(-5 59 28)" fill="#FFFFFF" opacity="0.65" />
+    <polygon 
+      points="54,12 42,42 50,43 45,74 61,38 52,37 58,12" 
+      fill="url(#dualLightning)" 
+      stroke="#D4AF37" 
+      strokeWidth="1.5"
+    />
+  </svg>
+);
+
+// Default Festive Shield Emblem SVG
+const DefaultFestiveIcon: React.FC<{ className?: string }> = ({ className = "w-full h-full" }) => (
+  <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} aria-hidden="true">
+    <defs>
+      <linearGradient id="shieldGold" x1="20" y1="20" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#FFF2B2" />
+        <stop offset="50%" stopColor="#D4AF37" />
+        <stop offset="100%" stopColor="#996515" />
+      </linearGradient>
+    </defs>
+    <path d="M50 14 L78 24 C78 52 64 74 50 86 C36 74 22 52 22 24 Z" fill="#24060F" stroke="url(#shieldGold)" strokeWidth="3.5" strokeLinejoin="round" />
+    <polygon points="50,32 54,42 64,43 56,50 59,60 50,54 41,60 44,50 36,43 46,42" fill="url(#shieldGold)" />
+  </svg>
+);
+
+// Map each canonical or custom game ID / iconName to a bespoke rich festive vector illustration
 const getGameEmblem = (gameId: string, iconName?: string) => {
   const key = (iconName || gameId || '').toLowerCase();
   if (key.includes('target') || key.includes('shoot')) {
-    return <Target className="w-6 h-6 text-amber-300" />;
+    return <TargetShootingIcon className="w-full h-full" />;
   }
   if (key.includes('lemon') || key.includes('timer') || key.includes('speed') || key.includes('race')) {
-    return <Timer className="w-6 h-6 text-amber-300" />;
+    return <LemonRaceIcon className="w-full h-full" />;
   }
   if (key.includes('music') || key.includes('chair')) {
-    return <Music className="w-6 h-6 text-amber-300" />;
+    return <MusicalChairsIcon className="w-full h-full" />;
   }
-  if (key.includes('knot') || key.includes('team') || key.includes('group') || key.includes('user')) {
-    return <Users className="w-6 h-6 text-amber-300" />;
+  if (key.includes('knot') || key.includes('team') || key.includes('group') || key.includes('synergy')) {
+    return <HumanKnotIcon className="w-full h-full" />;
   }
   if (key.includes('cup') || key.includes('pyramid') || key.includes('layer')) {
-    return <Layers className="w-6 h-6 text-amber-300" />;
+    return <CupBalloonPyramidIcon className="w-full h-full" />;
   }
   if (key.includes('balloon') || key.includes('zap') || key.includes('dual')) {
-    return <Zap className="w-6 h-6 text-amber-300" />;
+    return <BalloonDualRaceIcon className="w-full h-full" />;
   }
-  if (key.includes('flame') || key.includes('fire')) {
-    return <Flame className="w-6 h-6 text-amber-300" />;
-  }
-  if (key.includes('trophy') || key.includes('award')) {
-    return <Trophy className="w-6 h-6 text-amber-300" />;
-  }
-  return <Gamepad2 className="w-6 h-6 text-amber-300" />;
+  return <DefaultFestiveIcon className="w-full h-full" />;
 };
 
 export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
@@ -282,7 +489,8 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
                   </div>
 
                   {/* Stylized Visual Festive Game Emblem Jewel (Warm Gold & Crimson, Zero Green) */}
-                  <div className="w-13 h-13 rounded-2xl flex items-center justify-center border-2 border-[#D4AF37]/70 bg-gradient-to-br from-[#4A0D1F] via-[#300815] to-[#1A030A] text-[#FFE28A] shadow-[0_0_18px_rgba(212,175,55,0.25)] group-hover:scale-105 transition-transform duration-300 shrink-0">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl p-2.5 flex items-center justify-center border-2 border-[#D4AF37]/60 bg-gradient-to-br from-[#3D0A17] via-[#24050E] to-[#120207] shadow-[0_6px_20px_rgba(0,0,0,0.6)] group-hover:border-[#F5D372] group-hover:shadow-[0_0_20px_rgba(212,175,55,0.35)] group-hover:scale-105 group-hover:rotate-1 transition-all duration-300 shrink-0 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-radial from-amber-500/15 via-transparent to-transparent pointer-events-none" />
                     {getGameEmblem(game.id, game.iconName)}
                   </div>
 
