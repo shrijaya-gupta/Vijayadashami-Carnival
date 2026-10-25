@@ -533,6 +533,15 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   border: 1px solid transparent;
   text-align: left;
   width: 100%;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.sidebar-nav-item * {
+  pointer-events: none;
 }
 
 .sidebar-nav-item svg {

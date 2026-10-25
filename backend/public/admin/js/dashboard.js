@@ -81,6 +81,9 @@ let certRequestSeq = 0;
 let gamewiseRequestSeq = 0;
 let gamewiseScoresSeq = 0;
 
+// Expose switchView immediately so inline onclick and click handlers never fail
+window.switchView = switchView;
+
 // Run navigation listeners immediately so all tabs, sidebars, and buttons work right away
 try {
   initNavigation();
@@ -303,6 +306,12 @@ function switchView(viewName) {
   }
 
   currentView = viewName;
+
+  // Auto-close mobile sidebar drawer if open
+  const sidebar = document.getElementById('dashboardSidebar');
+  const backdrop = document.getElementById('sidebarBackdrop');
+  sidebar?.classList.remove('mobile-open', 'sidebar-open', 'active');
+  backdrop?.classList.remove('active');
 
   // Update sidebar nav buttons
   document.querySelectorAll('.sidebar-nav-item[data-view]').forEach(btn => {
@@ -2914,16 +2923,6 @@ async function fetchAndDisplayPass(regId) {
     activeResult.innerHTML = `
       <div style="padding: 24px; text-align: center; color: #E11D48;">
         <p style="font-weight: 700;">Network error connecting to verification service.</p>
-        <button type="button" class="btn-verify-manual" style="margin-top: 10px;" onclick="window.clearScannerResult()">Try Again</button>
-      </div>
-    `;
-  }
-}
-  } catch (err) {
-    console.error('Error fetching registration for scanner:', err);
-    activeResult.innerHTML = `
-      <div style="padding: 24px; text-align: center; color: #F87171;">
-        <p>Network error connecting to verification service.</p>
         <button type="button" class="btn-verify-manual" style="margin-top: 10px;" onclick="window.clearScannerResult()">Try Again</button>
       </div>
     `;
