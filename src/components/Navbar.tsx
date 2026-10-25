@@ -120,17 +120,12 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenS
             <VijayadashamiBowIcon className="w-5 h-5 sm:w-6 sm:h-6 text-amber-300 drop-shadow-md" />
           </div>
           <div className="shrink-0">
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <span className="font-heading font-black text-base sm:text-lg tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-[#FFFDF9] via-[#FCE7B0] to-[#E5C158] whitespace-nowrap drop-shadow-sm">
-                VIJAYADASHAMI
-              </span>
-              <span className="text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold bg-amber-500/20 text-amber-300 border border-[#E5C158]/50 shadow-xs whitespace-nowrap">
-                SRMU B5-408
-              </span>
-            </div>
+            <span className="font-heading font-black text-base sm:text-lg tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-[#FFFDF9] via-[#FCE7B0] to-[#E5C158] whitespace-nowrap drop-shadow-sm block">
+              VIJAYADASHAMI
+            </span>
             <p className="text-[10px] sm:text-[11px] text-amber-200/90 font-medium whitespace-nowrap flex items-center gap-1">
               <Flame className="w-2.5 h-2.5 text-amber-400" />
-              <span>Campus Carnival 2026</span>
+              <span>SRMU B5-408</span>
             </p>
           </div>
         </button>
