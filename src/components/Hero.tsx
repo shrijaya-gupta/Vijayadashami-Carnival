@@ -180,7 +180,7 @@ export const Hero: React.FC<HeroProps> = ({
           Desktop: Text is on Left 5 cols, Right 7 cols is open to let background artwork shine
           Mobile: Content sits below the top image, seamlessly flowing
           ========================================================================= */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 sm:-mt-8 lg:mt-0 pt-0 lg:pt-14 pb-14 sm:pb-22">
+      <div className="relative z-30 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-2 sm:mt-3 lg:mt-0 pt-2 lg:pt-14 pb-14 sm:pb-22">
         
         {/* ================= DESKTOP LAYOUT (>= 1024px) ================= */}
         <div className="hidden lg:grid lg:grid-cols-12 lg:gap-10 xl:gap-12 items-center">
@@ -312,11 +312,11 @@ export const Hero: React.FC<HeroProps> = ({
         <div className="block lg:hidden text-center space-y-4">
           
           {/* Grand Hero Title (Mobile / Tablet) - Stylish Readable Cursive Centered Layout */}
-          <div className="relative max-w-sm sm:max-w-md mx-auto pt-1 pb-1 text-center">
-            <h1 className="flex flex-col items-center justify-center select-none space-y-0.5">
+          <div className="relative max-w-sm sm:max-w-md mx-auto pt-3 pb-1 text-center">
+            <h1 className="flex flex-col items-center justify-center select-none space-y-1">
               {/* Vijayadashami - shifted slightly left */}
               <span 
-                className="block text-center text-4xl xs:text-5xl sm:text-6xl font-normal tracking-wide text-[#FFFDF9] drop-shadow-[0_4px_18px_rgba(0,0,0,0.95)] -translate-x-2.5 sm:-translate-x-4"
+                className="block text-center text-4xl xs:text-5xl sm:text-6xl font-normal tracking-wide text-[#FFFDF9] drop-shadow-[0_4px_18px_rgba(0,0,0,0.95)] -translate-x-2.5 sm:-translate-x-4 pt-1.5 leading-[1.25]"
                 style={{ fontFamily: "'Runethia', 'Playfair Display', cursive" }}
               >
                 Vijayadashami
@@ -324,7 +324,7 @@ export const Hero: React.FC<HeroProps> = ({
               
               {/* Carnival - shifted slightly right */}
               <span 
-                className="block text-center text-4xl xs:text-5xl sm:text-6xl font-normal gold-gradient-text drop-shadow-[0_4px_24px_rgba(212,175,55,0.45)] -mt-1 xs:-mt-2 translate-x-2.5 sm:translate-x-4"
+                className="block text-center text-4xl xs:text-5xl sm:text-6xl font-normal gold-gradient-text drop-shadow-[0_4px_24px_rgba(212,175,55,0.45)] translate-x-2.5 sm:translate-x-4 leading-[1.25]"
                 style={{ fontFamily: "'Runethia', 'Playfair Display', cursive" }}
               >
                 Carnival
