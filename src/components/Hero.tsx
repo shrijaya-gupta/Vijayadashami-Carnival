@@ -334,18 +334,8 @@ export const Hero: React.FC<HeroProps> = ({
           </div>
 
           {/* Mobile CTAs */}
-          <div className="space-y-2.5 pt-2 max-w-md mx-auto">
-            {/* Primary CTA */}
-            <button
-              onClick={onRegisterClick}
-              className="shine-effect w-full py-3.5 px-6 rounded-full text-xs sm:text-sm font-bold bg-gradient-to-r from-[#881337] via-[#BE123C] to-[#881337] text-white flex items-center justify-center gap-2 border-2 border-[#FFE28A]/80 shadow-[0_8px_25px_rgba(159,18,57,0.6)] active:scale-95 transition-all"
-            >
-              <Flame className="w-4 h-4 text-amber-300" />
-              <span>Get ₹10 Carnival Pass</span>
-              <ArrowRight className="w-4 h-4 text-amber-300" />
-            </button>
-
-            {/* Secondary CTA Row */}
+          <div className="pt-2 max-w-md mx-auto">
+            {/* Action Row */}
             <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={onExploreGamesClick}
