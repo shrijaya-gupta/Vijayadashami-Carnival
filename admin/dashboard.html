@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@600;700;800;900&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
   <!-- Admin Stylesheet -->
-  <link rel="stylesheet" href="css/admin.css?v=2.6">
+  <link rel="stylesheet" href="css/admin.css?v=2.7">
 </head>
 <body>
 
@@ -667,14 +667,14 @@
             <div class="notice-content">
               <h4 class="notice-title">Carnival Helpdesk &amp; UPI Payment Verification</h4>
               <p class="notice-desc">
-                Registration fee is strictly ₹10 flat for the All-Access Pass (authoritative backend calculation). Third-party automated payment gateway credentials are not enabled in this environment.
-                When students submit a UPI UTR transaction reference online or present payment at the B5-408 registration helpdesk, authorized organizers inspect transaction proof before marking the payment verified.
+                Registration fee is strictly ₹10 flat for the All-Access Pass (authoritative backend calculation).
+                When students submit a UPI UTR reference online or present cash at B5-408, authorized organizers inspect transaction proof before marking verified.
               </p>
             </div>
           </div>
 
           <!-- Payment Metrics Cards -->
-          <div class="metrics-grid" style="margin-bottom: 24px;">
+          <div class="metrics-grid payment-metrics-grid" style="margin-bottom: 24px;">
             <div class="metric-card">
               <div class="metric-icon-wrap metric-icon-amber" aria-hidden="true">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -728,43 +728,66 @@
               <div class="metric-info">
                 <span class="metric-label">Verified Collections</span>
                 <span id="metricPayEstimatedTotal" class="metric-value">₹0</span>
-                <span class="metric-sub">₹5 per verified entry</span>
+                <span class="metric-sub">₹10 per verified entry</span>
               </div>
             </div>
           </div>
 
           <!-- UPI QR Code Management Card -->
-          <div class="table-card" style="padding: 20px 24px; margin-bottom: 24px; border: 1px solid rgba(212, 175, 55, 0.3); background: linear-gradient(135deg, rgba(30, 7, 16, 0.8), rgba(20, 4, 11, 0.9)); border-radius: var(--radius-md);">
-            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 14px;">
-              <div>
-                <h4 style="font-size: 1.05rem; font-weight: 700; color: #FCD34D; margin: 0 0 4px 0;">
-                  UPI Payment QR Code &amp; Registration Desk Setup
-                </h4>
-                <p style="font-size: 0.82rem; color: var(--text-dim); margin: 0;">
-                  Set or upload your festival desk UPI QR Code image so participants can scan and pay during online registration. Leave blank to show the placeholder space.
-                </p>
+          <div class="payment-qr-setup-card">
+            <div class="payment-qr-setup-header">
+              <div class="payment-qr-setup-title-wrap">
+                <div class="payment-qr-icon-wrap" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="payment-qr-setup-title">
+                    UPI Payment QR Code &amp; Registration Desk Setup
+                  </h4>
+                  <p class="payment-qr-setup-desc">
+                    Set your festival desk UPI QR Code so participants can scan and pay during online registration.
+                  </p>
+                </div>
               </div>
-              <span id="qrStatusBadge" class="status-pill status-unverified">Loading QR Status...</span>
+              <div class="payment-qr-header-actions">
+                <span id="qrStatusBadge" class="status-pill status-unverified">Loading QR Status...</span>
+              </div>
             </div>
 
-            <form id="qrConfigForm" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) 140px; gap: 12px; align-items: flex-end;">
-              <div class="form-group" style="margin: 0;">
+            <form id="qrConfigForm" class="payment-qr-setup-form">
+              <div class="form-group">
                 <label for="inputQrUpiId" class="form-label">UPI ID</label>
                 <input type="text" id="inputQrUpiId" class="filter-input" placeholder="e.g. guptashrijaya-1@oksbi" value="guptashrijaya-1@oksbi">
               </div>
 
-              <div class="form-group" style="margin: 0;">
+              <div class="form-group">
                 <label for="inputQrUpiName" class="form-label">Payee / Account Name</label>
                 <input type="text" id="inputQrUpiName" class="filter-input" placeholder="e.g. Shrijaya Gupta (SRMU B5-408 Carnival Desk)" value="Shrijaya Gupta (SRMU B5-408 Carnival Desk)">
               </div>
 
-              <div class="form-group" style="margin: 0;">
-                <label for="inputQrImageUrl" class="form-label">QR Code Image URL (or Image Link)</label>
-                <input type="text" id="inputQrImageUrl" class="filter-input" placeholder="Paste image URL (blank = placeholder)" value="/assets/official-upi-qr.jpg">
+              <div class="form-group">
+                <label for="inputQrImageUrl" class="form-label">QR Code Image Link</label>
+                <div class="qr-url-input-wrap">
+                  <input type="text" id="inputQrImageUrl" class="filter-input" placeholder="Paste image URL (blank = placeholder)" value="/assets/official-upi-qr.jpg">
+                  <a id="qrPreviewThumbLink" href="/assets/official-upi-qr.jpg" target="_blank" rel="noopener noreferrer" class="qr-thumb-preview-btn" title="View Current QR Image">
+                    <img id="qrThumbnailImg" src="/assets/official-upi-qr.jpg" alt="QR Preview" class="qr-thumb-img" />
+                    <span>View QR</span>
+                  </a>
+                </div>
               </div>
 
-              <div>
-                <button type="submit" id="btnSaveQrConfig" class="btn-primary" style="width: 100%; height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+              <div class="form-group qr-submit-group">
+                <button type="submit" id="btnSaveQrConfig" class="btn-primary btn-save-qr">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                  </svg>
                   <span>Save QR</span>
                 </button>
               </div>
@@ -772,11 +795,11 @@
           </div>
 
           <!-- Payment Filtering Bar -->
-          <div class="filter-card">
-            <div class="filter-grid">
+          <div class="filter-card payment-filter-card">
+            <div class="filter-grid payment-filter-grid">
               <div class="form-group">
                 <label for="filterPaySearch" class="form-label">Search Transaction</label>
-                <input type="text" id="filterPaySearch" class="filter-input" placeholder="Search by name, roll, ID, or UTR...">
+                <input type="text" id="filterPaySearch" class="filter-input" placeholder="Search by name, ID, or UTR...">
               </div>
 
               <div class="form-group">
@@ -803,7 +826,7 @@
                 </select>
               </div>
 
-              <div>
+              <div class="filter-reset-wrap">
                 <button type="button" id="btnResetPayFilters" class="btn-reset-filters">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                     <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -815,10 +838,10 @@
             </div>
           </div>
 
-          <!-- Payments Table -->
-          <div class="table-card">
-            <div class="table-responsive">
-              <table class="data-table" aria-label="Student registrations payment table">
+          <!-- Payments Table Card -->
+          <div class="table-card payments-table-card">
+            <div class="table-responsive payments-table-responsive">
+              <table id="paymentsTable" class="data-table payments-data-table" aria-label="Student registrations payment table">
                 <thead>
                   <tr>
                     <th>Registration ID</th>
@@ -1393,6 +1416,6 @@
 
   <!-- Offline QR Scanner Library & Controller Scripts -->
   <script src="js/html5-qrcode.min.js"></script>
-  <script src="js/dashboard.js?v=2.6"></script>
+  <script src="js/dashboard.js?v=2.7"></script>
 </body>
 </html>

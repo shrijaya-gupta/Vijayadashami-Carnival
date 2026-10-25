@@ -1331,7 +1331,7 @@ function renderPaymentsRows(registrations) {
     }
 
     return `
-      <tr>
+      <tr class="payment-row payment-status-${reg.paymentStatus || 'unknown'}">
         <td data-label="ID">
           <span class="reg-id-badge cursor-pointer" onclick="openRegistrationModal('${escapeHtml(reg.registrationId)}')">
             ${escapeHtml(reg.registrationId)}
@@ -1467,8 +1467,18 @@ async function initPaymentQrConfig() {
   const upiNameInput = document.getElementById('inputQrUpiName');
   const qrUrlInput = document.getElementById('inputQrImageUrl');
   const badge = document.getElementById('qrStatusBadge');
+  const thumbImg = document.getElementById('qrThumbnailImg');
+  const thumbLink = document.getElementById('qrPreviewThumbLink');
 
   if (!form) return;
+
+  const updateQrThumb = (url) => {
+    const finalUrl = (url && url.trim()) ? url.trim() : '/assets/official-upi-qr.jpg';
+    if (thumbImg) thumbImg.src = finalUrl;
+    if (thumbLink) thumbLink.href = finalUrl;
+  };
+
+  qrUrlInput?.addEventListener('input', () => updateQrThumb(qrUrlInput.value));
 
   try {
     const res = await fetch(`${API_BASE_URL}/api/config/payment-qr`);
@@ -1477,7 +1487,10 @@ async function initPaymentQrConfig() {
       if (data) {
         if (upiIdInput && data.upi_id) upiIdInput.value = data.upi_id;
         if (upiNameInput && data.upi_name) upiNameInput.value = data.upi_name;
-        if (qrUrlInput) qrUrlInput.value = data.qr_image_url || '';
+        if (qrUrlInput) {
+          qrUrlInput.value = data.qr_image_url || '';
+          updateQrThumb(data.qr_image_url);
+        }
         if (badge) {
           if (data.qr_image_url) {
             badge.className = 'status-pill status-paid';
@@ -1521,6 +1534,7 @@ async function initPaymentQrConfig() {
       }
 
       showToast('✓ UPI Payment QR configuration saved successfully!');
+      updateQrThumb(qr_image_url);
       if (badge) {
         if (qr_image_url) {
           badge.className = 'status-pill status-paid';
