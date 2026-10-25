@@ -1,44 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useRegistration } from '../../context/RegistrationContext';
-import { GAMES_DATA } from '../../data/games';
 import { 
   ArrowLeft, 
   ShieldCheck, 
   AlertCircle, 
   Loader2, 
-  HelpCircle, 
   Copy, 
   Check, 
   Flame, 
-  QrCode,
   Smartphone,
   User,
   Phone,
-  GraduationCap,
-  Trophy
+  GraduationCap
 } from 'lucide-react';
 
 export const Step5Payment: React.FC = () => {
-  const { totalFee, selectedGameIds, gameConfigs, student, submitRegistration, isSubmitting, submitError, prevStep } = useRegistration();
+  const { totalFee, student, submitRegistration, isSubmitting, submitError, prevStep } = useRegistration();
   const [utrNumber, setUtrNumber] = useState('');
   const [copiedUpi, setCopiedUpi] = useState(false);
   const [qrConfig, setQrConfig] = useState<{ qr_image_url?: string; is_qr_active?: boolean; upi_id?: string } | null>(null);
-
-  const hasTeamGame = selectedGameIds.some(id => {
-    const g = GAMES_DATA.find(item => item.id === id);
-    return g && g.participationType.toLowerCase().includes('team');
-  });
-
-  const selectedGamesList = selectedGameIds.map(id => {
-    const found = GAMES_DATA.find(g => g.id === id);
-    const config = gameConfigs[id];
-    return {
-      id,
-      title: found?.name || id,
-      format: config?.participationType === 'team' ? 'Team Squad' : 'Individual',
-      fee: 5
-    };
-  });
 
   useEffect(() => {
     fetch('/api/config/payment-qr', { cache: 'no-store' })
@@ -66,9 +46,9 @@ export const Step5Payment: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 text-white">
+    <form onSubmit={handleSubmit} className="space-y-5 text-white">
       {/* Concise Clean Header */}
-      <div className="pb-3 border-b border-white/10 space-y-1.5">
+      <div className="pb-3 border-b border-white/10 space-y-1">
         <div className="flex items-center justify-between gap-2">
           <h3 className="text-base sm:text-xl font-bold font-heading text-white tracking-wide">
             Pass Payment
@@ -85,31 +65,30 @@ export const Step5Payment: React.FC = () => {
             Scan UPI QR or pay to UPI ID and submit UTR
           </span>
         </div>
-        <span className="sr-only">Step 5: Registration Fee & Payment Verification Review your entry, scan the official carnival UPI QR code, and submit your registration.</span>
       </div>
 
       {submitError && (
-        <div className="p-4 rounded-xl bg-rose-950/60 border border-rose-500/50 text-rose-200 text-xs sm:text-sm flex items-start gap-2.5 shadow-md">
+        <div className="p-3.5 rounded-xl bg-rose-950/60 border border-rose-500/50 text-rose-200 text-xs sm:text-sm flex items-start gap-2.5 shadow-md">
           <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-rose-400" />
           <span>{submitError}</span>
         </div>
       )}
 
-      {/* Quick Summary Pill of Registered Participant */}
-      <div className="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-[#24060F] to-[#160309] border border-[#D4AF37]/35 shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-2.5">
+      {/* Quick Summary of Registered Participant */}
+      <div className="p-3 sm:p-3.5 rounded-xl bg-gradient-to-r from-[#24060F] to-[#160309] border border-[#D4AF37]/35 shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-[#E5C158]/15 border border-[#E5C158]/35 flex items-center justify-center text-[#FFE28A] shrink-0">
-              <User className="w-4 h-4" />
+            <div className="w-7 h-7 rounded-full bg-[#E5C158]/15 border border-[#E5C158]/35 flex items-center justify-center text-[#FFE28A] shrink-0">
+              <User className="w-3.5 h-3.5" />
             </div>
             <div>
-              <div className="text-sm font-bold text-white flex items-center gap-2">
+              <div className="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
                 <span>{student.fullName || 'Participant'}</span>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">
-                  {student.course} • {student.academicYear}
+                <span className="text-[10px] px-2 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">
+                  {student.course} {student.academicYear ? `• ${student.academicYear}` : ''}
                 </span>
               </div>
-              <div className="text-xs text-stone-400 flex items-center gap-3 mt-0.5">
+              <div className="text-[11px] text-stone-400 flex items-center gap-2.5 mt-0.5">
                 <span className="flex items-center gap-1">
                   <Phone className="w-3 h-3 text-amber-400" />
                   {student.mobileNumber || 'Phone provided'}
@@ -125,37 +104,10 @@ export const Step5Payment: React.FC = () => {
           </div>
 
           <div className="text-right">
-            <span className="text-[10px] uppercase tracking-wider text-stone-400 font-bold block">Access Pass</span>
-            <span className="text-sm font-bold text-amber-300">All 6 Games Included (₹{totalFee})</span>
+            <span className="text-[10px] uppercase tracking-wider text-stone-400 font-bold block">All-Access Pass</span>
+            <span className="text-xs sm:text-sm font-bold text-amber-300">₹{totalFee} (All 6 Games)</span>
           </div>
         </div>
-
-        {/* Selected Games Badges */}
-        <div className="mt-3 pt-3 border-t border-white/10 flex flex-wrap gap-2">
-          {selectedGamesList.map(game => (
-            <div 
-              key={game.id}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/40 border border-[#D4AF37]/25 text-xs text-stone-200"
-            >
-              <Trophy className="w-3 h-3 text-amber-400 shrink-0" />
-              <span className="font-semibold text-white">{game.title}</span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded bg-white/10 text-emerald-300 font-medium">
-                Included in ₹10 Pass
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Official Notice Card */}
-      <div className="p-3.5 sm:p-4 rounded-2xl bg-[#2A0812] border border-[#D4AF37]/40 text-amber-200 text-xs space-y-1.5 shadow-sm">
-        <div className="flex items-center gap-2 font-bold text-xs sm:text-sm text-[#FFE28A]">
-          <HelpCircle className="w-4 h-4 text-amber-400" />
-          Carnival Helpdesk & Payment Policy Notice
-        </div>
-        <p className="leading-relaxed text-stone-300">
-          The event uses a manual audit verification workflow at the Building B5-408 Helpdesk. You may complete your UPI payment online and enter the 12-digit UTR reference below, or register now and pay cash at the B5-408 registration counter on carnival day.
-        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 items-start">

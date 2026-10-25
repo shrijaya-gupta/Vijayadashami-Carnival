@@ -52,15 +52,6 @@ export const Step6Confirmation: React.FC = () => {
       .then((url: string) => setQrDataUrl(url))
       .catch(() => {});
     }
-
-    // Direct student to official Carnival WhatsApp Group after registration
-    const waTimer = setTimeout(() => {
-      try {
-        window.open('https://chat.whatsapp.com/Ev1kiwPGzrDFvopit0B12l', '_blank');
-      } catch (_) {}
-    }, 1200);
-
-    return () => clearTimeout(waTimer);
   }, [regId]);
 
   if (!submissionResult) return null;

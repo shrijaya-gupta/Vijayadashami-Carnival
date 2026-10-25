@@ -10,6 +10,7 @@ import { SelectionBar } from './components/SelectionBar';
 import { ScoreboardModal } from './components/ScoreboardModal';
 import { Footer } from './components/Footer';
 import { IntroScreen } from './components/IntroScreen';
+import { FloatingRegisterPill } from './components/FloatingRegisterPill';
 
 const CarnivalApp: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'home' | 'games' | 'register'>('home');
@@ -131,6 +132,9 @@ const CarnivalApp: React.FC = () => {
         isOpen={showIntro} 
         onClose={() => setShowIntro(false)} 
       />
+
+      {/* Floating Register CTA Pill */}
+      <FloatingRegisterPill onRegisterClick={handleRegisterClick} />
 
       <Footer />
     </div>

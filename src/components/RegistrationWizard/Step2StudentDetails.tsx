@@ -65,27 +65,27 @@ export const Step2StudentDetails: React.FC = () => {
       {/* Hidden rollNumber fallback to maintain model compatibility without user input */}
       <input type="hidden" value={student.rollNumber || ''} />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-        
+      {/* Primary Details: Name & Mobile */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Full Name */}
         <div>
-          <label className="block text-xs font-bold text-amber-200 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+          <label className="block text-xs font-bold text-amber-200 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
             <User className="w-3.5 h-3.5 text-amber-400" />
             Full Name <span className="text-rose-400">*</span>
           </label>
           <input
             type="text"
             required
-            placeholder="Name"
+            placeholder="Full Name"
             value={student.fullName}
             onChange={(e) => updateStudent({ fullName: e.target.value })}
-            className="w-full px-4 py-3 rounded-xl border border-[#D4AF37]/35 bg-black/50 text-white placeholder-stone-500 text-sm focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] focus:outline-hidden transition-all shadow-inner"
+            className="w-full px-3.5 py-2.5 rounded-xl border border-[#D4AF37]/35 bg-black/50 text-white placeholder-stone-500 text-sm focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] focus:outline-hidden transition-all shadow-inner"
           />
         </div>
 
         {/* Mobile Number */}
         <div>
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-1.5">
             <label className="text-xs font-bold text-amber-200 uppercase tracking-wider flex items-center gap-1.5">
               <Phone className="w-3.5 h-3.5 text-amber-400" />
               10-Digit Mobile Number <span className="text-rose-400">*</span>
@@ -93,11 +93,11 @@ export const Step2StudentDetails: React.FC = () => {
             {student.mobileNumber && (
               isMobileValid ? (
                 <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-1">
-                  <Check className="w-3 h-3 stroke-[3]" /> Valid Number
+                  <Check className="w-3 h-3 stroke-[3]" /> Valid
                 </span>
               ) : (
                 <span className="text-[10px] font-bold text-amber-400">
-                  Must be 10 digits (6–9)
+                  10 digits (6–9)
                 </span>
               )
             )}
@@ -113,7 +113,7 @@ export const Step2StudentDetails: React.FC = () => {
                 const val = e.target.value.replace(/[^0-9+\s\-]/g, '');
                 updateStudent({ mobileNumber: val });
               }}
-              className={`w-full px-4 py-3 rounded-xl border bg-black/50 text-white placeholder-stone-500 text-sm focus:outline-hidden transition-all shadow-inner ${
+              className={`w-full px-3.5 py-2.5 rounded-xl border bg-black/50 text-white placeholder-stone-500 text-sm focus:outline-hidden transition-all shadow-inner ${
                 student.mobileNumber && isMobileValid
                   ? 'border-emerald-500/80 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400'
                   : 'border-[#D4AF37]/35 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]'
@@ -125,21 +125,21 @@ export const Step2StudentDetails: React.FC = () => {
               </div>
             )}
           </div>
-          <p className="text-[11px] text-stone-400 mt-1">
-            Indian mobile numbers starting with 6–9.
-          </p>
         </div>
+      </div>
 
+      {/* Academic Details: Course, Branch, Year */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {/* Course Selection */}
         <div>
-          <label className="block text-xs font-bold text-amber-200 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+          <label className="block text-xs font-bold text-amber-200 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
             <GraduationCap className="w-3.5 h-3.5 text-amber-400" />
             Degree / Course <span className="text-rose-400">*</span>
           </label>
           <select
             value={student.course}
             onChange={(e) => updateStudent({ course: e.target.value })}
-            className="w-full px-4 py-3 rounded-xl border border-[#D4AF37]/35 bg-black/50 text-white text-sm focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] focus:outline-hidden transition-all"
+            className="w-full px-3 py-2.5 rounded-xl border border-[#D4AF37]/35 bg-black/50 text-white text-sm focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] focus:outline-hidden transition-all"
           >
             {COURSES.map(c => <option key={c} value={c} className="bg-stone-900 text-white">{c}</option>)}
           </select>
@@ -150,21 +150,21 @@ export const Step2StudentDetails: React.FC = () => {
               placeholder="Specify Course"
               value={student.courseOther}
               onChange={(e) => updateStudent({ courseOther: e.target.value })}
-              className="w-full mt-2 px-4 py-2.5 rounded-xl border border-[#D4AF37]/35 bg-black/50 text-white text-sm"
+              className="w-full mt-2 px-3 py-2 rounded-xl border border-[#D4AF37]/35 bg-black/50 text-white text-sm"
             />
           )}
         </div>
 
         {/* Branch Selection */}
         <div>
-          <label className="block text-xs font-bold text-amber-200 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+          <label className="block text-xs font-bold text-amber-200 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
             <Building2 className="w-3.5 h-3.5 text-amber-400" />
-            Branch / Department <span className="text-rose-400">*</span>
+            Branch / Dept <span className="text-rose-400">*</span>
           </label>
           <select
             value={student.branch}
             onChange={(e) => updateStudent({ branch: e.target.value })}
-            className="w-full px-4 py-3 rounded-xl border border-[#D4AF37]/35 bg-black/50 text-white text-sm focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] focus:outline-hidden transition-all"
+            className="w-full px-3 py-2.5 rounded-xl border border-[#D4AF37]/35 bg-black/50 text-white text-sm focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] focus:outline-hidden transition-all"
           >
             {BRANCHES.map(b => <option key={b} value={b} className="bg-stone-900 text-white">{b}</option>)}
           </select>
@@ -175,44 +175,38 @@ export const Step2StudentDetails: React.FC = () => {
               placeholder="Specify Branch"
               value={student.branchOther}
               onChange={(e) => updateStudent({ branchOther: e.target.value })}
-              className="w-full mt-2 px-4 py-2.5 rounded-xl border border-[#D4AF37]/35 bg-black/50 text-white text-sm"
+              className="w-full mt-2 px-3 py-2 rounded-xl border border-[#D4AF37]/35 bg-black/50 text-white text-sm"
             />
           )}
         </div>
 
         {/* Academic Year */}
         <div>
-          <label className="block text-xs font-bold text-amber-200 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+          <label className="block text-xs font-bold text-amber-200 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
             <Calendar className="w-3.5 h-3.5 text-amber-400" />
-            Academic Year <span className="text-rose-400">*</span>
+            Year <span className="text-rose-400">*</span>
           </label>
           <select
             value={student.academicYear}
             onChange={(e) => updateStudent({ academicYear: e.target.value })}
-            className="w-full px-4 py-3 rounded-xl border border-[#D4AF37]/35 bg-black/50 text-white text-sm focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] focus:outline-hidden transition-all"
+            className="w-full px-3 py-2.5 rounded-xl border border-[#D4AF37]/35 bg-black/50 text-white text-sm focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] focus:outline-hidden transition-all"
           >
             {YEARS.map(y => <option key={y} value={y} className="bg-stone-900 text-white">{y}</option>)}
           </select>
         </div>
-
       </div>
 
-      {/* WhatsApp Consent */}
-      <div className="p-4 rounded-xl bg-[#20050E]/80 border border-[#D4AF37]/30 flex items-start gap-3 shadow-inner">
+      {/* WhatsApp Schedule Consent (Streamlined & Clean) */}
+      <label htmlFor="regConsent" className="flex items-center gap-3 p-2.5 px-3 rounded-xl bg-black/40 border border-[#D4AF37]/25 cursor-pointer text-xs text-stone-300 hover:border-[#D4AF37]/40 transition-colors">
         <input
           type="checkbox"
           id="regConsent"
           checked={student.whatsAppConsent}
           onChange={(e) => updateStudent({ whatsAppConsent: e.target.checked })}
-          className="w-4 h-4 rounded text-rose-600 focus:ring-rose-500 mt-1 cursor-pointer accent-[#881337]"
+          className="w-4 h-4 rounded text-rose-600 focus:ring-rose-500 cursor-pointer accent-[#881337] shrink-0"
         />
-        <label htmlFor="regConsent" className="text-xs text-stone-200 cursor-pointer">
-          <strong className="block text-white font-semibold mb-0.5">
-            Receive Event Schedule & Heat Alerts via WhatsApp
-          </strong>
-          Allow the SRMU B5-408 carnival coordination committee to send official reminders, lane timings, and event schedule updates to this mobile number.
-        </label>
-      </div>
+        <span>Receive official match schedules &amp; heat alerts on WhatsApp</span>
+      </label>
 
       {/* Buttons with Fast-Track Option */}
       <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
