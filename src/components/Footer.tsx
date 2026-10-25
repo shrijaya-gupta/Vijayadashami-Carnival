@@ -1,7 +1,4 @@
-import React, { useEffect, useRef } from 'react';
-import { useSmoothScroll } from '../context/SmoothScrollContext';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import React from 'react';
 import { 
   MapPin, 
   Calendar, 
@@ -71,35 +68,8 @@ interface FooterProps {
 }
 
 export const Footer: React.FC<FooterProps> = ({ onRegisterClick, onOpenScoreboard }) => {
-  const { scrollTo } = useSmoothScroll();
-  const footerRef = useRef<HTMLElement>(null);
-  const columnsGridRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-
-    const ctx = gsap.context(() => {
-      if (columnsGridRef.current) {
-        gsap.from(columnsGridRef.current.children, {
-          opacity: 0,
-          y: 35,
-          stagger: 0.12,
-          duration: 0.8,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: columnsGridRef.current,
-            start: 'top 90%',
-            toggleActions: 'play none none none'
-          }
-        });
-      }
-    }, footerRef);
-
-    return () => ctx.revert();
-  }, []);
-
   const scrollToTop = () => {
-    scrollTo(0, { duration: 1.4 });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleRegister = (e: React.MouseEvent) => {
@@ -107,17 +77,19 @@ export const Footer: React.FC<FooterProps> = ({ onRegisterClick, onOpenScoreboar
     if (onRegisterClick) {
       onRegisterClick();
     } else {
-      scrollTo('#wizard-form-card', { offset: -70, duration: 1.2 });
+      const el = document.getElementById('wizard-form-card') || document.getElementById('register');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
   const handleGames = (e: React.MouseEvent) => {
     e.preventDefault();
-    scrollTo('#games', { offset: -70, duration: 1.2 });
+    const el = document.getElementById('games');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <footer ref={footerRef} className="w-full bg-gradient-to-b from-[#18030C] via-[#0E0207] to-[#040002] text-stone-300 border-t-2 border-[#D4AF37]/40 pt-16 pb-10 mt-14 text-white shadow-[0_-25px_60px_rgba(0,0,0,0.95)] relative overflow-hidden">
+    <footer className="w-full bg-gradient-to-b from-[#18030C] via-[#0E0207] to-[#040002] text-stone-300 border-t-2 border-[#D4AF37]/40 pt-16 pb-10 mt-14 text-white shadow-[0_-25px_60px_rgba(0,0,0,0.95)] relative overflow-hidden">
       
       {/* Decorative Golden Ambient Backglow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-28 bg-[#D4AF37]/10 blur-[90px] pointer-events-none" />
@@ -138,7 +110,7 @@ export const Footer: React.FC<FooterProps> = ({ onRegisterClick, onOpenScoreboar
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Main 3-Column Grid */}
-        <div ref={columnsGridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 pb-12 border-b border-white/10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 pb-12 border-b border-white/10">
           
           {/* Column 1: Brand & University Identity */}
           <div className="space-y-4">

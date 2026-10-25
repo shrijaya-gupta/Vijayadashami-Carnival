@@ -1,6 +1,5 @@
 import React from 'react';
 import { useRegistration } from '../../context/RegistrationContext';
-import { useSmoothScroll } from '../../context/SmoothScrollContext';
 import { 
   ArrowLeft, 
   ArrowRight, 
@@ -11,10 +10,10 @@ import {
   GraduationCap, 
   Building2, 
   Calendar, 
-  Zap, 
-  Check, 
-  Gamepad2, 
-  Flame 
+  Zap,
+  Check,
+  Gamepad2,
+  Flame
 } from 'lucide-react';
 import { GAMES_DATA } from '../../data/games';
 
@@ -24,7 +23,6 @@ const YEARS = ['1st Year', '2nd Year', '3rd Year', '4th Year', '5th Year'];
 
 export const Step2StudentDetails: React.FC = () => {
   const { student, updateStudent, nextStep, prevStep, goToStep, selectedGameIds, gameConfigs, submitError, totalFee } = useRegistration();
-  const { scrollTo } = useSmoothScroll();
   const hasTeamGame = selectedGameIds.some(id => gameConfigs[id]?.participationType === 'team');
 
   const isMobileValid = /^(?:\+91|0)?[6-9]\d{9}$/.test(student.mobileNumber.replace(/[\s\-\(\)]/g, ''));
@@ -210,7 +208,8 @@ export const Step2StudentDetails: React.FC = () => {
         <button
           type="button"
           onClick={() => {
-            scrollTo('#games', { offset: -70, duration: 1.2 });
+            const el = document.getElementById('games');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
           }}
           className="w-full sm:w-auto px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold text-stone-300 hover:text-white bg-black/40 hover:bg-black/70 border border-white/10 transition-colors flex items-center justify-center gap-2 cursor-pointer"
         >

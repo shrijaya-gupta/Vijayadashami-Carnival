@@ -1,7 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { Game } from '../types';
-import { gsap } from 'gsap';
-import { useSmoothScroll } from '../context/SmoothScrollContext';
 import { 
   X, 
   Check, 
@@ -34,18 +32,6 @@ export const GameGuidelinesModal: React.FC<GameGuidelinesModalProps> = ({
   onToggleSelect
 }) => {
   const [activeTab, setActiveTab] = useState<'rules' | 'procedure' | 'safety' | 'materials'>('rules');
-  const cardRef = useRef<HTMLDivElement>(null);
-  const { scrollTo } = useSmoothScroll();
-
-  useEffect(() => {
-    if (isOpen && cardRef.current) {
-      gsap.fromTo(
-        cardRef.current,
-        { scale: 0.94, opacity: 0, y: 15 },
-        { scale: 1, opacity: 1, y: 0, duration: 0.35, ease: 'power3.out' }
-      );
-    }
-  }, [isOpen]);
 
   if (!isOpen || !game) return null;
 
@@ -54,11 +40,9 @@ export const GameGuidelinesModal: React.FC<GameGuidelinesModalProps> = ({
       
       {/* Modal Dialog Card */}
       <div 
-        ref={cardRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="modalGameTitle"
-        data-lenis-prevent
         className="w-full max-w-2xl max-h-[90vh] flex flex-col rounded-2xl bg-[#18040C] border border-[#D4AF37]/50 shadow-2xl shadow-rose-950/80 overflow-hidden"
       >
         
@@ -251,7 +235,8 @@ export const GameGuidelinesModal: React.FC<GameGuidelinesModalProps> = ({
           <button
             onClick={() => {
               onClose();
-              scrollTo('#wizard-form-card', { offset: -70, duration: 1.2 });
+              const el = document.getElementById('wizard-form-card') || document.getElementById('register');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
             }}
             className="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all cursor-pointer shadow-md bg-gradient-to-r from-[#881337] via-[#B91C1C] to-[#881337] hover:from-[#9F1239] hover:to-[#DC2626] text-white border border-[#E5C158]/70 shadow-rose-950/60"
           >

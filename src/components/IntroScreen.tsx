@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowRight, Sparkles, X, Volume2, VolumeX } from 'lucide-react';
+import { ArrowRight, Sparkles, ChevronRight } from 'lucide-react';
 
 interface IntroScreenProps {
   isOpen: boolean;
@@ -14,7 +14,6 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({
 }) => {
   const [isClosing, setIsClosing] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [isMuted, setIsMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
   const ambientVideoRef = useRef<HTMLVideoElement>(null);
 
@@ -58,15 +57,6 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({
       clearTimeout(autoCloseTimer);
     };
   }, [isOpen, autoDismissDelay]);
-
-  const toggleSound = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const nextMuted = !isMuted;
-    setIsMuted(nextMuted);
-    if (videoRef.current) {
-      videoRef.current.muted = nextMuted;
-    }
-  };
 
   const handleDismiss = () => {
     setIsClosing(true);
@@ -114,7 +104,7 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({
             ref={videoRef}
             autoPlay
             playsInline
-            muted={isMuted}
+            muted
             loop
             preload="auto"
             poster="/assets/hero-mobile.jpg"
@@ -144,45 +134,27 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({
       </div>
 
       {/* =========================================================================
-          TOP HEADER: BADGE, AUDIO TOGGLE, SKIP BUTTON
+          TOP HEADER: BADGE & PREMIUM SKIP BUTTON (Speaker removed, cross removed)
           ========================================================================= */}
       <header className="relative z-20 w-full max-w-5xl mx-auto px-4 sm:px-8 pt-5 sm:pt-7 flex items-center justify-between">
         
         {/* Event Pill Badge */}
-        <div className="flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-[#1A050F]/80 border border-[#D4AF37]/40 backdrop-blur-md shadow-lg">
+        <div className="flex items-center gap-2 sm:gap-2.5 px-3.5 sm:px-4 py-1.5 rounded-full bg-gradient-to-r from-[#1A050F]/90 via-[#2A0818]/85 to-[#1A050F]/90 border border-[#D4AF37]/50 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.6),0_0_15px_rgba(212,175,55,0.15)]">
           <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-spin" style={{ animationDuration: '6s' }} />
-          <span className="text-[10px] sm:text-xs font-semibold tracking-wider uppercase text-amber-200">
+          <span className="text-[10px] sm:text-xs font-semibold tracking-wider uppercase text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-[#FFE7A0] to-amber-300">
             SRMU B5-408 • Carnival Battle Intro
           </span>
         </div>
 
-        {/* Action Controls: Sound Toggle & Skip */}
-        <div className="flex items-center gap-2.5">
-          <button
-            onClick={toggleSound}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/40 hover:bg-black/60 border border-white/20 text-stone-200 hover:text-white transition-all text-xs font-medium backdrop-blur-md cursor-pointer"
-            title={isMuted ? "Unmute Sound" : "Mute Sound"}
-          >
-            {isMuted ? (
-              <>
-                <VolumeX className="w-3.5 h-3.5 text-amber-300" />
-                <span className="hidden xs:inline text-[11px]">Unmute</span>
-              </>
-            ) : (
-              <>
-                <Volume2 className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
-                <span className="hidden xs:inline text-[11px]">Sound On</span>
-              </>
-            )}
-          </button>
-
+        {/* Action Controls: Premium Skip Button */}
+        <div className="flex items-center">
           <button
             onClick={handleDismiss}
-            className="group flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-stone-200 hover:text-white transition-all text-xs font-medium backdrop-blur-md cursor-pointer"
+            className="group relative flex items-center gap-1.5 sm:gap-2 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full bg-gradient-to-r from-black/60 via-[#1F0713]/80 to-black/60 hover:from-amber-950/70 hover:to-[#2D0613]/90 border border-amber-400/40 hover:border-amber-300 text-amber-200/90 hover:text-white transition-all duration-300 text-xs sm:text-[13px] font-semibold tracking-wider uppercase backdrop-blur-md shadow-[0_4px_16px_rgba(0,0,0,0.6)] hover:shadow-[0_0_20px_rgba(212,175,55,0.35)] hover:scale-105 active:scale-95 cursor-pointer"
             title="Skip Intro"
           >
             <span>Skip</span>
-            <X className="w-3.5 h-3.5 text-stone-300 group-hover:text-white transition-colors" />
+            <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-300/80 group-hover:text-amber-200 group-hover:translate-x-0.5 transition-transform" />
           </button>
         </div>
       </header>

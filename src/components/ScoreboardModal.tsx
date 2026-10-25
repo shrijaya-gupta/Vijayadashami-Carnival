@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { gsap } from 'gsap';
+import React, { useState, useEffect } from 'react';
 import { 
   Trophy, 
   X, 
@@ -110,18 +109,8 @@ export const ScoreboardModal: React.FC<ScoreboardModalProps> = ({ isOpen, onClos
     }
   };
 
-  const cardRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     if (!isOpen) return;
-
-    if (cardRef.current) {
-      gsap.fromTo(
-        cardRef.current,
-        { scale: 0.94, opacity: 0, y: 15 },
-        { scale: 1, opacity: 1, y: 0, duration: 0.35, ease: 'power3.out' }
-      );
-    }
 
     fetchScores(selectedGame);
 
@@ -147,11 +136,9 @@ export const ScoreboardModal: React.FC<ScoreboardModalProps> = ({ isOpen, onClos
       
       {/* Modal Dialog Card */}
       <div 
-        ref={cardRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="scoreboardModalTitle"
-        data-lenis-prevent
         className="w-full max-w-4xl max-h-[92vh] flex flex-col rounded-3xl bg-[#140209] border-2 border-[#D4AF37]/50 shadow-[0_20px_60px_rgba(0,0,0,0.95)] overflow-hidden"
       >
         {/* Header */}
