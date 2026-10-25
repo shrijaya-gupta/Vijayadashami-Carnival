@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@600;700;800;900&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
   <!-- Admin Stylesheet -->
-  <link rel="stylesheet" href="css/admin.css?v=2.2">
+  <link rel="stylesheet" href="css/admin.css?v=2.3">
 </head>
 <body>
 
@@ -53,7 +53,7 @@
       <nav class="sidebar-nav">
         <span class="nav-section-label">Management</span>
         
-        <button type="button" class="sidebar-nav-item active" data-view="overview" id="navOverview">
+        <button type="button" class="sidebar-nav-item active" data-view="overview" id="navOverview" onclick="switchView('overview')">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <rect x="3" y="3" width="7" height="7"></rect>
             <rect x="14" y="3" width="7" height="7"></rect>
@@ -63,7 +63,7 @@
           <span>Overview</span>
         </button>
 
-        <button type="button" class="sidebar-nav-item" data-view="registrations" id="navRegistrations">
+        <button type="button" class="sidebar-nav-item" data-view="registrations" id="navRegistrations" onclick="switchView('registrations')">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
             <circle cx="9" cy="7" r="4"></circle>
@@ -73,7 +73,7 @@
           <span>All Registrations</span>
         </button>
 
-        <button type="button" class="sidebar-nav-item" data-view="scanner" id="navScanner">
+        <button type="button" class="sidebar-nav-item" data-view="scanner" id="navScanner" onclick="switchView('scanner')">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
             <circle cx="12" cy="13" r="4"></circle>
@@ -81,14 +81,14 @@
           <span>QR Pass Scanner</span>
         </button>
 
-        <button type="button" class="sidebar-nav-item" data-view="gamewise" id="navGamewise">
+        <button type="button" class="sidebar-nav-item" data-view="gamewise" id="navGamewise" onclick="switchView('gamewise')">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
           </svg>
           <span>Game-wise Roster</span>
         </button>
 
-        <button type="button" class="sidebar-nav-item" data-view="gamesmanage" id="navGamesManage">
+        <button type="button" class="sidebar-nav-item" data-view="gamesmanage" id="navGamesManage" onclick="switchView('gamesmanage')">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <rect x="2" y="6" width="20" height="12" rx="2"></rect>
             <path d="M6 12h4m-2-2v4m10-2h.01m-3 0h.01"></path>
@@ -96,7 +96,7 @@
           <span>Manage Games</span>
         </button>
 
-        <button type="button" class="sidebar-nav-item" data-view="payments" id="navPayments">
+        <button type="button" class="sidebar-nav-item" data-view="payments" id="navPayments" onclick="switchView('payments')">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <rect x="2" y="5" width="20" height="14" rx="2"></rect>
             <line x1="2" y1="10" x2="22" y2="10"></line>
@@ -104,7 +104,7 @@
           <span>Payment Management</span>
         </button>
 
-        <button type="button" class="sidebar-nav-item" data-view="certificates" id="navCertificates">
+        <button type="button" class="sidebar-nav-item" data-view="certificates" id="navCertificates" onclick="switchView('certificates')">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="8" r="6"></circle>
             <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path>
@@ -112,7 +112,7 @@
           <span>Certificates &amp; Verification</span>
         </button>
 
-        <button type="button" class="sidebar-nav-item" data-view="export" id="navExport">
+        <button type="button" class="sidebar-nav-item" data-view="export" id="navExport" onclick="switchView('export')">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
             <polyline points="7 10 12 15 17 10"></polyline>
@@ -679,7 +679,7 @@
             <div class="notice-content">
               <h4 class="notice-title">Carnival Helpdesk &amp; UPI Payment Verification</h4>
               <p class="notice-desc">
-                Registration fee is strictly ₹5 per selected game (authoritative backend calculation). Third-party automated payment gateway credentials are not enabled in this environment.
+                Registration fee is strictly ₹10 flat for the All-Access Pass (authoritative backend calculation). Third-party automated payment gateway credentials are not enabled in this environment.
                 When students submit a UPI UTR transaction reference online or present payment at the B5-408 registration helpdesk, authorized organizers inspect transaction proof before marking the payment verified.
               </p>
             </div>
@@ -929,7 +929,7 @@
           <div class="view-header-bar">
             <div>
               <h2 id="gamesManageHeading" class="section-title">Games &amp; Activities Catalogue</h2>
-              <p class="section-subtitle">Add new carnival games, edit titles, rules, descriptions, fees, or toggle visibility on the live portal.</p>
+              <p class="section-subtitle">Add new carnival games, edit titles, rules, descriptions, participation formats, or toggle visibility on the live portal.</p>
             </div>
             <div class="view-header-actions">
               <button type="button" id="btnOpenAddGameModal" class="btn-primary-action btn-add-game" onclick="window.openAddGameModal()">
@@ -1260,15 +1260,10 @@
       <form id="gameEditorForm" onsubmit="window.handleGameEditorSubmit(event); return false;" style="display: flex; flex-direction: column; gap: 14px; margin-top: 14px;">
         <input type="hidden" id="editGameId">
         
-        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 12px;">
-          <div class="form-group">
-            <label for="gameTitleInput" class="form-label">Game Title / Name *</label>
-            <input type="text" id="gameTitleInput" class="filter-input" style="width: 100%;" placeholder="e.g. Tug of War, Lemon Race" required />
-          </div>
-          <div class="form-group">
-            <label for="gameFeeInput" class="form-label">Fee Amount (₹) *</label>
-            <input type="number" id="gameFeeInput" class="filter-input" style="width: 100%;" min="0" max="500" value="5" required />
-          </div>
+        <input type="hidden" id="gameFeeInput" value="0">
+        <div class="form-group">
+          <label for="gameTitleInput" class="form-label">Game Title / Name *</label>
+          <input type="text" id="gameTitleInput" class="filter-input" style="width: 100%;" placeholder="e.g. Tug of War, Lemon Race" required />
         </div>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
@@ -1323,7 +1318,7 @@
 
   <!-- Mobile Bottom Navigation Bar (Phones & Small Tablets) -->
   <nav id="mobileBottomNav" class="mobile-bottom-nav" aria-label="Quick mobile navigation">
-    <button type="button" class="bottom-nav-item active" data-view="overview" aria-label="Go to Overview">
+    <button type="button" class="bottom-nav-item active" data-view="overview" onclick="switchView('overview')" aria-label="Go to Overview">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <rect x="3" y="3" width="7" height="7"></rect>
         <rect x="14" y="3" width="7" height="7"></rect>
@@ -1333,7 +1328,7 @@
       <span>Overview</span>
     </button>
 
-    <button type="button" class="bottom-nav-item" data-view="registrations" aria-label="Go to Registrations">
+    <button type="button" class="bottom-nav-item" data-view="registrations" onclick="switchView('registrations')" aria-label="Go to Registrations">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
         <circle cx="9" cy="7" r="4"></circle>
@@ -1343,7 +1338,7 @@
       <span>Registrations</span>
     </button>
 
-    <button type="button" class="bottom-nav-item" data-view="payments" aria-label="Go to Payments">
+    <button type="button" class="bottom-nav-item" data-view="payments" onclick="switchView('payments')" aria-label="Go to Payments">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <rect x="2" y="4" width="20" height="16" rx="2"></rect>
         <line x1="2" y1="10" x2="22" y2="10"></line>
@@ -1351,7 +1346,7 @@
       <span>Payments</span>
     </button>
 
-    <button type="button" class="bottom-nav-item" data-view="gamewise" aria-label="Go to Games">
+    <button type="button" class="bottom-nav-item" data-view="gamewise" onclick="switchView('gamewise')" aria-label="Go to Games">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <circle cx="12" cy="12" r="10"></circle>
         <polygon points="12 6 12 12 16 14"></polygon>
@@ -1359,7 +1354,7 @@
       <span>Roster</span>
     </button>
 
-    <button type="button" class="bottom-nav-item" data-view="gamesmanage" aria-label="Manage Games">
+    <button type="button" class="bottom-nav-item" data-view="gamesmanage" onclick="switchView('gamesmanage')" aria-label="Manage Games">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <rect x="2" y="6" width="20" height="12" rx="2"></rect>
         <path d="M6 12h4m-2-2v4m10-2h.01m-3 0h.01"></path>
@@ -1367,7 +1362,7 @@
       <span>Catalogue</span>
     </button>
 
-    <button type="button" class="bottom-nav-item" data-view="certificates" aria-label="Go to Attendance & Certificates">
+    <button type="button" class="bottom-nav-item" data-view="certificates" onclick="switchView('certificates')" aria-label="Go to Attendance & Certificates">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
         <polyline points="22 4 12 14.01 9 11.01"></polyline>
@@ -1389,6 +1384,6 @@
 
   <!-- Offline QR Scanner Library & Controller Scripts -->
   <script src="js/html5-qrcode.min.js"></script>
-  <script src="js/dashboard.js?v=2.2"></script>
+  <script src="js/dashboard.js?v=2.3"></script>
 </body>
 </html>

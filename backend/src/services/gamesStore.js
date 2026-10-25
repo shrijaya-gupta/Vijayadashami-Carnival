@@ -15,8 +15,8 @@ const DEFAULT_GAMES = [
     description: 'Classic campus sprint requiring players to balance a fresh lemon on a spoon while racing through designated lane checkpoints.',
     objective: 'Complete the course while maintaining the approved lemon-and-spoon setup.',
     approvalStatus: 'Approved & Active',
-    registrationFee: '₹5 per selected game',
-    feeAmount: 5,
+    registrationFee: 'Included with All-Access Pass',
+    feeAmount: 0,
     suggestedTeamSize: 'Individual (1 player per track lane)',
     suggestedDuration: 'Provisional: 3 to 5 minutes per heat',
     procedure: [
@@ -52,8 +52,8 @@ const DEFAULT_GAMES = [
     description: 'A campus target challenge testing focus, aim, and precision. The activity will follow organizer-approved safety procedures and supervised equipment use in a controlled arena.',
     objective: 'Hit the designated target using organizer-approved equipment.',
     approvalStatus: 'Approved & Active',
-    registrationFee: '₹5 per selected game',
-    feeAmount: 5,
+    registrationFee: 'Included with All-Access Pass',
+    feeAmount: 0,
     suggestedTeamSize: 'Individual / Supervised',
     suggestedDuration: 'Provisional: 2 to 4 minutes per participant attempt',
     procedure: [
@@ -89,8 +89,8 @@ const DEFAULT_GAMES = [
     description: 'High-energy musical sprint around a decreasing ring of chairs to popular campus beats, demanding razor-sharp reflexes.',
     objective: 'Secure a chair every time the music halts until the champion is crowned.',
     approvalStatus: 'Approved & Active',
-    registrationFee: '₹5 per selected game',
-    feeAmount: 5,
+    registrationFee: 'Included with All-Access Pass',
+    feeAmount: 0,
     suggestedTeamSize: 'Individual (Solo entry)',
     suggestedDuration: 'Provisional: 10 to 15 minutes per round heat',
     procedure: [
@@ -125,8 +125,8 @@ const DEFAULT_GAMES = [
     description: 'Collaborative physical puzzle where participants grasp hands across a circle and maneuver to untangle without releasing contact.',
     objective: 'Untangle the entire cluster into a clean unbroken circle within the time limit.',
     approvalStatus: 'Approved & Active',
-    registrationFee: '₹5 per selected game',
-    feeAmount: 5,
+    registrationFee: 'Included with All-Access Pass',
+    feeAmount: 0,
     suggestedTeamSize: 'Team / Group (6 to 10 players)',
     suggestedDuration: 'Provisional: 5 to 8 minutes per squad attempt',
     procedure: [
@@ -160,8 +160,8 @@ const DEFAULT_GAMES = [
     description: 'Dexterity challenge using inflated balloons to pick up, transfer, and stack cups into a stable multi-tier pyramid without manual touch.',
     objective: 'Build a complete 6-cup or 10-cup pyramid and disassemble it cleanly using only balloons.',
     approvalStatus: 'Approved & Active',
-    registrationFee: '₹5 per selected game',
-    feeAmount: 5,
+    registrationFee: 'Included with All-Access Pass',
+    feeAmount: 0,
     suggestedTeamSize: 'Individual or Pair (1-2 players)',
     suggestedDuration: 'Provisional: 3 to 5 minutes per attempt',
     procedure: [
@@ -195,8 +195,8 @@ const DEFAULT_GAMES = [
     description: 'High-energy pair sprint where teammates balance a balloon between their backs or shoulders while navigating the race course.',
     objective: 'Cross the finish line in tandem keeping the balloon held firmly between partners.',
     approvalStatus: 'Approved & Active',
-    registrationFee: '₹5 per selected game',
-    feeAmount: 5,
+    registrationFee: 'Included with All-Access Pass',
+    feeAmount: 0,
     suggestedTeamSize: 'Pairs / Duo (2 players)',
     suggestedDuration: 'Provisional: 2 to 4 minutes per heat',
     procedure: [
@@ -313,8 +313,8 @@ class GamesStore {
       description: (gameData.description || gameData.shortDescription || 'Carnival activity').trim(),
       objective: (gameData.objective || 'Complete the event challenge to win prizes.').trim(),
       approvalStatus: gameData.approvalStatus || 'Approved & Active',
-      registrationFee: gameData.registrationFee || '₹5 per selected game',
-      feeAmount: Number(gameData.feeAmount) || 5,
+      registrationFee: 'Included with All-Access Pass',
+      feeAmount: 0,
       suggestedTeamSize: gameData.suggestedTeamSize || 'Individual',
       suggestedDuration: gameData.suggestedDuration || '5 to 10 minutes',
       procedure: Array.isArray(gameData.procedure) ? gameData.procedure : (
@@ -356,10 +356,9 @@ class GamesStore {
     };
 
     if (updateData.feeAmount !== undefined || updateData.fee !== undefined) {
-      const fee = Number(updateData.feeAmount !== undefined ? updateData.feeAmount : updateData.fee) || 0;
-      updated.feeAmount = fee;
-      updated.fee = fee;
-      updated.registrationFee = `₹${fee} per selected game`;
+      updated.feeAmount = 0;
+      updated.fee = 0;
+      updated.registrationFee = 'Included with All-Access Pass';
     }
     if (updateData.participationType) {
       updated.participationType = updateData.participationType.trim();

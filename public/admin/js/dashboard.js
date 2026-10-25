@@ -81,11 +81,18 @@ let certRequestSeq = 0;
 let gamewiseRequestSeq = 0;
 let gamewiseScoresSeq = 0;
 
-document.addEventListener('DOMContentLoaded', async () => {
+// Run navigation listeners immediately so all tabs, sidebars, and buttons work right away
+try {
+  initNavigation();
+} catch (e) {
+  // Suppress early initialization errors if DOM is still parsing
+}
+
+async function bootDashboardApp() {
+  initNavigation();
   const isAuthed = await checkSession();
   if (!isAuthed) return;
 
-  initNavigation();
   initOverview();
   initRegistrationsTable();
   initPaymentsTable();
@@ -103,7 +110,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       refreshCurrentView(true);
     }
   }, 15000);
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bootDashboardApp);
+} else {
+  bootDashboardApp();
+}
 
 // ============================================================================
 // 1. SESSION MANAGEMENT & LOGOUT
@@ -171,12 +184,11 @@ async function handleLogout() {
 // ============================================================================
 
 function initNavigation() {
-  const navButtons = document.querySelectorAll('.sidebar-nav-item[data-view]');
-  const logoutBtn = document.getElementById('btnLogoutSidebar');
+  const sidebar = document.getElementById('dashboardSidebar');
+  const backdrop = document.getElementById('sidebarBackdrop');
   const mobileToggle = document.getElementById('mobileMenuToggle');
   const mobileClose = document.getElementById('mobileSidebarClose');
-  const backdrop = document.getElementById('sidebarBackdrop');
-  const sidebar = document.getElementById('dashboardSidebar');
+  const logoutBtn = document.getElementById('btnLogoutSidebar');
   const refreshBtn = document.getElementById('btnRefreshData');
 
   const closeSidebarMobile = () => {
@@ -184,19 +196,23 @@ function initNavigation() {
     backdrop?.classList.remove('active');
   };
 
-  navButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
+  // 1. Sidebar Nav items
+  document.querySelectorAll('.sidebar-nav-item[data-view]').forEach(btn => {
+    btn.onclick = (e) => {
+      e.preventDefault();
       const view = btn.dataset.view;
-      switchView(view);
-      if (window.innerWidth <= 992) {
-        closeSidebarMobile();
+      if (view) {
+        switchView(view);
+        if (window.innerWidth <= 1024) closeSidebarMobile();
       }
-    });
+    };
   });
 
   logoutBtn?.addEventListener('click', handleLogout);
 
-  mobileToggle?.addEventListener('click', () => {
+  mobileToggle?.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     const isOpen = sidebar?.classList.toggle('mobile-open');
     if (isOpen) {
       backdrop?.classList.add('active');
@@ -205,16 +221,56 @@ function initNavigation() {
     }
   });
 
-  mobileClose?.addEventListener('click', closeSidebarMobile);
+  mobileClose?.addEventListener('click', (e) => {
+    e.preventDefault();
+    closeSidebarMobile();
+  });
   backdrop?.addEventListener('click', closeSidebarMobile);
 
-  const bottomNavButtons = document.querySelectorAll('.bottom-nav-item[data-view]');
-  bottomNavButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
+  // 2. Mobile Bottom Nav bar with delegated clicks
+  const bottomNav = document.getElementById('mobileBottomNav');
+  if (bottomNav) {
+    bottomNav.onclick = (e) => {
+      const btn = e.target.closest('.bottom-nav-item[data-view]');
+      if (!btn) return;
+      e.preventDefault();
       const view = btn.dataset.view;
-      switchView(view);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
+      if (view) {
+        switchView(view);
+        closeSidebarMobile();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    };
+  }
+
+  // Individual button listeners as extra failsafe
+  document.querySelectorAll('.bottom-nav-item[data-view]').forEach(btn => {
+    btn.onclick = (e) => {
+      e.preventDefault();
+      const view = btn.dataset.view;
+      if (view) {
+        switchView(view);
+        closeSidebarMobile();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    };
+  });
+
+  // 3. Global delegated fallback for any navigation element with data-view
+  document.addEventListener('click', (e) => {
+    const navBtn = e.target.closest('[data-view]');
+    if (navBtn && (navBtn.classList.contains('sidebar-nav-item') || navBtn.classList.contains('bottom-nav-item'))) {
+      const view = navBtn.dataset.view;
+      if (view) {
+        switchView(view);
+        if (navBtn.classList.contains('bottom-nav-item')) {
+          closeSidebarMobile();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else if (window.innerWidth <= 1024) {
+          closeSidebarMobile();
+        }
+      }
+    }
   });
 
   // Topbar & Quick Action Hub shortcuts
@@ -233,10 +289,12 @@ function initNavigation() {
 }
 
 function switchView(viewName) {
+  if (!viewName) return;
+
   // If leaving scanner view, stop camera stream to save resources
   if (currentView === 'scanner' && viewName !== 'scanner') {
     if (typeof stopCameraScanner === 'function') {
-      stopCameraScanner();
+      try { stopCameraScanner(); } catch (e) {}
     }
   }
 
@@ -279,7 +337,8 @@ function switchView(viewName) {
     sec.classList.remove('active');
   });
 
-  const activeSec = document.getElementById(viewMap[viewName]);
+  const activeSecId = viewMap[viewName];
+  const activeSec = activeSecId ? document.getElementById(activeSecId) : null;
   if (activeSec) {
     activeSec.classList.add('active');
   }
@@ -289,24 +348,29 @@ function switchView(viewName) {
     topbarTitle.textContent = titleMap[viewName] || 'Dashboard';
   }
 
-  // Load view data
-  if (viewName === 'overview') {
-    loadOverviewData();
-  } else if (viewName === 'registrations') {
-    loadRegistrationsData();
-  } else if (viewName === 'payments') {
-    loadPaymentsData();
-  } else if (viewName === 'certificates') {
-    loadCertificatesData();
-  } else if (viewName === 'gamewise') {
-    loadGamewiseData(activeGameId);
-  } else if (viewName === 'gamesmanage') {
-    loadAdminGamesData();
-  } else if (viewName === 'scanner') {
-    const manualInput = document.getElementById('manualPassIdInput');
-    manualInput?.focus();
+  // Load view data safely wrapped in try/catch
+  try {
+    if (viewName === 'overview') {
+      loadOverviewData();
+    } else if (viewName === 'registrations') {
+      loadRegistrationsData();
+    } else if (viewName === 'payments') {
+      loadPaymentsData();
+    } else if (viewName === 'certificates') {
+      loadCertificatesData();
+    } else if (viewName === 'gamewise') {
+      loadGamewiseData(activeGameId);
+    } else if (viewName === 'gamesmanage') {
+      loadAdminGamesData();
+    } else if (viewName === 'scanner') {
+      const manualInput = document.getElementById('manualPassIdInput');
+      manualInput?.focus();
+    }
+  } catch (err) {
+    console.error('Error loading view data for', viewName, err);
   }
 }
+window.switchView = switchView;
 
 function refreshCurrentView(isSilent = false) {
   if (currentView === 'overview') loadOverviewData(isSilent);
@@ -2938,7 +3002,6 @@ function renderAdminGameCards(games) {
     <div class="admin-games-grid-layout" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px;">
       ${games.map(game => {
         const isActive = game.isActive !== false;
-        const fee = game.feeAmount !== undefined ? game.feeAmount : (game.fee !== undefined ? game.fee : 5);
         const format = game.participationType || 'Individual';
 
         return `
@@ -2966,8 +3029,8 @@ function renderAdminGameCards(games) {
                 <span class="badge" style="font-size: 0.75rem; background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 3px 8px;">
                   👥 ${escapeHtml(format)}
                 </span>
-                <span class="badge" style="font-size: 0.75rem; background: rgba(245, 158, 11, 0.1); color: #FCD34D; border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 6px; padding: 3px 8px;">
-                  ₹${fee} Entry
+                <span class="badge" style="font-size: 0.72rem; background: rgba(16, 185, 129, 0.1); color: #6EE7B7; border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 6px; padding: 3px 8px;">
+                  🎟️ All-Access Pass
                 </span>
                 <span class="badge" style="font-size: 0.72rem; background: rgba(59, 130, 246, 0.1); color: #93C5FD; border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 6px; padding: 3px 8px;">
                   ID: ${escapeHtml(game.id)}
@@ -3005,7 +3068,7 @@ window.openAddGameModal = function() {
   const editId = document.getElementById('editGameId');
   if (editId) editId.value = '';
   const feeInput = document.getElementById('gameFeeInput');
-  if (feeInput) feeInput.value = '5';
+  if (feeInput) feeInput.value = '0';
   const activeCheck = document.getElementById('gameActiveCheckbox');
   if (activeCheck) activeCheck.checked = true;
   const activeLabel = document.getElementById('gameActiveStatusText');
@@ -3051,7 +3114,7 @@ window.openEditGameModal = async function(gameId) {
   const catInput = document.getElementById('gameCategoryInput');
   if (catInput) catInput.value = game.category || '';
   const feeInput = document.getElementById('gameFeeInput');
-  if (feeInput) feeInput.value = game.feeAmount !== undefined ? game.feeAmount : (game.fee !== undefined ? game.fee : 5);
+  if (feeInput) feeInput.value = '0';
   
   const formatSelect = document.getElementById('gameFormatSelect');
   if (formatSelect) {
@@ -3113,7 +3176,8 @@ window.handleGameEditorSubmit = async function(event) {
   const payload = {
     name: document.getElementById('gameTitleInput')?.value?.trim(),
     category: document.getElementById('gameCategoryInput')?.value?.trim(),
-    feeAmount: Number(document.getElementById('gameFeeInput')?.value) || 5,
+    feeAmount: 0,
+    registrationFee: 'Included with All-Access Pass',
     participationType: document.getElementById('gameFormatSelect')?.value || 'Individual',
     shortDescription: document.getElementById('gameShortDescInput')?.value?.trim(),
     description: document.getElementById('gameDescTextarea')?.value?.trim(),

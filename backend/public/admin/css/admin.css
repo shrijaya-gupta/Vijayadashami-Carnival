@@ -2073,8 +2073,8 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   height: 60px;
   background: #4A0A14;
   border-top: 1px solid rgba(212, 175, 55, 0.25);
-  z-index: 900;
-  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.15);
+  z-index: 1005;
+  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.25);
   align-items: center;
   justify-content: space-around;
   padding: 0 4px;
@@ -2091,7 +2091,24 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   font-weight: 700;
   flex: 1;
   height: 100%;
-  transition: color 0.15s ease;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  touch-action: manipulation;
+  pointer-events: auto;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.bottom-nav-item:active {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.bottom-nav-item * {
+  pointer-events: none;
 }
 
 .bottom-nav-item svg {
@@ -2134,6 +2151,12 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 
   .mobile-bottom-nav {
     display: flex;
+  }
+
+  .admin-toast-container {
+    bottom: 74px;
+    right: 16px;
+    left: 16px;
   }
 
   .dashboard-content-area {
