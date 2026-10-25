@@ -323,14 +323,14 @@ function switchView(viewName) {
   };
 
   const titleMap = {
-    overview: 'Dashboard Overview',
-    registrations: 'All Registrations Management',
-    scanner: 'QR Pass Scanner & Student Verification',
-    gamewise: 'Game-wise Participants Roster',
-    gamesmanage: 'Games & Activities Catalogue Management',
-    payments: 'Payment Management & Desk Verification',
-    certificates: 'Participation Certificates & Attendance Verification',
-    export: 'CSV Data Export'
+    overview: 'Overview',
+    registrations: 'All Registrations',
+    scanner: 'QR Pass Scanner',
+    gamewise: 'Game Rosters',
+    gamesmanage: 'Games Catalogue',
+    payments: 'Payment Desk',
+    certificates: 'Certificates & Attendance',
+    export: 'Data Export'
   };
 
   document.querySelectorAll('.dashboard-view-section').forEach(sec => {
@@ -517,7 +517,7 @@ function renderOverviewRecent(recent) {
   if (!tbody) return;
 
   if (recent.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-dim); padding: 30px;">No registrations recorded yet.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-dim); padding: 30px;">No registrations recorded yet.</td></tr>`;
     return;
   }
 
@@ -526,19 +526,18 @@ function renderOverviewRecent(recent) {
     const dateStr = formatDate(r.createdAt);
     return `
       <tr>
-        <td data-label="ID"><span class="reg-id-badge">${escapeHtml(r.registrationId)}</span></td>
-        <td data-label="Student"><strong>${escapeHtml(r.studentName)}</strong></td>
-        <td data-label="Roll No">${escapeHtml(r.rollNumber || '—')}</td>
+        <td data-label="ID"><span class="reg-id-badge cursor-pointer" onclick="openRegistrationModal('${escapeHtml(r.registrationId)}')">${escapeHtml(r.registrationId)}</span></td>
+        <td data-label="Student"><strong style="color: var(--text-main); font-weight: 700;">${escapeHtml(r.studentName)}</strong></td>
         <td data-label="Course">${escapeHtml(r.course)}</td>
         <td data-label="Games">${r.gamesCount} game${r.gamesCount !== 1 ? 's' : ''}</td>
         <td data-label="Status"><span class="status-pill ${statusClass}">${escapeHtml(r.status || 'confirmed')}</span></td>
         <td data-label="Date">${dateStr}</td>
         <td data-label="Action">
           <div class="action-btn-group">
-            <button type="button" class="btn-table-action" onclick="openRegistrationModal('${escapeHtml(r.registrationId)}')">
-              Details
+            <button type="button" class="btn-table-details" onclick="openRegistrationModal('${escapeHtml(r.registrationId)}')">
+              <span>Details</span>
             </button>
-            <button type="button" class="btn-table-action btn-revoke" onclick="window.deleteRegistrationQuick('${escapeHtml(r.registrationId)}', '${escapeHtml(r.studentName)}')" title="Delete participant">
+            <button type="button" class="btn-table-delete" onclick="window.deleteRegistrationQuick('${escapeHtml(r.registrationId)}', '${escapeHtml(r.studentName)}')" title="Delete participant">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
               <span>Delete</span>
             </button>
@@ -693,7 +692,7 @@ async function loadRegistrationsData(isSilent = false) {
 
     // Render Table Rows
     if (!registrations || registrations.length === 0) {
-      tbody.innerHTML = `<tr class="table-state-row"><td colspan="11" style="text-align: center; color: var(--text-dim); padding: 40px;">No registrations match your search or filter criteria.</td></tr>`;
+      tbody.innerHTML = `<tr class="table-state-row"><td colspan="7" style="text-align: center; color: var(--text-dim); padding: 40px;">No registrations match your search or filter criteria.</td></tr>`;
       tbody.style.opacity = '1';
       return;
     }
@@ -705,10 +704,12 @@ async function loadRegistrationsData(isSilent = false) {
 
       const gamesChips = (reg.selectedGames || []).map(g => {
         const isTeam = g.participationType === 'team';
-        return `<span style="display: inline-block; font-size: 0.72rem; padding: 2px 7px; border-radius: 4px; background: rgba(255,255,255,0.06); margin: 2px;">
-          ${escapeHtml(g.gameName || g.gameId)} ${isTeam ? '<strong style="color: #FCD34D;">[Team]</strong>' : ''}
+        return `<span class="game-chip">
+          <span class="game-chip-dot"></span>
+          <span>${escapeHtml(g.gameName || g.gameId)}</span>
+          ${isTeam ? '<span class="team-chip-tag">Team</span>' : ''}
         </span>`;
-      }).join(' ');
+      }).join('');
 
       const fee = reg.feeAmount != null ? reg.feeAmount : 10;
       const isPaid = reg.paymentStatus === 'paid';
@@ -716,10 +717,9 @@ async function loadRegistrationsData(isSilent = false) {
       const isFailed = reg.paymentStatus === 'payment_failed';
       const paymentLabel = isPaid ? 'Verified' : (isPendingVer ? 'Audit Needed' : (isFailed ? 'Failed' : 'Pending'));
       const paymentClass = isPaid ? 'status-paid' : (isPendingVer ? 'status-payment_verification_pending' : (isFailed ? 'status-payment_failed' : 'status-payment_pending'));
-      const utrBadge = reg.paymentReference ? `<div style="font-size: 0.7rem; font-family: monospace; color: #FCD34D; margin-top: 3px;" title="Submitted UTR: ${escapeHtml(reg.paymentReference)}">Ref: ${escapeHtml(reg.paymentReference)}</div>` : '';
+      const gamesCount = (reg.selectedGames || []).length;
 
       const subInfo = [
-        student.rollNumber || '',
         student.course || '',
         student.branch ? `(${student.branch})` : ''
       ].filter(Boolean).join(' • ');
@@ -730,27 +730,42 @@ async function loadRegistrationsData(isSilent = false) {
             <span class="reg-id-badge cursor-pointer" onclick="openRegistrationModal('${escapeHtml(reg.registrationId)}')">${escapeHtml(reg.registrationId)}</span>
           </td>
           <td data-label="Student">
-            <div style="font-weight: 700; color: #FFFDF9; font-size: 0.92rem;">${escapeHtml(student.fullName)}</div>
-            <div style="font-size: 0.74rem; color: var(--text-dim); margin-top: 2px;">${escapeHtml(subInfo || '—')}</div>
+            <div class="participant-name">${escapeHtml(student.fullName || 'Anonymous')}</div>
+            <div class="participant-meta">${escapeHtml(subInfo || 'SRMU Student')}</div>
           </td>
           <td data-label="Games">
-            <div style="font-size: 0.76rem; font-weight: 600; color: #FFFDF9; margin-bottom: 2px;">
-              ${(reg.selectedGames || []).length} Game${(reg.selectedGames || []).length !== 1 ? 's' : ''}
+            <div class="games-count-label">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+              <span>${gamesCount} Game${gamesCount !== 1 ? 's' : ''} Selected</span>
             </div>
-            ${gamesChips}
+            <div class="games-chips-wrap">
+              ${gamesChips || '<span style="color: var(--text-dim); font-size: 0.75rem;">None</span>'}
+            </div>
           </td>
-          <td data-label="Fee"><strong style="color: #FCD34D; font-size: 0.95rem;">₹${fee}</strong></td>
+          <td data-label="Fee">
+            <div class="fee-badge-container">
+              <span class="fee-amount-badge">₹${fee}</span>
+              <span class="fee-badge-sub">Pass</span>
+            </div>
+          </td>
           <td data-label="Payment">
-            <span class="status-pill ${paymentClass}">${escapeHtml(paymentLabel)}</span>
-            ${utrBadge}
+            <div class="payment-cell-wrap">
+              <span class="status-pill ${paymentClass}">${escapeHtml(paymentLabel)}</span>
+              ${reg.paymentReference ? `
+                <div class="payment-ref-box" title="Submitted UTR: ${escapeHtml(reg.paymentReference)}">
+                  <span class="ref-label">Ref:</span>
+                  <span>${escapeHtml(reg.paymentReference)}</span>
+                </div>
+              ` : ''}
+            </div>
           </td>
           <td data-label="Status"><span class="status-pill ${statusClass}">${escapeHtml(reg.status || 'confirmed')}</span></td>
           <td data-label="Action">
             <div class="action-btn-group">
-              <button type="button" class="btn-table-action" onclick="openRegistrationModal('${escapeHtml(reg.registrationId)}')" title="View complete details">
-                Details
+              <button type="button" class="btn-table-details" onclick="openRegistrationModal('${escapeHtml(reg.registrationId)}')" title="View complete details">
+                <span>Details</span>
               </button>
-              <button type="button" class="btn-table-action btn-revoke" onclick="window.deleteRegistrationQuick('${escapeHtml(reg.registrationId)}', '${escapeHtml(student.fullName)}')" title="Delete participant">
+              <button type="button" class="btn-table-delete" onclick="window.deleteRegistrationQuick('${escapeHtml(reg.registrationId)}', '${escapeHtml(student.fullName)}')" title="Delete participant">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                 <span>Delete</span>
               </button>
@@ -766,7 +781,7 @@ async function loadRegistrationsData(isSilent = false) {
     console.error('Failed to load registrations:', err);
     tbody.style.opacity = '1';
     if (!hasExistingRows) {
-      tbody.innerHTML = `<tr class="table-state-row"><td colspan="11" style="text-align: center; color: var(--red-light); padding: 40px;">Failed to load records from server.</td></tr>`;
+      tbody.innerHTML = `<tr class="table-state-row"><td colspan="7" style="text-align: center; color: var(--red-light); padding: 40px;">Failed to load records from server.</td></tr>`;
     } else {
       showToast('Notice: Could not refresh registrations. Showing cached records.');
     }
@@ -847,13 +862,13 @@ async function loadGamewiseData(gameId, isSilent = false) {
         <div style="display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
           <div>
             <div style="font-size: 0.75rem; font-weight: 700; color: var(--sky); text-transform: uppercase;">Category: ${escapeHtml(g.category)} &bull; ${escapeHtml(g.rulesApprovalStatus)}</div>
-            <h3 style="font-size: 1.4rem; font-weight: 800; color: #FFFFFF; margin: 4px 0 8px 0;">${escapeHtml(g.name)}</h3>
+            <h3 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin: 4px 0 8px 0;">${escapeHtml(g.name)}</h3>
             <p style="font-size: 0.88rem; color: var(--text-muted); max-width: 600px;">${escapeHtml(g.description)}</p>
           </div>
           <div style="display: flex; gap: 14px; flex-wrap: wrap;">
-            <div style="background: rgba(255,255,255,0.04); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 12px 18px; text-align: center;">
+            <div style="background: var(--bg-surface-secondary); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 12px 18px; text-align: center;">
               <span style="font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; display: block;">Total Entries</span>
-              <strong style="font-size: 1.4rem; color: #FFFFFF;">${m.totalRegistrations}</strong>
+              <strong style="font-size: 1.4rem; color: var(--text-main);">${m.totalRegistrations}</strong>
             </div>
             <div style="background: rgba(255,255,255,0.04); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 12px 18px; text-align: center;">
               <span style="font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; display: block;">Solo / Team</span>
@@ -871,7 +886,7 @@ async function loadGamewiseData(gameId, isSilent = false) {
     // Participants Table
     if (tbody) {
       if (!data.participants || data.participants.length === 0) {
-        tbody.innerHTML = `<tr class="table-state-row"><td colspan="8" style="text-align: center; color: var(--text-dim); padding: 40px;">No students have registered for this game yet.</td></tr>`;
+        tbody.innerHTML = `<tr class="table-state-row"><td colspan="7" style="text-align: center; color: var(--text-dim); padding: 40px;">No students have registered for this game yet.</td></tr>`;
         tbody.style.opacity = '1';
         return;
       }
@@ -886,9 +901,8 @@ async function loadGamewiseData(gameId, isSilent = false) {
 
         return `
           <tr>
-            <td data-label="ID"><span class="reg-id-badge">${escapeHtml(p.registrationId)}</span></td>
-            <td data-label="Student"><strong>${escapeHtml(p.studentName)}</strong></td>
-            <td data-label="Roll No">${escapeHtml(p.rollNumber)}</td>
+            <td data-label="ID"><span class="reg-id-badge cursor-pointer" onclick="openRegistrationModal('${escapeHtml(p.registrationId)}')">${escapeHtml(p.registrationId)}</span></td>
+            <td data-label="Student"><strong style="color: var(--text-main); font-weight: 700;">${escapeHtml(p.studentName)}</strong></td>
             <td data-label="Course">${escapeHtml(p.course)} - ${escapeHtml(p.branch)}</td>
             <td data-label="Format"><span class="status-pill ${isTeam ? 'status-pending' : 'status-confirmed'}">${isTeam ? 'Team' : 'Solo'}</span></td>
             <td data-label="Squad Details">${teamInfo}</td>
@@ -959,13 +973,13 @@ async function loadGamewiseScores(gameId, isSilent = false) {
         <tr>
           <td data-label="Rank">${medalBadge}</td>
           <td data-label="Participant">
-            <div style="font-weight: 700; color: #FFFFFF;">${escapeHtml(s.participant_name)}</div>
+            <div style="font-weight: 700; color: var(--text-main);">${escapeHtml(s.participant_name)}</div>
           </td>
           <td data-label="Roll No">
             <span style="font-family: monospace; color: var(--text-muted);">${escapeHtml(s.roll_number || '—')}</span>
           </td>
           <td data-label="Score">
-            <strong style="color: #FCD34D; font-size: 0.95rem;">${escapeHtml(s.score)}</strong>
+            <strong style="color: #92400E; font-size: 0.95rem;">${escapeHtml(s.score)}</strong>
           </td>
           <td data-label="Category">
             <span class="status-pill status-confirmed">${escapeHtml(s.category || 'Solo')}</span>
@@ -974,8 +988,8 @@ async function loadGamewiseScores(gameId, isSilent = false) {
             <span style="font-size: 0.8rem; color: var(--text-dim);">${formatDate(s.created_at)}</span>
           </td>
           <td data-label="Action">
-            <button type="button" class="btn-table-action btn-revoke" onclick="window.deleteHeatScore('${escapeHtml(s.id)}')" title="Remove score from leaderboard">
-              Delete
+            <button type="button" class="btn-table-delete" onclick="window.deleteHeatScore('${escapeHtml(s.id)}')" title="Remove score from leaderboard">
+              <span>Delete</span>
             </button>
           </td>
         </tr>
@@ -1240,7 +1254,7 @@ async function loadPaymentsData(isSilent = false) {
     console.error('Failed to load payment records:', err);
     tbody.style.opacity = '1';
     if (!hasExistingRows) {
-      tbody.innerHTML = `<tr class="table-state-row"><td colspan="9" style="text-align: center; color: var(--red-light); padding: 30px;">Error loading payment records: ${escapeHtml(err.message)}</td></tr>`;
+      tbody.innerHTML = `<tr class="table-state-row"><td colspan="8" style="text-align: center; color: var(--red-light); padding: 30px;">Error loading payment records: ${escapeHtml(err.message)}</td></tr>`;
     } else {
       showToast('Notice: Could not refresh payment records. Showing cached data.');
     }
@@ -1252,7 +1266,7 @@ function renderPaymentsRows(registrations) {
   if (!tbody) return;
 
   if (registrations.length === 0) {
-    tbody.innerHTML = `<tr class="table-state-row"><td colspan="9" style="text-align: center; color: var(--text-dim); padding: 36px;">No payment records match your search or filter criteria.</td></tr>`;
+    tbody.innerHTML = `<tr class="table-state-row"><td colspan="8" style="text-align: center; color: var(--text-dim); padding: 36px;">No payment records match your search or filter criteria.</td></tr>`;
     return;
   }
 
@@ -1325,10 +1339,9 @@ function renderPaymentsRows(registrations) {
             ${escapeHtml(reg.registrationId)}
           </span>
         </td>
-        <td data-label="Student"><strong>${escapeHtml(student.fullName)}</strong></td>
-        <td data-label="Roll No">${escapeHtml(student.rollNumber || '—')}</td>
+        <td data-label="Student"><strong style="color: var(--text-main); font-weight: 700;">${escapeHtml(student.fullName)}</strong></td>
         <td data-label="Games">${gamesDisplay}</td>
-        <td data-label="Fee"><strong style="color: #FCD34D;">₹${fee}</strong></td>
+        <td data-label="Fee"><span class="fee-amount-badge">₹${fee}</span></td>
         <td data-label="Payment"><span class="status-pill ${payBadgeClass}">${escapeHtml(payLabel)}</span></td>
         <td data-label="UTR / Ref">${utrDisplay}</td>
         <td data-label="Date">${dateStr}</td>
@@ -1636,9 +1649,16 @@ window.openRegistrationModal = async function(registrationId) {
     // Populate modal fields
     document.getElementById('modalRegIdBadge').textContent = data.registrationId;
     document.getElementById('modalStudentName').textContent = data.student.fullName;
-    document.getElementById('modalStudentMobile').textContent = data.student.mobileNumber || 'Not provided';
-    document.getElementById('modalStudentRoll').textContent = data.student.rollNumber;
-    document.getElementById('modalStudentAcademic').textContent = `${data.student.course} - ${data.student.branch} (${data.student.academicYear})`;
+    const rollWrap = document.getElementById('modalStudentRollWrap');
+    const rollVal = data.student.rollNumber && data.student.rollNumber !== 'N/A' ? data.student.rollNumber : '';
+    if (rollWrap) {
+      if (rollVal) {
+        rollWrap.style.display = '';
+        document.getElementById('modalStudentRoll').textContent = rollVal;
+      } else {
+        rollWrap.style.display = 'none';
+      }
+    }
     document.getElementById('modalCreatedAt').textContent = formatDate(data.createdAt);
 
     // Direct phone call & WhatsApp links
@@ -1856,8 +1876,8 @@ window.openRegistrationModal = async function(registrationId) {
             : '<li><em>No additional members listed.</em></li>';
 
           teamHtml = `
-            <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 10px 14px; margin-top: 8px;">
-              <div style="font-size: 0.82rem; font-weight: 700; color: #FCD34D;">Team Name: ${escapeHtml(g.teamName || 'Squad')}</div>
+            <div style="background: var(--bg-surface-secondary); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 10px 14px; margin-top: 8px;">
+              <div style="font-size: 0.82rem; font-weight: 700; color: #92400E;">Team Name: ${escapeHtml(g.teamName || 'Squad')}</div>
               <div style="font-size: 0.78rem; color: var(--text-dim); margin-top: 4px;">Roster Members:</div>
               <ul style="padding-left: 20px; font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">
                 ${membersList}
@@ -1867,9 +1887,9 @@ window.openRegistrationModal = async function(registrationId) {
         }
 
         return `
-          <div style="margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;">
+          <div style="margin-bottom: 12px; border-bottom: 1px solid var(--color-border-subtle); padding-bottom: 10px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-              <strong style="color: #FFFFFF; font-size: 0.95rem;">${escapeHtml(g.gameName || g.gameId)}</strong>
+              <strong style="color: var(--text-main); font-size: 0.95rem;">${escapeHtml(g.gameName || g.gameId)}</strong>
               <span class="status-pill ${isTeam ? 'status-pending' : 'status-confirmed'}">${isTeam ? 'Team Entry' : 'Solo / Individual'}</span>
             </div>
             ${teamHtml}
@@ -2081,7 +2101,7 @@ async function loadCertificatesData(isSilent = false) {
     console.error('Error loading certificates data:', err);
     tbody.style.opacity = '1';
     if (!hasExistingRows) {
-      tbody.innerHTML = `<tr class="table-state-row"><td colspan="7" style="text-align: center; color: var(--red-light); padding: 24px;">Failed to load participant data.</td></tr>`;
+      tbody.innerHTML = `<tr class="table-state-row"><td colspan="6" style="text-align: center; color: var(--red-light); padding: 24px;">Failed to load participant data.</td></tr>`;
     } else {
       showToast('Notice: Could not refresh certificates roster. Showing cached data.');
     }
@@ -2093,7 +2113,7 @@ function renderCertificatesRows(participants) {
   if (!tbody) return;
 
   if (participants.length === 0) {
-    tbody.innerHTML = `<tr class="table-state-row"><td colspan="7" style="text-align: center; color: var(--text-dim); padding: 32px;">No matching participant records found.</td></tr>`;
+    tbody.innerHTML = `<tr class="table-state-row"><td colspan="6" style="text-align: center; color: var(--text-dim); padding: 32px;">No matching participant records found.</td></tr>`;
     return;
   }
 
@@ -2164,14 +2184,11 @@ function renderCertificatesRows(participants) {
           </span>
         </td>
         <td data-label="Participant">
-          <div style="font-weight: 700; color: #FFFFFF;">${escapeHtml(p.studentName)}</div>
+          <div style="font-weight: 700; color: var(--text-main);">${escapeHtml(p.studentName)}</div>
           <div style="font-size: 0.75rem; color: var(--text-dim);">${escapeHtml(p.course)} &bull; ${escapeHtml(p.branch)}</div>
         </td>
-        <td data-label="Roll No">
-          <span style="font-family: monospace; color: var(--text-muted);">${escapeHtml(p.rollNumber || '—')}</span>
-        </td>
         <td data-label="Games">
-          <div style="font-weight: 600; color: #FFFFFF;">${gamesCount} challenge${gamesCount !== 1 ? 's' : ''}</div>
+          <div style="font-weight: 600; color: var(--text-main);">${gamesCount} challenge${gamesCount !== 1 ? 's' : ''}</div>
           <div style="font-size: 0.72rem; color: var(--text-dim); max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(gamesNames)}">
             ${escapeHtml(gamesNames)}
           </div>
@@ -3012,7 +3029,7 @@ function renderAdminGameCards(games) {
                   <span style="display: inline-block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--carnival-gold); margin-bottom: 4px;">
                     ${escapeHtml(game.category || 'General')}
                   </span>
-                  <h4 style="font-size: 1.1rem; font-weight: 700; color: #FFFFFF; margin: 0; line-height: 1.3;">
+                  <h4 style="font-size: 1.1rem; font-weight: 700; color: var(--text-main); margin: 0; line-height: 1.3;">
                     ${escapeHtml(game.name)}
                   </h4>
                 </div>
@@ -3026,7 +3043,7 @@ function renderAdminGameCards(games) {
               </p>
 
               <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px;">
-                <span class="badge" style="font-size: 0.75rem; background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 3px 8px;">
+                <span class="badge" style="font-size: 0.75rem; background: var(--bg-surface-secondary); color: var(--text-main); border: 1px solid var(--color-border); border-radius: 6px; padding: 3px 8px;">
                   👥 ${escapeHtml(format)}
                 </span>
                 <span class="badge" style="font-size: 0.72rem; background: rgba(16, 185, 129, 0.1); color: #6EE7B7; border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 6px; padding: 3px 8px;">
