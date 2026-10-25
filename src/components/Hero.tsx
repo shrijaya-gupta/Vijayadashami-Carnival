@@ -26,25 +26,61 @@ export const Hero: React.FC<HeroProps> = ({
   onWatchIntroClick 
 }) => {
   const [showVideoModal, setShowVideoModal] = useState(false);
-  const mobileVideoRef = useRef<HTMLVideoElement>(null);
+  const [activeVideo, setActiveVideo] = useState<'A' | 'B'>('A');
+  const videoRefA = useRef<HTMLVideoElement>(null);
+  const videoRefB = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    const vid = mobileVideoRef.current;
-    if (!vid) return;
+    const vidA = videoRefA.current;
+    const vidB = videoRefB.current;
+    if (!vidA || !vidB) return;
 
-    vid.muted = true;
+    vidA.muted = true;
+    vidB.muted = true;
+
     // Low-bandwidth adaptation (3G/4G / Data Saver)
     const nav = navigator as any;
     const conn = nav.connection || nav.mozConnection || nav.webkitConnection;
     const isSlowConn = conn && (conn.saveData || conn.effectiveType === '2g' || conn.effectiveType === '3g');
 
     if (isSlowConn) {
-      // In 2G/3G or Data-Saver, keep high-resolution poster to prevent video buffering freeze
-      vid.pause();
-    } else {
-      vid.play().catch(() => {});
+      vidA.pause();
+      vidB.pause();
+      return;
     }
-  }, []);
+
+    // Play primary video
+    vidA.play().catch(() => {});
+
+    // Gapless cross-fading: start crossfade 0.8s before video ends to eliminate browser seek stutter
+    const handleTimeUpdateA = () => {
+      if (vidA.duration && vidA.currentTime >= vidA.duration - 0.8) {
+        if (activeVideo === 'A') {
+          vidB.currentTime = 0;
+          vidB.play().catch(() => {});
+          setActiveVideo('B');
+        }
+      }
+    };
+
+    const handleTimeUpdateB = () => {
+      if (vidB.duration && vidB.currentTime >= vidB.duration - 0.8) {
+        if (activeVideo === 'B') {
+          vidA.currentTime = 0;
+          vidA.play().catch(() => {});
+          setActiveVideo('A');
+        }
+      }
+    };
+
+    vidA.addEventListener('timeupdate', handleTimeUpdateA);
+    vidB.addEventListener('timeupdate', handleTimeUpdateB);
+
+    return () => {
+      vidA.removeEventListener('timeupdate', handleTimeUpdateA);
+      vidB.removeEventListener('timeupdate', handleTimeUpdateB);
+    };
+  }, [activeVideo]);
 
   const handleWatchIntro = () => {
     if (onWatchIntroClick) {
@@ -94,18 +130,19 @@ export const Hero: React.FC<HeroProps> = ({
           Optimized with preload="metadata" and fast decoding poster for 3G/4G speeds
           ========================================================================= */}
       <div className="block lg:hidden relative w-full aspect-[4/3] xs:aspect-[16/10] sm:aspect-[16/9] overflow-hidden bg-[#100308]">
+        {/* Video Layer A */}
         <video 
-          ref={mobileVideoRef}
+          ref={videoRefA}
           autoPlay 
-          loop 
           muted 
           playsInline 
-          preload="metadata"
+          preload="auto"
           poster="/assets/hero-mobile.jpg" 
-          className="w-full h-full object-cover object-center pointer-events-none"
+          className={`absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-700 ease-in-out ${
+            activeVideo === 'A' ? 'opacity-100 z-10' : 'opacity-0 z-0'
+          }`}
         >
           <source src="/assets/hero-mobile.mp4" type="video/mp4" />
-          {/* Fallback image if video is deferred or network is slow */}
           <img 
             src="/assets/hero-mobile.jpg" 
             alt="Vijayadashami Dussehra Carnival at SRMU B5-408" 
@@ -114,14 +151,28 @@ export const Hero: React.FC<HeroProps> = ({
           />
         </video>
 
+        {/* Video Layer B (Pre-buffered seamless crossfade layer) */}
+        <video 
+          ref={videoRefB}
+          muted 
+          playsInline 
+          preload="auto"
+          poster="/assets/hero-mobile.jpg" 
+          className={`absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-700 ease-in-out ${
+            activeVideo === 'B' ? 'opacity-100 z-10' : 'opacity-0 z-0'
+          }`}
+        >
+          <source src="/assets/hero-mobile.mp4" type="video/mp4" />
+        </video>
+
         {/* Subtle festive ambient tint overlay to harmonize colors with page backdrop */}
-        <div className="absolute inset-0 bg-[#100308]/15 mix-blend-multiply pointer-events-none" />
+        <div className="absolute inset-0 z-20 bg-[#100308]/15 mix-blend-multiply pointer-events-none" />
 
         {/* Seamless downward, side and top feathering into background #100308 */}
-        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#100308] via-[#100308]/90 via-35% to-transparent pointer-events-none" />
-        <div className="absolute inset-x-0 top-0 h-14 bg-gradient-to-b from-[#100308]/75 to-transparent pointer-events-none" />
-        <div className="absolute inset-y-0 left-0 w-10 sm:w-14 bg-gradient-to-r from-[#100308]/75 to-transparent pointer-events-none" />
-        <div className="absolute inset-y-0 right-0 w-10 sm:w-14 bg-gradient-to-l from-[#100308]/75 to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 z-20 h-32 bg-gradient-to-t from-[#100308] via-[#100308]/90 via-35% to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 top-0 z-20 h-14 bg-gradient-to-b from-[#100308]/75 to-transparent pointer-events-none" />
+        <div className="absolute inset-y-0 left-0 z-20 w-10 sm:w-14 bg-gradient-to-r from-[#100308]/75 to-transparent pointer-events-none" />
+        <div className="absolute inset-y-0 right-0 z-20 w-10 sm:w-14 bg-gradient-to-l from-[#100308]/75 to-transparent pointer-events-none" />
       </div>
 
       {/* =========================================================================
