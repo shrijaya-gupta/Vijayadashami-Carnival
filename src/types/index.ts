@@ -66,21 +66,4 @@ export interface RegistrationSubmissionResult {
   submissionDate?: string;
   error?: string;
 }
-
-export interface CertificateVerificationResult {
-  valid: boolean;
-  certificate?: {
-    certificateId: string;
-    studentName: string;
-    rollNumber: string;
-    course: string;
-    branch: string;
-    academicYear: string;
-    gameName?: string;
-    category?: string;
-    issueDate: string;
-    verificationToken: string;
-    verifiedStatus: boolean;
-  };
-  error?: string;
 }

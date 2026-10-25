@@ -7,13 +7,12 @@ import { Hero } from './components/Hero';
 import { GamesCatalogue } from './components/GamesCatalogue';
 import { RegistrationWizard } from './components/RegistrationWizard';
 import { SelectionBar } from './components/SelectionBar';
-import { CertificateVerification } from './components/CertificateVerification';
 import { ScoreboardModal } from './components/ScoreboardModal';
 import { Footer } from './components/Footer';
 import { IntroScreen } from './components/IntroScreen';
 
 const CarnivalApp: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'home' | 'games' | 'register' | 'verify'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'games' | 'register'>('home');
   const [isScoreboardOpen, setIsScoreboardOpen] = useState<boolean>(false);
   const [showIntro, setShowIntro] = useState<boolean>(() => {
     try {
@@ -23,13 +22,6 @@ const CarnivalApp: React.FC = () => {
     }
   });
   const { selectedGameIds, toggleGameSelection, goToStep, activeStep } = useRegistration();
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('token') || window.location.pathname.startsWith('/verify')) {
-      setActiveTab('verify');
-    }
-  }, []);
 
   const handleRegisterClick = () => {
     setActiveTab('home');
@@ -115,12 +107,6 @@ const CarnivalApp: React.FC = () => {
         {activeTab === 'register' && (
           <div className="pt-6">
             <RegistrationWizard />
-          </div>
-        )}
-
-        {activeTab === 'verify' && (
-          <div className="pt-6">
-            <CertificateVerification />
           </div>
         )}
       </main>

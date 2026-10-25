@@ -54,10 +54,6 @@
       "destination": "/api/index.js"
     },
     {
-      "source": "/verify-certificate/(.*)",
-      "destination": "/api/index.js"
-    },
-    {
       "source": "/admin",
       "destination": "/admin/login.html"
     },

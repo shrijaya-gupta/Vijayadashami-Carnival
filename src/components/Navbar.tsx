@@ -7,7 +7,6 @@ import {
   Gamepad2, 
   UserPlus, 
   ExternalLink,
-  Award,
   Flame,
   Trophy
 } from 'lucide-react';
@@ -83,8 +82,8 @@ const VijayadashamiBowIcon: React.FC<{ className?: string }> = ({ className = "w
 );
 
 interface NavbarProps {
-  activeTab: 'home' | 'games' | 'register' | 'verify';
-  setActiveTab: (tab: 'home' | 'games' | 'register' | 'verify') => void;
+  activeTab: 'home' | 'games' | 'register';
+  setActiveTab: (tab: 'home' | 'games' | 'register') => void;
   onOpenScoreboard?: () => void;
 }
 
@@ -102,7 +101,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenS
     }
   };
 
-  const handleNavClick = (tab: 'home' | 'games' | 'register' | 'verify') => {
+  const handleNavClick = (tab: 'home' | 'games' | 'register') => {
     setActiveTab(tab);
     setMobileMenuOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -177,18 +176,6 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenS
                 {selectedGameIds.length}
               </span>
             )}
-          </button>
-
-          <button
-            onClick={() => handleNavClick('verify')}
-            className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold flex items-center gap-1.5 whitespace-nowrap transition-all ${
-              activeTab === 'verify'
-                ? 'bg-[#881337] text-white shadow-xs border border-[#E5C158]/40'
-                : 'text-stone-300 hover:bg-white/10 hover:text-white'
-            }`}
-          >
-            <Award className="w-3.5 h-3.5 text-[#E5C158] shrink-0" />
-            <span>Verify<span className="hidden xl:inline"> Certificate</span></span>
           </button>
 
           <button
@@ -279,18 +266,6 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenS
           >
             <UserPlus className="w-4 h-4 text-[#E5C158]" />
             <span>Registration Wizard</span>
-          </button>
-
-          <button
-            onClick={() => handleNavClick('verify')}
-            className={`w-full text-left px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 ${
-              activeTab === 'verify'
-                ? 'bg-[#881337] text-white border border-[#E5C158]/40'
-                : 'text-stone-200 hover:bg-white/10'
-            }`}
-          >
-            <Award className="w-4 h-4 text-[#E5C158]" />
-            <span>Verify Certificate</span>
           </button>
 
           <button

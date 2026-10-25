@@ -93,7 +93,7 @@ export const Footer: React.FC = () => {
           <div>
             <h4 className="text-xs font-bold uppercase tracking-wider text-amber-300 mb-4 flex items-center gap-1.5">
               <Trophy className="w-3.5 h-3.5 text-amber-400" />
-              Carnival Games (₹5 / Entry)
+              Carnival Games (All-Access Pass)
             </h4>
             <ul className="space-y-2 text-xs text-stone-300">
               <li>• Lemon and Spoon Race</li>
@@ -119,11 +119,6 @@ export const Footer: React.FC = () => {
               <li>
                 <a href="#register" className="text-stone-300 hover:text-amber-300 transition-colors">
                   Registration Wizard
-                </a>
-              </li>
-              <li>
-                <a href="/verify.html" className="text-stone-300 hover:text-amber-300 transition-colors">
-                  Certificate Verification
                 </a>
               </li>
               <li>

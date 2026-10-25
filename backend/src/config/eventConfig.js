@@ -48,10 +48,10 @@ const EVENT_CONFIG = {
     unconfiguredNotice: 'The official WhatsApp group invitation link will be shared directly by the event organizers with registered participants following registration verification.'
   },
 
-  // Exciting Gifts, Rewards & Participation Certificates
+  // Exciting Gifts & Carnival Rewards
   rewardsAndCertificates: {
-    sectionTitle: 'Exciting Gifts, Rewards & Participation Certificates',
-    publicText: 'Participate in the Vijayadashami Carnival, enjoy exciting games and activities, and stand a chance to receive gifts and rewards. Participation certificates will also be provided to participants.'
+    sectionTitle: 'Exciting Gifts & Campus Rewards',
+    publicText: 'Participate in the Vijayadashami Carnival, enjoy exciting games and activities, and stand a chance to receive gifts and rewards.'
   }
 };
 

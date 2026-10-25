@@ -290,6 +290,10 @@ function initNavigation() {
 
 function switchView(viewName) {
   if (!viewName) return;
+  if (viewName === 'certificates') {
+    switchView('overview');
+    return;
+  }
 
   // If leaving scanner view, stop camera stream to save resources
   if (currentView === 'scanner' && viewName !== 'scanner') {
@@ -1367,7 +1371,7 @@ window.copyTextToClipboard = function(text) {
 window.deleteRegistrationQuick = async function(registrationId, studentName) {
   if (!registrationId) return;
   const nameLabel = studentName ? `for ${studentName} (${registrationId})` : `(${registrationId})`;
-  const confirmMsg = `Are you sure you want to delete participant ${nameLabel}?\n\nThis will permanently remove their registration, payment audit, and issued certificates.\nThis action cannot be undone.`;
+  const confirmMsg = `Are you sure you want to delete participant ${nameLabel}?\n\nThis will permanently remove their registration and payment records.\nThis action cannot be undone.`;
   
   if (!window.confirm(confirmMsg)) return;
 
@@ -2316,7 +2320,7 @@ window.handleInstantQrLookup = async function(e) {
           ` : `
             <span style="color: #34D399; font-weight: 700; font-size: 0.84rem; display: inline-flex; align-items: center; gap: 0.35rem;">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-              Attendee Verified for Challenges &amp; Certificate
+              Attendee Verified &amp; Checked-In
             </span>
           `}
           <button type="button" class="btn-table-action" onclick="window.openRegistrationModal('${escapeHtml(regId)}')" style="padding: 0.45rem 0.85rem; font-size: 0.8rem; cursor: pointer;">
@@ -2372,7 +2376,7 @@ window.verifyParticipantAttendance = async function(registrationId) {
       throw new Error(data.message || 'Verification failed');
     }
 
-    showToast(`✓ Participation verified for ${registrationId}. Certificate issuance enabled!`);
+    showToast(`✓ Participation verified for ${registrationId}.`);
     refreshCurrentView();
   } catch (err) {
     showToast(`Error: ${err.message}`);
@@ -2380,7 +2384,7 @@ window.verifyParticipantAttendance = async function(registrationId) {
 };
 
 window.revokeParticipantAttendance = async function(registrationId) {
-  if (!confirm(`REVOKE attendance verification for ${registrationId}?\nIf a certificate was previously issued, it will also be revoked.`)) {
+  if (!confirm(`REVOKE attendance verification for ${registrationId}?`)) {
     return;
   }
 

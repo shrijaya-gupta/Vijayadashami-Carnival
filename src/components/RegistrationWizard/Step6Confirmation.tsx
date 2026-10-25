@@ -82,7 +82,7 @@ export const Step6Confirmation: React.FC = () => {
     const siteUrl = window.location.origin;
     const text = encodeURIComponent(
       `🎯 *VIJAYADASHAMI CARNIVAL 2026 — 6 Exciting Campus Games & Competitions!*\n\n` +
-      `🔥 6 Thrilling Games & Challenges | Cash Prizes & Official Certificates\n` +
+      `🔥 6 Thrilling Games & Challenges | Cash Prizes & Exciting Rewards\n` +
       `🎟️ All-Access Pass: Only ₹10 (All Games Included)\n` +
       `📅 Date: Thursday, 29 October 2026 • 11:00 AM\n` +
       `📍 Venue: SRMU B5-408\n\n` +
@@ -259,7 +259,7 @@ export const Step6Confirmation: React.FC = () => {
         </div>
       )}
 
-      {/* Share, Print & Certificate Links */}
+      {/* Share & Print Pass Actions */}
       <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
         <button
           type="button"
@@ -278,17 +278,6 @@ export const Step6Confirmation: React.FC = () => {
           <Share2 className="w-4 h-4" />
           <span>Share on WhatsApp</span>
         </button>
-
-        <a
-          href="/verify.html"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="px-5 py-2.5 rounded-full font-bold text-xs sm:text-sm bg-black/50 hover:bg-black/80 text-amber-200 hover:text-white flex items-center gap-2 border border-[#D4AF37]/50 transition-colors"
-        >
-          <Award className="w-4 h-4 text-amber-400" />
-          <span>Certificate Verification Portal</span>
-          <ExternalLink className="w-3 h-3 text-stone-400" />
-        </a>
       </div>
 
       {/* Reset button */}
