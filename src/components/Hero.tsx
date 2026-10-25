@@ -309,10 +309,10 @@ export const Hero: React.FC<HeroProps> = ({
 
         {/* ================= MOBILE / TABLET LAYOUT (< 1024px) ================= */}
         {/* Visual artwork is positioned at the top of the section; content flows cleanly below */}
-        <div className="block lg:hidden text-center space-y-4">
+        <div className="block lg:hidden text-center space-y-3">
           
           {/* Grand Hero Title (Mobile / Tablet) - Stylish Readable Cursive Centered Layout */}
-          <div className="relative max-w-sm sm:max-w-md mx-auto pt-1 pb-1 text-center">
+          <div className="relative max-w-sm sm:max-w-md mx-auto pt-1 pb-0.5 text-center">
             <h1 className="flex flex-col items-center justify-center select-none space-y-1">
               {/* Vijayadashami - shifted slightly left */}
               <span 
@@ -332,13 +332,8 @@ export const Hero: React.FC<HeroProps> = ({
             </h1>
           </div>
 
-          {/* Subtitle */}
-          <p className="text-stone-300 text-xs sm:text-sm font-normal leading-relaxed max-w-sm sm:max-w-md mx-auto px-2">
-            Join the SRMU campus celebration featuring 6 exciting competitions, team challenges, and festive carnival rewards.
-          </p>
-
           {/* Mobile Event Badges 2x2 VIP Ticket Grid */}
-          <div className="grid grid-cols-2 gap-2.5 text-xs max-w-md mx-auto pt-2">
+          <div className="grid grid-cols-2 gap-2 text-xs max-w-md mx-auto pt-1">
             {/* Date */}
             <div className="royal-glass-card flex items-center gap-2 p-2.5 rounded-xl text-left">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#5A0E22] to-[#25040D] border border-[#D4AF37]/50 text-amber-300 flex items-center justify-center shrink-0">
