@@ -90,13 +90,20 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     try {
       const res = await fetch('/api/games', { cache: 'no-store' });
       const data = await res.json();
-      if (data && data.success && Array.isArray(data.games) && data.games.length > 0) {
+      if (data && data.success && Array.isArray(data.games)) {
         const rawPayload = JSON.stringify(data.games);
         if (rawPayload === lastGamesPayloadRef.current) {
           // Payload has not changed, avoid unnecessary state setting and re-renders
           return;
         }
         lastGamesPayloadRef.current = rawPayload;
+
+        if (data.games.length === 0) {
+          setGamesList([]);
+          setSelectedGameIds([]);
+          setGameConfigs({});
+          return;
+        }
 
         const mappedGames: Game[] = data.games.map((g: any) => {
           const canonical = GAMES_DATA.find(c => c.id === g.id);

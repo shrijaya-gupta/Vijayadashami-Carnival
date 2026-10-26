@@ -35,6 +35,42 @@ function getCsrfToken() {
   return '';
 }
 
+/**
+ * Resilient Admin API fetch wrapper with automated CSRF management and retry
+ */
+async function adminApiFetch(url, options = {}) {
+  const opts = { ...options };
+  opts.credentials = 'include';
+  opts.headers = { ...(opts.headers || {}) };
+
+  let token = (typeof getCsrfToken === 'function' ? getCsrfToken() : '') || csrfToken || sessionStorage.getItem('srmu_csrf_token') || '';
+  if (token && !opts.headers['X-CSRF-Token']) {
+    opts.headers['X-CSRF-Token'] = token;
+  }
+
+  let res = await fetch(url, opts);
+
+  // If 403 (CSRF desync or expired), auto-refresh once via /api/admin/me and retry
+  if (res.status === 403) {
+    try {
+      const meRes = await fetch(`${API_BASE_URL}/api/admin/me`, { credentials: 'include' });
+      if (meRes.ok) {
+        const meData = await meRes.json();
+        if (meData && meData.csrfToken) {
+          csrfToken = meData.csrfToken;
+          sessionStorage.setItem('srmu_csrf_token', meData.csrfToken);
+          opts.headers['X-CSRF-Token'] = meData.csrfToken;
+          res = await fetch(url, opts);
+        }
+      }
+    } catch (e) {
+      console.warn('Auto CSRF refresh failed:', e);
+    }
+  }
+
+  return res;
+}
+
 // Registrations Table State
 let regPageState = {
   page: 1,
@@ -3263,14 +3299,14 @@ function renderAdminGameCards(games) {
 
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.08);">
               <div style="display: flex; gap: 6px;">
-                <button type="button" class="btn-table-action" onclick="window.openEditGameModal('${escapeHtml(game.id)}')" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 600;">
+                <button type="button" class="btn-table-action" onclick="window.openEditGameModal('${encodeURIComponent(game.id)}')" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 600;">
                   ✏️ Edit
                 </button>
-                <button type="button" class="btn-table-action" onclick="window.handleToggleGame('${escapeHtml(game.id)}')" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 600; color: ${isActive ? '#F59E0B' : '#10B981'};">
+                <button type="button" class="btn-table-action" onclick="window.handleToggleGame('${encodeURIComponent(game.id)}')" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 600; color: ${isActive ? '#F59E0B' : '#10B981'};">
                   ${isActive ? '👁️ Hide' : '✅ Show'}
                 </button>
               </div>
-              <button type="button" class="btn-table-action" onclick="window.handleDeleteGame('${escapeHtml(game.id)}', '${escapeHtml(game.name)}')" style="padding: 6px 10px; font-size: 0.8rem; color: #EF4444;" title="Delete Game">
+              <button type="button" class="btn-table-action" onclick="window.handleDeleteGame('${encodeURIComponent(game.id)}')" style="padding: 6px 10px; font-size: 0.8rem; color: #EF4444;" title="Delete Game">
                 🗑️
               </button>
             </div>
@@ -3318,15 +3354,16 @@ window.openAddGameModal = function() {
   modal.setAttribute('aria-hidden', 'false');
 };
 
-window.openEditGameModal = async function(gameId) {
-  let game = adminGamesList.find(g => g.id === gameId);
+window.openEditGameModal = async function(rawId) {
+  const gameId = typeof rawId === 'string' ? decodeURIComponent(rawId) : rawId;
+  let game = (adminGamesList || []).find(g => g.id === gameId);
   if (!game) {
     await loadAdminGamesData();
-    game = adminGamesList.find(g => g.id === gameId);
+    game = (adminGamesList || []).find(g => g.id === gameId);
   }
   if (!game) {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/games-catalogue`, { credentials: 'include' });
+      const res = await adminApiFetch(`${API_BASE_URL}/api/admin/games-catalogue`);
       const data = await res.json();
       if (data && Array.isArray(data.games)) {
         adminGamesList = data.games;
@@ -3463,15 +3500,11 @@ window.handleGameEditorSubmit = async function(event) {
       : `${API_BASE_URL}/api/admin/games-catalogue`;
     const method = isEditing ? 'PUT' : 'POST';
 
-    const activeCsrf = (typeof getCsrfToken === 'function' ? getCsrfToken() : '') || csrfToken || sessionStorage.getItem('srmu_csrf_token') || '';
-
-    const res = await fetch(url, {
+    const res = await adminApiFetch(url, {
       method,
       headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': activeCsrf
+        'Content-Type': 'application/json'
       },
-      credentials: 'include',
       body: JSON.stringify(payload)
     });
 
@@ -3481,13 +3514,7 @@ window.handleGameEditorSubmit = async function(event) {
       return false;
     }
 
-    if (res.status === 403) {
-      await checkSession();
-      showToast('Security token refreshed. Please click Save again.');
-      return false;
-    }
-
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
     if (!res.ok || !data.success) {
       showToast(data.error || 'Failed to save game.');
       return false;
@@ -3510,18 +3537,16 @@ window.handleGameEditorSubmit = async function(event) {
   return false;
 };
 
-window.handleToggleGame = async function(gameId) {
+window.handleToggleGame = async function(rawId) {
   try {
-    const activeCsrf = (typeof getCsrfToken === 'function' ? getCsrfToken() : '') || csrfToken || sessionStorage.getItem('srmu_csrf_token') || '';
-    const res = await fetch(`${API_BASE_URL}/api/admin/games-catalogue/${encodeURIComponent(gameId)}/toggle`, {
+    const gameId = typeof rawId === 'string' ? decodeURIComponent(rawId) : rawId;
+    const res = await adminApiFetch(`${API_BASE_URL}/api/admin/games-catalogue/${encodeURIComponent(gameId)}/toggle`, {
       method: 'PATCH',
       headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': activeCsrf
-      },
-      credentials: 'include'
+        'Content-Type': 'application/json'
+      }
     });
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
     if (res.ok && data.success) {
       broadcastGamesUpdate();
       showToast(data.message ? `✓ ${data.message} Live on User Portal.` : '✓ Status updated & live on User Portal.');
@@ -3534,22 +3559,23 @@ window.handleToggleGame = async function(gameId) {
   }
 };
 
-window.handleDeleteGame = async function(gameId, gameName) {
-  if (!confirm(`Are you sure you want to delete "${gameName || gameId}"? This will remove it from the active festival lineup and the live portal.`)) {
+window.handleDeleteGame = async function(rawId) {
+  const gameId = typeof rawId === 'string' ? decodeURIComponent(rawId) : rawId;
+  const game = (adminGamesList || []).find(g => g.id === gameId);
+  const gameName = game ? game.name : gameId;
+
+  if (!confirm(`Are you sure you want to delete "${gameName}"? This will remove it from the active festival lineup and the live portal.`)) {
     return;
   }
 
   try {
-    const activeCsrf = (typeof getCsrfToken === 'function' ? getCsrfToken() : '') || csrfToken || sessionStorage.getItem('srmu_csrf_token') || '';
-    const res = await fetch(`${API_BASE_URL}/api/admin/games-catalogue/${encodeURIComponent(gameId)}`, {
+    const res = await adminApiFetch(`${API_BASE_URL}/api/admin/games-catalogue/${encodeURIComponent(gameId)}`, {
       method: 'DELETE',
       headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': activeCsrf
-      },
-      credentials: 'include'
+        'Content-Type': 'application/json'
+      }
     });
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
     if (res.ok && data.success) {
       broadcastGamesUpdate();
       showToast(`✓ Game "${gameName}" removed from catalogue & live portal.`);

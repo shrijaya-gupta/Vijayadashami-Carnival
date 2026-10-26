@@ -959,39 +959,11 @@
             </div>
           </div>
 
-          <!-- Quick Stats Strip -->
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 20px;">
-            <div style="background: var(--bg-card); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between;">
-              <div>
-                <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); font-weight: 700;">Total Games</div>
-                <div id="statTotalGames" style="font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-top: 2px;">6</div>
-              </div>
-              <span style="font-size: 1.5rem;">🎮</span>
-            </div>
-
-            <div style="background: var(--bg-card); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: var(--radius-md); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between;">
-              <div>
-                <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6EE7B7; font-weight: 700;">Live on Public Portal</div>
-                <div id="statActiveGames" style="font-size: 1.6rem; font-weight: 800; color: #10B981; margin-top: 2px;">6</div>
-              </div>
-              <span style="font-size: 1.5rem;">✅</span>
-            </div>
-
-            <div style="background: var(--bg-card); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between;">
-              <div>
-                <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); font-weight: 700;">Hidden / Offline</div>
-                <div id="statHiddenGames" style="font-size: 1.6rem; font-weight: 800; color: #F59E0B; margin-top: 2px;">0</div>
-              </div>
-              <span style="font-size: 1.5rem;">👁️</span>
-            </div>
-
-            <div style="background: var(--bg-card); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: var(--radius-md); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between;">
-              <div>
-                <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--carnival-gold); font-weight: 700;">Sync Mode</div>
-                <div style="font-size: 0.95rem; font-weight: 700; color: #FDE047; margin-top: 6px;">⚡ Multi-Channel Live</div>
-              </div>
-              <span style="font-size: 1.5rem;">📡</span>
-            </div>
+          <!-- Hidden Stats Storage (Cards removed per admin request to show only games) -->
+          <div style="display: none;" aria-hidden="true">
+            <span id="statTotalGames">0</span>
+            <span id="statActiveGames">0</span>
+            <span id="statHiddenGames">0</span>
           </div>
 
           <!-- Filter & Search Toolbar -->

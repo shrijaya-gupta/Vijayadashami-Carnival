@@ -40,7 +40,7 @@ app.use(cors({
     }
     return callback(new Error(`CORS origin '${origin}' is not permitted by server policy.`));
   },
-  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Idempotency-Key', 'Accept', 'X-CSRF-Token'],
   credentials: true
 }));

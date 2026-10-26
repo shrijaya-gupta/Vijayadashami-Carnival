@@ -67,7 +67,7 @@ function verifyCsrf(req, res, next) {
     return next();
   }
 
-  const clientToken = req.headers['x-csrf-token'] || (req.body && req.body._csrf);
+  const clientToken = req.headers['x-csrf-token'] || (req.body && req.body._csrf) || (req.cookies && req.cookies.srmu_csrf);
   const sessionToken = req.adminSession ? req.adminSession.csrfToken : null;
 
   if (!clientToken || !sessionToken || clientToken !== sessionToken) {
