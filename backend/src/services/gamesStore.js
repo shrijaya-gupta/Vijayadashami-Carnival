@@ -223,9 +223,101 @@ const DEFAULT_GAMES = [
   }
 ];
 
+const { supabase } = require('../config/supabase');
+
 class GamesStore {
   constructor() {
+    this._memoryCache = null;
     this._ensureStoreFile();
+    this._initSupabaseSync().catch(err => {
+      console.warn('[GamesStore] Background Supabase sync warning:', err.message);
+    });
+  }
+
+  async _initSupabaseSync() {
+    if (!supabase) return;
+    try {
+      const { data, error } = await supabase.from('games').select('*').order('created_at', { ascending: true });
+      if (!error && Array.isArray(data)) {
+        if (data.length === 0) {
+          // Seed defaults into Supabase
+          for (const g of DEFAULT_GAMES) {
+            await this._insertGameToSupabase(g);
+          }
+          this._memoryCache = [...DEFAULT_GAMES];
+        } else {
+          this._memoryCache = data.map(r => this._mapSupabaseRow(r));
+        }
+        this._write(this._memoryCache);
+      }
+    } catch (e) {
+      console.warn('[GamesStore] Initial Supabase sync warning:', e.message);
+    }
+  }
+
+  _mapSupabaseRow(row) {
+    let extra = {};
+    if (row.description && typeof row.description === 'string' && row.description.startsWith('{')) {
+      try {
+        extra = JSON.parse(row.description);
+      } catch (e) {}
+    }
+    const def = DEFAULT_GAMES.find(g => g.id === row.id) || {};
+    return {
+      ...def,
+      id: row.id,
+      name: row.name || def.name || 'Carnival Game',
+      category: row.category || def.category || 'Fun & Challenge',
+      feeAmount: 0,
+      fee: 0,
+      registrationFee: 'Included with All-Access Pass',
+      isActive: row.is_active !== false,
+      shortDescription: extra.shortDescription || (typeof row.description === 'string' && !row.description.startsWith('{') ? row.description : '') || def.shortDescription || '',
+      description: extra.fullDescription || extra.description || (typeof row.description === 'string' && !row.description.startsWith('{') ? row.description : '') || def.description || '',
+      objective: extra.objective || def.objective || 'Complete the event challenge to win awards.',
+      participationType: extra.participationType || extra.suggestedTeamSize || def.participationType || 'Individual',
+      suggestedTeamSize: extra.suggestedTeamSize || extra.participationType || def.suggestedTeamSize || 'Individual',
+      suggestedDuration: extra.suggestedDuration || def.suggestedDuration || '3 to 5 minutes',
+      procedure: (Array.isArray(extra.procedure) && extra.procedure.length > 0) ? extra.procedure : (def.procedure || ['Report to arena coordinator.']),
+      proposedRules: (Array.isArray(extra.proposedRules) && extra.proposedRules.length > 0) ? extra.proposedRules : (def.proposedRules || ['Fair play rules apply.']),
+      materials: extra.materials || def.materials || 'Supplied at arena.',
+      winningCriteria: extra.winningCriteria || def.winningCriteria || 'Highest score or completion speed.',
+      safetyNotes: (Array.isArray(extra.safetyNotes) && extra.safetyNotes.length > 0) ? extra.safetyNotes : (def.safetyNotes || ['Follow supervisor instructions.']),
+      iconName: extra.iconName || def.iconName || 'Gamepad2',
+      createdAt: row.created_at || def.createdAt || new Date().toISOString(),
+      updatedAt: row.created_at || new Date().toISOString()
+    };
+  }
+
+  async _insertGameToSupabase(game) {
+    if (!supabase) return;
+    try {
+      const extra = {
+        shortDescription: game.shortDescription || game.description,
+        fullDescription: game.description || game.shortDescription,
+        objective: game.objective,
+        participationType: game.participationType,
+        suggestedTeamSize: game.suggestedTeamSize,
+        suggestedDuration: game.suggestedDuration,
+        procedure: game.procedure,
+        proposedRules: game.proposedRules,
+        materials: game.materials,
+        winningCriteria: game.winningCriteria,
+        safetyNotes: game.safetyNotes,
+        iconName: game.iconName
+      };
+      const row = {
+        id: game.id,
+        name: game.name,
+        category: game.category,
+        fee_amount: 0,
+        is_active: game.isActive !== false,
+        description: JSON.stringify(extra)
+      };
+      await supabase.from('games').upsert([row]);
+    } catch (e) {
+      console.warn('[GamesStore] Supabase insert warning:', e.message);
+    }
   }
 
   _ensureStoreFile() {
@@ -237,41 +329,60 @@ class GamesStore {
         fs.writeFileSync(STORE_FILE, JSON.stringify(DEFAULT_GAMES, null, 2), 'utf8');
       }
     } catch (e) {
-      console.warn('GamesStore: Error creating store directory/file:', e.message);
+      // Non-fatal if running in read-only environment like Vercel
     }
   }
 
   _read() {
+    if (Array.isArray(this._memoryCache) && this._memoryCache.length > 0) {
+      return this._memoryCache;
+    }
     try {
       this._ensureStoreFile();
-      const content = fs.readFileSync(STORE_FILE, 'utf8');
-      const parsed = JSON.parse(content);
-      if (Array.isArray(parsed)) {
-        return parsed;
+      if (fs.existsSync(STORE_FILE)) {
+        const content = fs.readFileSync(STORE_FILE, 'utf8');
+        const parsed = JSON.parse(content);
+        if (Array.isArray(parsed)) {
+          this._memoryCache = parsed;
+          return parsed;
+        }
       }
-      return DEFAULT_GAMES;
-    } catch (e) {
-      console.warn('GamesStore: Error reading store file, using in-memory defaults:', e.message);
-      return DEFAULT_GAMES;
-    }
+    } catch (e) {}
+    this._memoryCache = DEFAULT_GAMES;
+    return DEFAULT_GAMES;
   }
 
   _write(games) {
+    this._memoryCache = games;
     try {
       this._ensureStoreFile();
       fs.writeFileSync(STORE_FILE, JSON.stringify(games, null, 2), 'utf8');
-      return true;
     } catch (e) {
-      console.error('GamesStore: Error writing to store file:', e.message);
-      return false;
+      // Ignored on read-only environments (e.g. Vercel)
     }
+    return true;
+  }
+
+  async getAllGamesAsync({ includeInactive = false } = {}) {
+    if (supabase) {
+      try {
+        const { data, error } = await supabase.from('games').select('*').order('created_at', { ascending: true });
+        if (!error && Array.isArray(data) && data.length > 0) {
+          this._memoryCache = data.map(r => this._mapSupabaseRow(r));
+          this._write(this._memoryCache);
+        }
+      } catch (e) {
+        console.warn('[GamesStore] getAllGamesAsync error:', e.message);
+      }
+    }
+    const games = this._read();
+    if (includeInactive) return games;
+    return games.filter(g => g.isActive !== false);
   }
 
   getAllGames({ includeInactive = false } = {}) {
     const games = this._read();
-    if (includeInactive) {
-      return games;
-    }
+    if (includeInactive) return games;
     return games.filter(g => g.isActive !== false);
   }
 
@@ -285,9 +396,7 @@ class GamesStore {
   }
 
   addGame(gameData) {
-    const games = this._read();
-    
-    // Generate valid slug ID from name if not provided
+    const games = [...this._read()];
     let slug = gameData.id ? String(gameData.id).trim().toLowerCase().replace(/[^a-z0-9_-]/g, '-') : '';
     if (!slug) {
       slug = String(gameData.name || 'new-game')
@@ -296,7 +405,6 @@ class GamesStore {
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-|-$/g, '');
     }
-    // Prevent ID collision
     let uniqueId = slug;
     let counter = 1;
     while (games.some(g => g.id === uniqueId)) {
@@ -337,21 +445,29 @@ class GamesStore {
 
     games.push(newGame);
     this._write(games);
+    // Background async sync with Supabase
+    this._insertGameToSupabase(newGame).catch(err => {
+      console.warn('[GamesStore] Async Supabase insert failed:', err.message);
+    });
     return newGame;
   }
 
+  async addGameAsync(gameData) {
+    const game = this.addGame(gameData);
+    await this._insertGameToSupabase(game);
+    return game;
+  }
+
   updateGame(id, updateData) {
-    const games = this._read();
+    const games = [...this._read()];
     const index = games.findIndex(g => g.id === id);
-    if (index === -1) {
-      return null;
-    }
+    if (index === -1) return null;
 
     const existing = games[index];
     const updated = {
       ...existing,
       ...updateData,
-      id: existing.id, // ID remains immutable to preserve reference integrity
+      id: existing.id,
       updatedAt: new Date().toISOString()
     };
 
@@ -389,28 +505,83 @@ class GamesStore {
 
     games[index] = updated;
     this._write(games);
+    // Background sync with Supabase
+    this._insertGameToSupabase(updated).catch(err => {
+      console.warn('[GamesStore] Async Supabase update failed:', err.message);
+    });
+    return updated;
+  }
+
+  async updateGameAsync(id, updateData) {
+    const updated = this.updateGame(id, updateData);
+    if (!updated) return null;
+    await this._insertGameToSupabase(updated);
     return updated;
   }
 
   toggleGameStatus(id) {
-    const games = this._read();
+    const games = [...this._read()];
     const game = games.find(g => g.id === id);
     if (!game) return null;
 
     game.isActive = !game.isActive;
     game.updatedAt = new Date().toISOString();
     this._write(games);
+    if (supabase) {
+      Promise.resolve(supabase.from('games').update({ is_active: game.isActive }).eq('id', id)).catch(err => {
+        console.warn('[GamesStore] Async Supabase toggle status failed:', err.message);
+      });
+    }
+    return game;
+  }
+
+  async toggleGameStatusAsync(id) {
+    const games = [...this._read()];
+    const game = games.find(g => g.id === id);
+    if (!game) return null;
+
+    game.isActive = !game.isActive;
+    game.updatedAt = new Date().toISOString();
+    this._write(games);
+    if (supabase) {
+      try {
+        await supabase.from('games').update({ is_active: game.isActive }).eq('id', id);
+      } catch (e) {
+        console.warn('[GamesStore] Supabase toggle status error:', e.message);
+      }
+    }
     return game;
   }
 
   deleteGame(id) {
-    const games = this._read();
+    const games = [...this._read()];
     const index = games.findIndex(g => g.id === id);
     if (index === -1) return false;
 
-    // Remove game
     games.splice(index, 1);
     this._write(games);
+    if (supabase) {
+      Promise.resolve(supabase.from('games').delete().eq('id', id)).catch(err => {
+        console.warn('[GamesStore] Async Supabase delete failed:', err.message);
+      });
+    }
+    return true;
+  }
+
+  async deleteGameAsync(id) {
+    const games = [...this._read()];
+    const index = games.findIndex(g => g.id === id);
+    if (index === -1) return false;
+
+    games.splice(index, 1);
+    this._write(games);
+    if (supabase) {
+      try {
+        await supabase.from('games').delete().eq('id', id);
+      } catch (e) {
+        console.warn('[GamesStore] Supabase delete error:', e.message);
+      }
+    }
     return true;
   }
 }

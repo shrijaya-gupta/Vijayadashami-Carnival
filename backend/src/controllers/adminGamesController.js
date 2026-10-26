@@ -6,7 +6,7 @@ const gamesStore = require('../services/gamesStore');
  */
 async function getAdminGamesList(req, res) {
   try {
-    const games = gamesStore.getAllGames({ includeInactive: true });
+    const games = await gamesStore.getAllGamesAsync({ includeInactive: true });
     return res.status(200).json({
       success: true,
       total: games.length,
@@ -48,7 +48,7 @@ async function createAdminGame(req, res) {
       return res.status(400).json({ success: false, error: 'Game title/name is required.' });
     }
 
-    const created = gamesStore.addGame({
+    const created = await gamesStore.addGameAsync({
       name: name.trim(),
       category: (category && String(category).trim()) || 'Fun & Challenge',
       participationType: (participationType && String(participationType).trim()) || 'Individual',
@@ -91,7 +91,7 @@ async function updateAdminGame(req, res) {
       return res.status(404).json({ success: false, error: `Game with ID '${gameId}' not found.` });
     }
 
-    const updated = gamesStore.updateGame(gameId, req.body);
+    const updated = await gamesStore.updateGameAsync(gameId, req.body);
     return res.status(200).json({
       success: true,
       message: `Game "${updated.name}" updated successfully.`,
@@ -110,7 +110,7 @@ async function updateAdminGame(req, res) {
 async function toggleAdminGameStatus(req, res) {
   try {
     const gameId = req.params.id;
-    const toggled = gamesStore.toggleGameStatus(gameId);
+    const toggled = await gamesStore.toggleGameStatusAsync(gameId);
     if (!toggled) {
       return res.status(404).json({ success: false, error: `Game with ID '${gameId}' not found.` });
     }
@@ -139,7 +139,7 @@ async function deleteAdminGame(req, res) {
       return res.status(404).json({ success: false, error: `Game with ID '${gameId}' not found.` });
     }
 
-    const deleted = gamesStore.deleteGame(gameId);
+    const deleted = await gamesStore.deleteGameAsync(gameId);
     if (!deleted) {
       return res.status(500).json({ success: false, error: 'Failed to delete game.' });
     }

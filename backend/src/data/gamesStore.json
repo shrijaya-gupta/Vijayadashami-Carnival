@@ -34,8 +34,9 @@
     "iconName": "Timer",
     "isActive": true,
     "isLegacy": false,
-    "createdAt": "2026-10-24T16:22:44.400Z",
-    "updatedAt": "2026-10-26T04:02:30.989Z"
+    "createdAt": "2026-10-26T07:54:22.786286+00:00",
+    "fee": 0,
+    "updatedAt": "2026-10-26T07:54:22.786286+00:00"
   },
   {
     "id": "target-shooting",
@@ -72,21 +73,23 @@
     "iconName": "Target",
     "isActive": true,
     "isLegacy": false,
-    "createdAt": "2026-10-24T16:22:44.406Z"
+    "createdAt": "2026-10-26T07:54:22.947395+00:00",
+    "fee": 0,
+    "updatedAt": "2026-10-26T07:54:22.947395+00:00"
   },
   {
     "id": "musical-chairs",
     "name": "Musical Chairs",
     "category": "Agility & Rhythm",
     "participationType": "Individual",
-    "shortDescription": "Circle the chairs while music plays and grab a seat when it stops.",
+    "shortDescription": "High energy sprint around chairs - champion crowned!",
     "description": "High-energy musical sprint around a decreasing ring of chairs to popular campus beats, demanding razor-sharp reflexes.",
     "objective": "Secure a chair every time the music halts until the champion is crowned.",
     "approvalStatus": "Approved & Active",
     "registrationFee": "Included with All-Access Pass",
     "feeAmount": 0,
-    "suggestedTeamSize": "Individual (Solo entry)",
-    "suggestedDuration": "Provisional: 10 to 15 minutes per round heat",
+    "suggestedTeamSize": "Solo Heats",
+    "suggestedDuration": "10 to 15 minutes",
     "procedure": [
       "Assemble around the perimeter of the arranged chair circle.",
       "Circle the chairs continuously in one direction while music plays.",
@@ -106,9 +109,11 @@
       "Space chairs safely to avoid pinching fingers."
     ],
     "iconName": "Music",
-    "isActive": true,
+    "isActive": false,
     "isLegacy": false,
-    "createdAt": "2026-10-24T16:22:44.406Z"
+    "createdAt": "2026-10-26T07:54:23.044966+00:00",
+    "fee": 0,
+    "updatedAt": "2026-10-26T08:01:34.578Z"
   },
   {
     "id": "human-knot",
@@ -143,7 +148,9 @@
     "iconName": "Users",
     "isActive": true,
     "isLegacy": false,
-    "createdAt": "2026-10-24T16:22:44.406Z"
+    "createdAt": "2026-10-26T07:54:23.144176+00:00",
+    "fee": 0,
+    "updatedAt": "2026-10-26T07:54:23.144176+00:00"
   },
   {
     "id": "cup-balloon-pyramid",
@@ -178,7 +185,9 @@
     "iconName": "Layers",
     "isActive": true,
     "isLegacy": false,
-    "createdAt": "2026-10-24T16:22:44.406Z"
+    "createdAt": "2026-10-26T07:54:23.262922+00:00",
+    "fee": 0,
+    "updatedAt": "2026-10-26T07:54:23.262922+00:00"
   },
   {
     "id": "balloon-dual-race",
@@ -213,7 +222,37 @@
     "iconName": "Zap",
     "isActive": true,
     "isLegacy": false,
-    "createdAt": "2026-10-24T16:22:44.406Z",
-    "updatedAt": "2026-10-26T04:26:41.366Z"
+    "createdAt": "2026-10-26T07:54:23.349912+00:00",
+    "fee": 0,
+    "updatedAt": "2026-10-26T07:54:23.349912+00:00"
+  },
+  {
+    "id": "cloud-supabase-test-arena",
+    "name": "Cloud Supabase Test Arena",
+    "category": "Database Verification",
+    "feeAmount": 0,
+    "fee": 0,
+    "registrationFee": "Included with All-Access Pass",
+    "isActive": true,
+    "shortDescription": "Verifying real-time Supabase cloud persistence",
+    "description": "Full database persistence test",
+    "objective": "Full database persistence test",
+    "participationType": "Individual",
+    "suggestedTeamSize": "Individual",
+    "suggestedDuration": "3 to 5 minutes",
+    "procedure": [
+      "Report to arena coordinator."
+    ],
+    "proposedRules": [
+      "Must persist in cloud database"
+    ],
+    "materials": "Materials provided at arena station.",
+    "winningCriteria": "Highest score or completion time.",
+    "safetyNotes": [
+      "Follow supervisor instructions."
+    ],
+    "iconName": "Gamepad2",
+    "createdAt": "2026-10-26T08:00:11.361919+00:00",
+    "updatedAt": "2026-10-26T08:00:11.361919+00:00"
   }
 ]
