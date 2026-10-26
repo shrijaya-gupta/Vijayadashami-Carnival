@@ -66,4 +66,3 @@ export interface RegistrationSubmissionResult {
   submissionDate?: string;
   error?: string;
 }
-}

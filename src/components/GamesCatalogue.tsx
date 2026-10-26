@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { GAMES_DATA } from '../data/games';
 import { Game } from '../types';
+import { useRegistration } from '../context/RegistrationContext';
 import { GameGuidelinesModal } from './GameGuidelinesModal';
 import { 
   Gamepad2, 
@@ -268,58 +269,23 @@ const getGameEmblem = (gameId: string, iconName?: string) => {
   return <DefaultFestiveIcon className="w-full h-full" />;
 };
 
-export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
+export const GamesCatalogue: React.FC<GamesCatalogueProps> = React.memo(({
   selectedGameIds,
   onToggleGame,
   onProceedToRegister
 }) => {
+  const { gamesList: contextGames, refreshGames } = useRegistration();
   const [selectedGameForModal, setSelectedGameForModal] = useState<Game | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState<'all' | 'solo' | 'team'>('all');
-  const [gamesList, setGamesList] = useState<Game[]>(GAMES_DATA);
   const [eventVenue, setEventVenue] = useState<string>('SRMU Campus, B5-408');
   const [eventDate, setEventDate] = useState<string>('Thursday, 29 October 2026');
 
-  // Fetch dynamic game updates and newly added games from backend API (Admin configured)
   useEffect(() => {
-    fetch('/api/games')
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.success && Array.isArray(data.games) && data.games.length > 0) {
-          if (data.venue) setEventVenue(data.venue);
-          if (data.date) setEventDate(data.date);
-          const merged: Game[] = data.games.map((g: any) => {
-            const canonical = GAMES_DATA.find(c => c.id === g.id);
-            return {
-              ...(canonical || {}),
-              ...g,
-              id: g.id,
-              name: g.name || (canonical?.name ?? 'Carnival Game'),
-              category: g.category || (canonical?.category ?? 'Fun & Challenge'),
-              participationType: g.participationType || g.suggestedTeamSize || (canonical?.participationType ?? 'Individual'),
-              suggestedTeamSize: g.suggestedTeamSize || g.participationType || (canonical?.suggestedTeamSize ?? 'Individual'),
-              shortDescription: g.shortDescription || g.description || (canonical?.shortDescription ?? ''),
-              description: g.description || g.shortDescription || (canonical?.description ?? ''),
-              objective: g.objective || g.description || (canonical?.objective ?? ''),
-              approvalStatus: g.approvalStatus || (canonical?.approvalStatus ?? 'Approved & Active'),
-              registrationFee: 'Included with All-Access Pass',
-              feeAmount: 0,
-              suggestedDuration: g.suggestedDuration || (canonical?.suggestedDuration ?? '3 to 5 minutes'),
-              procedure: Array.isArray(g.procedure) && g.procedure.length > 0 ? g.procedure : (canonical?.procedure ?? ['Report to coordinator arena.']),
-              proposedRules: Array.isArray(g.proposedRules) && g.proposedRules.length > 0 ? g.proposedRules : (canonical?.proposedRules ?? ['Standard fair play rules apply.']),
-              materials: g.materials || (canonical?.materials ?? 'Supplied at arena.'),
-              winningCriteria: g.winningCriteria || (canonical?.winningCriteria ?? 'Highest score or completion speed.'),
-              safetyNotes: Array.isArray(g.safetyNotes) && g.safetyNotes.length > 0 ? g.safetyNotes : (canonical?.safetyNotes ?? ['Adhere to field supervisor instructions.']),
-              iconName: g.iconName || (canonical?.iconName ?? 'Gamepad2')
-            };
-          });
-          setGamesList(merged);
-        }
-      })
-      .catch(() => {});
-  }, []);
+    refreshGames();
+  }, [refreshGames]);
 
-  const activeCatalog = gamesList.length > 0 ? gamesList : GAMES_DATA;
+  const activeCatalog = (contextGames && contextGames.length > 0) ? contextGames : GAMES_DATA;
 
   const handleOpenGuidelines = (game: Game) => {
     setSelectedGameForModal(game);
@@ -559,4 +525,4 @@ export const GamesCatalogue: React.FC<GamesCatalogueProps> = ({
 
     </section>
   );
-};
+});

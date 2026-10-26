@@ -938,14 +938,87 @@
         <section id="viewGamesManage" class="dashboard-view-section" aria-labelledby="gamesManageHeading">
           <div class="view-header-bar">
             <div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.35); font-weight: 700; font-size: 0.75rem; padding: 3px 10px; border-radius: 9999px; display: inline-flex; align-items: center; gap: 6px;">
+                  <span style="width: 7px; height: 7px; border-radius: 50%; background: #10B981; display: inline-block; animation: pulse 2s infinite;"></span>
+                  <span>Live Portal Connected &bull; Real-Time Broadcast Active</span>
+                </span>
+              </div>
               <h2 id="gamesManageHeading" class="section-title">Games &amp; Activities Catalogue</h2>
-              <p class="section-subtitle">Add new carnival games, edit titles, rules, descriptions, participation formats, or toggle visibility on the live portal.</p>
+              <p class="section-subtitle">Add carnival games, edit rules &amp; participation formats, or toggle live visibility. Changes reflect immediately on the student portal.</p>
             </div>
-            <div class="view-header-actions">
+            <div class="view-header-actions" style="display: flex; gap: 10px; align-items: center;">
+              <button type="button" class="btn-table-action" onclick="window.loadAdminGamesData()" title="Reload games from server" style="padding: 9px 14px; font-weight: 600;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="vertical-align: -2px; margin-right: 4px;"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                <span>Refresh</span>
+              </button>
               <button type="button" id="btnOpenAddGameModal" class="btn-primary-action btn-add-game" onclick="window.openAddGameModal()">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                 <span>Add New Game</span>
               </button>
+            </div>
+          </div>
+
+          <!-- Quick Stats Strip -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 20px;">
+            <div style="background: var(--bg-card); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); font-weight: 700;">Total Games</div>
+                <div id="statTotalGames" style="font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-top: 2px;">6</div>
+              </div>
+              <span style="font-size: 1.5rem;">🎮</span>
+            </div>
+
+            <div style="background: var(--bg-card); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: var(--radius-md); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6EE7B7; font-weight: 700;">Live on Public Portal</div>
+                <div id="statActiveGames" style="font-size: 1.6rem; font-weight: 800; color: #10B981; margin-top: 2px;">6</div>
+              </div>
+              <span style="font-size: 1.5rem;">✅</span>
+            </div>
+
+            <div style="background: var(--bg-card); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); font-weight: 700;">Hidden / Offline</div>
+                <div id="statHiddenGames" style="font-size: 1.6rem; font-weight: 800; color: #F59E0B; margin-top: 2px;">0</div>
+              </div>
+              <span style="font-size: 1.5rem;">👁️</span>
+            </div>
+
+            <div style="background: var(--bg-card); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: var(--radius-md); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--carnival-gold); font-weight: 700;">Sync Mode</div>
+                <div style="font-size: 0.95rem; font-weight: 700; color: #FDE047; margin-top: 6px;">⚡ Multi-Channel Live</div>
+              </div>
+              <span style="font-size: 1.5rem;">📡</span>
+            </div>
+          </div>
+
+          <!-- Filter & Search Toolbar -->
+          <div class="filters-toolbar" style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 20px; background: var(--bg-card); padding: 12px 16px; border-radius: var(--radius-md); border: 1px solid var(--color-border);">
+            <div style="flex: 1; min-width: 220px; position: relative;">
+              <input type="text" id="adminGameSearchInput" class="filter-input" placeholder="Search by game title, category, or rules..." oninput="window.handleAdminGameFilterChange()" style="width: 100%; padding-left: 34px;" />
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text-dim);"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </div>
+
+            <!-- Status Pills -->
+            <div style="display: flex; gap: 6px;" role="tablist" aria-label="Game status filters">
+              <button type="button" class="btn-table-action active-pill" id="btnFilterAllGames" onclick="window.setAdminGameStatusFilter('all')" style="padding: 6px 14px; font-size: 0.8rem; font-weight: 700; border-radius: 9999px;">
+                All (<span id="countPillAll">6</span>)
+              </button>
+              <button type="button" class="btn-table-action" id="btnFilterActiveGames" onclick="window.setAdminGameStatusFilter('active')" style="padding: 6px 14px; font-size: 0.8rem; font-weight: 700; border-radius: 9999px;">
+                Active (<span id="countPillActive">6</span>)
+              </button>
+              <button type="button" class="btn-table-action" id="btnFilterHiddenGames" onclick="window.setAdminGameStatusFilter('hidden')" style="padding: 6px 14px; font-size: 0.8rem; font-weight: 700; border-radius: 9999px;">
+                Hidden (<span id="countPillHidden">0</span>)
+              </button>
+            </div>
+
+            <!-- Category Filter Dropdown -->
+            <div style="min-width: 180px;">
+              <select id="adminGameCategoryFilter" class="filter-select" onchange="window.handleAdminGameFilterChange()" style="width: 100%;" aria-label="Filter games by category">
+                <option value="all">All Categories</option>
+              </select>
             </div>
           </div>
 
@@ -1320,6 +1393,17 @@
           </div>
         </div>
 
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label for="gameDurationInput" class="form-label">Suggested Duration</label>
+            <input type="text" id="gameDurationInput" class="filter-input" style="width: 100%;" placeholder="e.g. 3 to 5 minutes per heat" />
+          </div>
+          <div class="form-group">
+            <label for="gameTeamSizeInput" class="form-label">Squad / Player Limit</label>
+            <input type="text" id="gameTeamSizeInput" class="filter-input" style="width: 100%;" placeholder="e.g. 4 to 6 players per team" />
+          </div>
+        </div>
+
         <div class="form-group">
           <label for="gameShortDescInput" class="form-label">Short Tagline (Card Preview)</label>
           <input type="text" id="gameShortDescInput" class="filter-input" style="width: 100%;" placeholder="Punchy one-line description for student view..." />
@@ -1335,6 +1419,27 @@
           <textarea id="gameRulesTextarea" class="filter-input" style="width: 100%; resize: vertical;" rows="3" placeholder="Enter each key rule on a separate line..."></textarea>
         </div>
 
+        <div class="form-group">
+          <label for="gameProcedureTextarea" class="form-label">Field Procedure / Coordinator Steps (One per line)</label>
+          <textarea id="gameProcedureTextarea" class="filter-input" style="width: 100%; resize: vertical;" rows="2" placeholder="Step 1: Assemble behind lane markers&#10;Step 2: Signal referee..."></textarea>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label for="gameMaterialsInput" class="form-label">Required Equipment / Materials</label>
+            <input type="text" id="gameMaterialsInput" class="filter-input" style="width: 100%;" placeholder="e.g. Stopwatches, lemons, spoons" />
+          </div>
+          <div class="form-group">
+            <label for="gameWinningInput" class="form-label">Winning / Scoring Criteria</label>
+            <input type="text" id="gameWinningInput" class="filter-input" style="width: 100%;" placeholder="e.g. Lowest lap time across finish line" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="gameSafetyTextarea" class="form-label">Safety Notes (One per line)</label>
+          <textarea id="gameSafetyTextarea" class="filter-input" style="width: 100%; resize: vertical;" rows="2" placeholder="e.g. Closed-toe footwear mandatory&#10;Clear lane clearance"></textarea>
+        </div>
+
         <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--color-border); border-radius: var(--radius-md);">
           <div>
             <div style="font-weight: 700; font-size: 0.9rem; color: var(--text-main);">Portal Visibility Status</div>
@@ -1344,6 +1449,10 @@
             <input type="checkbox" id="gameActiveCheckbox" checked style="width: 18px; height: 18px; accent-color: #10B981; cursor: pointer;" />
             <span id="gameActiveStatusText" style="font-weight: 700; font-size: 0.85rem; color: #10B981;">Active</span>
           </label>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(212, 175, 55, 0.08); border: 1px dashed rgba(212, 175, 55, 0.4); border-radius: var(--radius-sm); font-size: 0.8rem; color: #FCD34D;">
+          <span>⚡ <strong>Real-Time Sync:</strong> Any updates saved here are broadcasted live to the student portal and registration form immediately.</span>
         </div>
 
         <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">

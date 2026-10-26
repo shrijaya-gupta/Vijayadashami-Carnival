@@ -10,6 +10,9 @@ const gamesStore = require('../services/gamesStore');
  * Returns active games from the authoritative catalogue or dynamic store
  */
 router.get('/', (req, res) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
   const includeInactive = req.query.all === 'true';
   const games = gamesStore.getAllGames({ includeInactive });
   res.status(200).json({

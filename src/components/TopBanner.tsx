@@ -72,7 +72,7 @@ const ANNOUNCEMENTS = [
   },
 ];
 
-export const TopBanner: React.FC<TopBannerProps> = ({ onProceedClick }) => {
+export const TopBanner: React.FC<TopBannerProps> = React.memo(({ onProceedClick }) => {
   const [activeAnnounceIndex, setActiveAnnounceIndex] = useState(0);
   const [isFading, setIsFading] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -309,5 +309,5 @@ export const TopBanner: React.FC<TopBannerProps> = ({ onProceedClick }) => {
       </div>
     </div>
   );
-};
+});
 

@@ -34,8 +34,16 @@ const selectedGameSchema = new mongoose.Schema({
   gameId: {
     type: String,
     required: [true, 'Game ID is required'],
-    enum: {
-      values: ALL_KNOWN_GAME_IDS,
+    validate: {
+      validator: function(val) {
+        if (!val || typeof val !== 'string') return false;
+        try {
+          const gamesStore = require('../services/gamesStore');
+          const allActive = gamesStore.getAllGames({ includeInactive: true }).map(g => g.id);
+          if (allActive.includes(val)) return true;
+        } catch (e) {}
+        return ALL_KNOWN_GAME_IDS.includes(val);
+      },
       message: 'Invalid game ID: {VALUE}'
     }
   },

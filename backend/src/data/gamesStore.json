@@ -35,7 +35,7 @@
     "isActive": true,
     "isLegacy": false,
     "createdAt": "2026-10-24T16:22:44.400Z",
-    "updatedAt": "2026-10-24T16:43:46.229Z"
+    "updatedAt": "2026-10-26T04:02:30.989Z"
   },
   {
     "id": "target-shooting",
@@ -213,6 +213,7 @@
     "iconName": "Zap",
     "isActive": true,
     "isLegacy": false,
-    "createdAt": "2026-10-24T16:22:44.406Z"
+    "createdAt": "2026-10-24T16:22:44.406Z",
+    "updatedAt": "2026-10-26T04:26:41.366Z"
   }
 ]

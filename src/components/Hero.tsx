@@ -20,67 +20,12 @@ interface HeroProps {
   onWatchIntroClick?: () => void;
 }
 
-export const Hero: React.FC<HeroProps> = ({ 
+export const Hero: React.FC<HeroProps> = React.memo(({ 
   onRegisterClick, 
   onExploreGamesClick,
   onWatchIntroClick 
 }) => {
   const [showVideoModal, setShowVideoModal] = useState(false);
-  const [activeVideo, setActiveVideo] = useState<'A' | 'B'>('A');
-  const videoRefA = useRef<HTMLVideoElement>(null);
-  const videoRefB = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    const vidA = videoRefA.current;
-    const vidB = videoRefB.current;
-    if (!vidA || !vidB) return;
-
-    vidA.muted = true;
-    vidB.muted = true;
-
-    // Low-bandwidth adaptation (3G/4G / Data Saver)
-    const nav = navigator as any;
-    const conn = nav.connection || nav.mozConnection || nav.webkitConnection;
-    const isSlowConn = conn && (conn.saveData || conn.effectiveType === '2g' || conn.effectiveType === '3g');
-
-    if (isSlowConn) {
-      vidA.pause();
-      vidB.pause();
-      return;
-    }
-
-    // Play primary video
-    vidA.play().catch(() => {});
-
-    // Gapless cross-fading: start crossfade 0.8s before video ends to eliminate browser seek stutter
-    const handleTimeUpdateA = () => {
-      if (vidA.duration && vidA.currentTime >= vidA.duration - 0.8) {
-        if (activeVideo === 'A') {
-          vidB.currentTime = 0;
-          vidB.play().catch(() => {});
-          setActiveVideo('B');
-        }
-      }
-    };
-
-    const handleTimeUpdateB = () => {
-      if (vidB.duration && vidB.currentTime >= vidB.duration - 0.8) {
-        if (activeVideo === 'B') {
-          vidA.currentTime = 0;
-          vidA.play().catch(() => {});
-          setActiveVideo('A');
-        }
-      }
-    };
-
-    vidA.addEventListener('timeupdate', handleTimeUpdateA);
-    vidB.addEventListener('timeupdate', handleTimeUpdateB);
-
-    return () => {
-      vidA.removeEventListener('timeupdate', handleTimeUpdateA);
-      vidB.removeEventListener('timeupdate', handleTimeUpdateB);
-    };
-  }, [activeVideo]);
 
   const handleWatchIntro = () => {
     if (onWatchIntroClick) {
@@ -127,20 +72,17 @@ export const Hero: React.FC<HeroProps> = ({
 
       {/* =========================================================================
           MOBILE VIEW (< 1024px): CONTINUOUS AMBIENT VIDEO AT THE TOP
-          Optimized with preload="metadata" and fast decoding poster for 3G/4G speeds
+          Optimized with preload="metadata", native loop & hardware acceleration
           ========================================================================= */}
       <div className="block lg:hidden relative w-full aspect-[4/3] xs:aspect-[16/10] sm:aspect-[16/9] overflow-hidden bg-[#100308]">
-        {/* Video Layer A */}
         <video 
-          ref={videoRefA}
           autoPlay 
+          loop
           muted 
           playsInline 
-          preload="auto"
+          preload="metadata"
           poster="/assets/hero-mobile.jpg" 
-          className={`absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-700 ease-in-out ${
-            activeVideo === 'A' ? 'opacity-100 z-10' : 'opacity-0 z-0'
-          }`}
+          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none"
         >
           <source src="/assets/hero-mobile.mp4" type="video/mp4" />
           <img 
@@ -149,20 +91,6 @@ export const Hero: React.FC<HeroProps> = ({
             className="w-full h-full object-cover object-top"
             decoding="async"
           />
-        </video>
-
-        {/* Video Layer B (Pre-buffered seamless crossfade layer) */}
-        <video 
-          ref={videoRefB}
-          muted 
-          playsInline 
-          preload="auto"
-          poster="/assets/hero-mobile.jpg" 
-          className={`absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-700 ease-in-out ${
-            activeVideo === 'B' ? 'opacity-100 z-10' : 'opacity-0 z-0'
-          }`}
-        >
-          <source src="/assets/hero-mobile.mp4" type="video/mp4" />
         </video>
 
         {/* Subtle festive ambient tint overlay to harmonize colors with page backdrop */}
@@ -564,4 +492,4 @@ export const Hero: React.FC<HeroProps> = ({
 
     </section>
   );
-};
+});

@@ -1,16 +1,18 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { 
   SelectedGameConfig, 
   StudentDetails, 
   ParticipationFormat, 
   TeamMember, 
-  RegistrationSubmissionResult 
+  RegistrationSubmissionResult,
+  Game
 } from '../types';
 import { GAMES_DATA } from '../data/games';
 
 interface RegistrationContextType {
   activeStep: number;
   selectedGameIds: string[];
+  gamesList: Game[];
   gameConfigs: Record<string, SelectedGameConfig>;
   student: StudentDetails;
   totalFee: number;
@@ -19,6 +21,7 @@ interface RegistrationContextType {
   submissionResult: RegistrationSubmissionResult | null;
   
   // Actions
+  refreshGames: () => Promise<void>;
   toggleGameSelection: (gameId: string) => void;
   setGameFormat: (gameId: string, format: ParticipationFormat) => void;
   setTeamName: (gameId: string, name: string) => void;
@@ -54,6 +57,7 @@ const RegistrationContext = createContext<RegistrationContextType | undefined>(u
 
 export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [activeStep, setActiveStep] = useState<number>(2);
+  const [gamesList, setGamesList] = useState<Game[]>(() => GAMES_DATA);
   const [selectedGameIds, setSelectedGameIds] = useState<string[]>(() => GAMES_DATA.map(g => g.id));
   
   // Initialize game configs
@@ -75,31 +79,93 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submissionResult, setSubmissionResult] = useState<RegistrationSubmissionResult | null>(null);
+  // Authoritative dynamic registration pass fee (synced with admin event configuration; defaults to 10)
+  const [passFee, setPassFee] = useState<number>(10);
+  const totalFee = passFee;
 
-  // Sync dynamic game configs from API if available
-  useEffect(() => {
-    fetch('/api/games')
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.success && Array.isArray(data.games)) {
-          setGameConfigs(prev => {
-            const next = { ...prev };
-            data.games.forEach((g: any) => {
-              if (!next[g.id]) {
-                next[g.id] = {
-                  gameId: g.id,
-                  gameName: g.name,
-                  participationType: g.format === 'team' ? 'team' : 'individual',
-                  teamName: '',
-                  teamMembers: []
-                };
-              }
-            });
-            return next;
-          });
+  const lastGamesPayloadRef = useRef<string>('');
+
+  // Real-time bidirectional game sync between Admin dashboard and Student Portal
+  const loadGamesFromApi = useCallback(async () => {
+    try {
+      const res = await fetch('/api/games', { cache: 'no-store' });
+      const data = await res.json();
+      if (data && data.success && Array.isArray(data.games) && data.games.length > 0) {
+        const rawPayload = JSON.stringify(data.games);
+        if (rawPayload === lastGamesPayloadRef.current) {
+          // Payload has not changed, avoid unnecessary state setting and re-renders
+          return;
         }
-      })
-      .catch(() => {});
+        lastGamesPayloadRef.current = rawPayload;
+
+        const mappedGames: Game[] = data.games.map((g: any) => {
+          const canonical = GAMES_DATA.find(c => c.id === g.id);
+          return {
+            ...(canonical || {}),
+            ...g,
+            id: g.id,
+            name: g.name || (canonical?.name ?? 'Carnival Game'),
+            category: g.category || (canonical?.category ?? 'Fun & Challenge'),
+            participationType: g.participationType || g.suggestedTeamSize || (canonical?.participationType ?? 'Individual'),
+            suggestedTeamSize: g.suggestedTeamSize || g.participationType || (canonical?.suggestedTeamSize ?? 'Individual'),
+            shortDescription: g.shortDescription || g.description || (canonical?.shortDescription ?? ''),
+            description: g.description || g.shortDescription || (canonical?.description ?? ''),
+            objective: g.objective || g.description || (canonical?.objective ?? ''),
+            approvalStatus: g.approvalStatus || (canonical?.approvalStatus ?? 'Approved & Active'),
+            registrationFee: 'Included with All-Access Pass',
+            suggestedDuration: g.suggestedDuration || (canonical?.suggestedDuration ?? '3 to 5 minutes'),
+            procedure: Array.isArray(g.procedure) && g.procedure.length > 0 ? g.procedure : (canonical?.procedure ?? ['Report to coordinator arena.']),
+            proposedRules: Array.isArray(g.proposedRules) && g.proposedRules.length > 0 ? g.proposedRules : (canonical?.proposedRules ?? ['Standard fair play rules apply.']),
+            materials: g.materials || (canonical?.materials ?? 'Supplied at arena.'),
+            winningCriteria: g.winningCriteria || (canonical?.winningCriteria ?? 'Highest score or completion speed.'),
+            safetyNotes: Array.isArray(g.safetyNotes) && g.safetyNotes.length > 0 ? g.safetyNotes : (canonical?.safetyNotes ?? ['Adhere to field supervisor instructions.']),
+            iconName: g.iconName || (canonical?.iconName ?? 'Gamepad2')
+          };
+        });
+
+        setGamesList(mappedGames);
+
+        const activeGameIds = mappedGames.map(g => g.id);
+        setSelectedGameIds(activeGameIds);
+
+        setGameConfigs(prev => {
+          const next = { ...prev };
+          mappedGames.forEach(g => {
+            const isTeam = g.participationType.toLowerCase().includes('team') || 
+                           g.participationType.toLowerCase().includes('duo') ||
+                           g.participationType.toLowerCase().includes('pair');
+            if (!next[g.id]) {
+              next[g.id] = {
+                gameId: g.id,
+                gameName: g.name,
+                participationType: isTeam ? 'team' : 'individual',
+                teamName: '',
+                teamMembers: []
+              };
+            } else {
+              next[g.id] = {
+                ...next[g.id],
+                gameName: g.name
+              };
+            }
+          });
+          // Prune removed/hidden games
+          Object.keys(next).forEach(id => {
+            if (!activeGameIds.includes(id)) {
+              delete next[id];
+            }
+          });
+          return next;
+        });
+      }
+    } catch (e) {
+      console.warn('RegistrationContext: Could not sync games from API:', e);
+    }
+  }, []);
+
+  // Sync dynamic game configs & event config from API with multi-channel live updates
+  useEffect(() => {
+    loadGamesFromApi();
 
     // Sync authoritative event config (pass fee, deadlines) from admin/server
     fetch('/api/config')
@@ -110,11 +176,54 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         }
       })
       .catch(() => {});
-  }, []);
 
-  // Authoritative dynamic registration pass fee (synced with admin event configuration; defaults to 10)
-  const [passFee, setPassFee] = useState<number>(10);
-  const totalFee = passFee;
+    // Listen for cross-tab BroadcastChannel from admin saves
+    let channel: BroadcastChannel | null = null;
+    try {
+      channel = new BroadcastChannel('srmu_carnival_sync');
+      channel.onmessage = (event) => {
+        if (event.data?.type === 'GAMES_UPDATED') {
+          loadGamesFromApi();
+        }
+      };
+    } catch (e) {}
+
+    // Listen for storage events across browser tabs
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'srmu_games_updated_at') {
+        loadGamesFromApi();
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+
+    // Refresh when user returns to this browser tab
+    const handleFocus = () => {
+      loadGamesFromApi();
+    };
+    window.addEventListener('focus', handleFocus);
+
+    const handleVisibility = () => {
+      if (!document.hidden) {
+        loadGamesFromApi();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    // Polling safety net every 15 seconds to ensure instant reflection
+    const pollInterval = setInterval(() => {
+      loadGamesFromApi();
+    }, 15000);
+
+    return () => {
+      if (channel) {
+        try { channel.close(); } catch (e) {}
+      }
+      window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibility);
+      clearInterval(pollInterval);
+    };
+  }, [loadGamesFromApi]);
 
   // Precision scroll helper to keep student focused directly on the active form card
   const scrollToWizard = () => {
@@ -341,7 +450,7 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const resetRegistration = () => {
     setActiveStep(2);
-    setSelectedGameIds(GAMES_DATA.map(g => g.id));
+    setSelectedGameIds(gamesList.map(g => g.id));
     setStudent(initialStudent);
     setSubmissionResult(null);
     setSubmitError(null);
@@ -369,7 +478,7 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       },
       selectedGames: selectedGameIds.map(gameId => {
         const config = gameConfigs[gameId];
-        const gameMeta = GAMES_DATA.find(g => g.id === gameId);
+        const gameMeta = gamesList.find(g => g.id === gameId) || GAMES_DATA.find(g => g.id === gameId);
         const hasTeamName = Boolean(config?.teamName && config.teamName.trim());
         const isTeam = config?.participationType === 'team' && hasTeamName;
         return {
@@ -508,32 +617,45 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }
   };
 
+  const contextValue = useMemo(() => ({
+    activeStep,
+    selectedGameIds,
+    gamesList,
+    gameConfigs,
+    student,
+    totalFee,
+    isSubmitting,
+    submitError,
+    submissionResult,
+    refreshGames: loadGamesFromApi,
+    toggleGameSelection,
+    setGameFormat,
+    setTeamName,
+    addTeamMember,
+    removeTeamMember,
+    updateTeamMember,
+    updateStudent,
+    goToStep,
+    nextStep,
+    prevStep,
+    resetRegistration,
+    submitRegistration,
+    submitPostUtr
+  }), [
+    activeStep,
+    selectedGameIds,
+    gamesList,
+    gameConfigs,
+    student,
+    totalFee,
+    isSubmitting,
+    submitError,
+    submissionResult,
+    loadGamesFromApi
+  ]);
+
   return (
-    <RegistrationContext.Provider
-      value={{
-        activeStep,
-        selectedGameIds,
-        gameConfigs,
-        student,
-        totalFee,
-        isSubmitting,
-        submitError,
-        submissionResult,
-        toggleGameSelection,
-        setGameFormat,
-        setTeamName,
-        addTeamMember,
-        removeTeamMember,
-        updateTeamMember,
-        updateStudent,
-        goToStep,
-        nextStep,
-        prevStep,
-        resetRegistration,
-        submitRegistration,
-        submitPostUtr
-      }}
-    >
+    <RegistrationContext.Provider value={contextValue}>
       {children}
     </RegistrationContext.Provider>
   );

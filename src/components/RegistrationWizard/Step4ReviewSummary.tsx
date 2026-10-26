@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 
 export const Step4ReviewSummary: React.FC = () => {
-  const { student, selectedGameIds, gameConfigs, totalFee, goToStep, nextStep, prevStep } = useRegistration();
+  const { student, selectedGameIds, gamesList, gameConfigs, totalFee, goToStep, nextStep, prevStep } = useRegistration();
 
   // Privacy phone masking: e.g. ••••••3210 (Protected)
   const maskPhone = (phone: string): string => {
@@ -107,7 +107,7 @@ export const Step4ReviewSummary: React.FC = () => {
 
             <div className="space-y-2.5">
               {selectedGameIds.map((gameId) => {
-                const gameMeta = GAMES_DATA.find(g => g.id === gameId);
+                const gameMeta = gamesList?.find(g => g.id === gameId) || GAMES_DATA.find(g => g.id === gameId);
                 const config = gameConfigs[gameId];
                 if (!gameMeta || !config) return null;
 

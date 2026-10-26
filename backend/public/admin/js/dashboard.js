@@ -3066,11 +3066,76 @@ function initGamesManagement() {
   });
 }
 
+let adminGameStatusFilter = 'all';
+let adminGameSearchQuery = '';
+let adminGameCategoryFilter = 'all';
+
+function broadcastGamesUpdate() {
+  try {
+    localStorage.setItem('srmu_games_updated_at', String(Date.now()));
+    const ch = new BroadcastChannel('srmu_carnival_sync');
+    ch.postMessage({ type: 'GAMES_UPDATED', timestamp: Date.now() });
+    ch.close();
+  } catch (e) {}
+}
+
+window.setAdminGameStatusFilter = function(status) {
+  adminGameStatusFilter = status;
+  ['all', 'active', 'hidden'].forEach(s => {
+    const btn = document.getElementById(`btnFilter${s.charAt(0).toUpperCase() + s.slice(1)}Games`);
+    if (btn) {
+      if (s === status) {
+        btn.classList.add('active-pill');
+        btn.style.background = 'var(--carnival-gold)';
+        btn.style.color = '#000';
+      } else {
+        btn.classList.remove('active-pill');
+        btn.style.background = '';
+        btn.style.color = '';
+      }
+    }
+  });
+  filterAndRenderAdminGames();
+};
+
+window.handleAdminGameFilterChange = function() {
+  adminGameSearchQuery = (document.getElementById('adminGameSearchInput')?.value || '').trim().toLowerCase();
+  adminGameCategoryFilter = document.getElementById('adminGameCategoryFilter')?.value || 'all';
+  filterAndRenderAdminGames();
+};
+
+function filterAndRenderAdminGames() {
+  if (!Array.isArray(adminGamesList)) return;
+
+  const filtered = adminGamesList.filter(game => {
+    const isActive = game.isActive !== false;
+    if (adminGameStatusFilter === 'active' && !isActive) return false;
+    if (adminGameStatusFilter === 'hidden' && isActive) return false;
+
+    if (adminGameCategoryFilter !== 'all' && (game.category || '').toLowerCase() !== adminGameCategoryFilter.toLowerCase()) {
+      return false;
+    }
+
+    if (adminGameSearchQuery) {
+      const q = adminGameSearchQuery;
+      const matchName = (game.name || '').toLowerCase().includes(q);
+      const matchCat = (game.category || '').toLowerCase().includes(q);
+      const matchDesc = (game.shortDescription || game.description || '').toLowerCase().includes(q);
+      const matchRules = Array.isArray(game.proposedRules) && game.proposedRules.some(r => r.toLowerCase().includes(q));
+      if (!matchName && !matchCat && !matchDesc && !matchRules) return false;
+    }
+
+    return true;
+  });
+
+  renderAdminGameCards(filtered);
+}
+
 async function loadAdminGamesData(isSilent = false) {
   const container = document.getElementById('adminGamesContainer');
   if (!container) return;
 
-  const hasExistingCards = container.querySelectorAll('.game-item-card').length > 0;
+  const hasExistingCards = container.querySelectorAll('.admin-game-card').length > 0;
   if (!hasExistingCards && !isSilent) {
     container.innerHTML = `<div class="empty-state-card" style="padding: 30px; text-align: center; color: var(--text-dim);">Loading games catalogue...</div>`;
   }
@@ -3089,7 +3154,37 @@ async function loadAdminGamesData(isSilent = false) {
     }
 
     adminGamesList = data.games || [];
-    renderAdminGameCards(adminGamesList);
+
+    // Update stats strip
+    const total = adminGamesList.length;
+    const activeCount = adminGamesList.filter(g => g.isActive !== false).length;
+    const hiddenCount = total - activeCount;
+
+    const elTotal = document.getElementById('statTotalGames');
+    if (elTotal) elTotal.textContent = total;
+    const elActive = document.getElementById('statActiveGames');
+    if (elActive) elActive.textContent = activeCount;
+    const elHidden = document.getElementById('statHiddenGames');
+    if (elHidden) elHidden.textContent = hiddenCount;
+
+    const pillAll = document.getElementById('countPillAll');
+    if (pillAll) pillAll.textContent = total;
+    const pillActive = document.getElementById('countPillActive');
+    if (pillActive) pillActive.textContent = activeCount;
+    const pillHidden = document.getElementById('countPillHidden');
+    if (pillHidden) pillHidden.textContent = hiddenCount;
+
+    // Update categories dropdown
+    const catSelect = document.getElementById('adminGameCategoryFilter');
+    if (catSelect) {
+      const currentCatVal = catSelect.value || 'all';
+      const categories = Array.from(new Set(adminGamesList.map(g => g.category || 'General').filter(Boolean))).sort();
+      catSelect.innerHTML = `<option value="all">All Categories</option>` + 
+        categories.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+      catSelect.value = categories.includes(currentCatVal) ? currentCatVal : 'all';
+    }
+
+    filterAndRenderAdminGames();
   } catch (err) {
     console.error('Error loading games catalogue:', err);
     if (!hasExistingCards) {
@@ -3104,9 +3199,13 @@ function renderAdminGameCards(games) {
 
   if (!games || games.length === 0) {
     container.innerHTML = `
-      <div style="text-align: center; padding: 48px 20px; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px dashed var(--color-border);">
-        <p style="color: var(--text-dim); margin-bottom: 16px;">No carnival games found in catalogue.</p>
-        <button type="button" class="btn-primary" onclick="window.openAddGameModal()">+ Add Your First Game</button>
+      <div style="text-align: center; padding: 48px 20px; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px dashed var(--color-border); grid-column: 1 / -1;">
+        <span style="font-size: 2.2rem; display: block; margin-bottom: 10px;">🎯</span>
+        <h4 style="color: var(--text-main); font-weight: 700; margin-bottom: 6px;">No games match your filter</h4>
+        <p style="color: var(--text-dim); margin-bottom: 16px; font-size: 0.85rem;">Try clearing the search input or switching status filter tabs.</p>
+        <button type="button" class="btn-primary" onclick="window.setAdminGameStatusFilter('all'); document.getElementById('adminGameSearchInput').value=''; window.handleAdminGameFilterChange();">
+          Reset Filters
+        </button>
       </div>
     `;
     return;
@@ -3117,26 +3216,28 @@ function renderAdminGameCards(games) {
       ${games.map(game => {
         const isActive = game.isActive !== false;
         const format = game.participationType || 'Individual';
+        const rulesCount = Array.isArray(game.proposedRules) ? game.proposedRules.length : (game.proposedRules ? 1 : 0);
 
         return `
-          <div class="admin-game-card ${isActive ? 'card-active' : 'card-inactive'}" style="background: var(--bg-card); border: 1px solid ${isActive ? 'rgba(212, 175, 55, 0.25)' : 'var(--color-border)'}; border-radius: var(--radius-lg); padding: 18px; display: flex; flex-direction: column; justify-content: space-between; position: relative; transition: all 0.2s ease;">
+          <div class="admin-game-card ${isActive ? 'card-active' : 'card-inactive'}" style="background: var(--bg-card); border: 1px solid ${isActive ? 'rgba(212, 175, 55, 0.35)' : 'var(--color-border)'}; border-radius: var(--radius-lg); padding: 18px; display: flex; flex-direction: column; justify-content: space-between; position: relative; transition: all 0.2s ease; box-shadow: ${isActive ? '0 4px 20px rgba(0,0,0,0.3)' : 'none'};">
             <div>
               <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 10px;">
                 <div>
                   <span style="display: inline-block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--carnival-gold); margin-bottom: 4px;">
                     ${escapeHtml(game.category || 'General')}
                   </span>
-                  <h4 style="font-size: 1.1rem; font-weight: 700; color: var(--text-main); margin: 0; line-height: 1.3;">
+                  <h4 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main); margin: 0; line-height: 1.3;">
                     ${escapeHtml(game.name)}
                   </h4>
                 </div>
-                <span class="status-pill ${isActive ? 'status-paid' : 'status-payment_failed'}" style="font-size: 0.72rem; padding: 2px 8px; border-radius: 9999px;">
-                  ${isActive ? 'Active' : 'Hidden'}
+                <span class="status-pill ${isActive ? 'status-paid' : 'status-payment_failed'}" style="font-size: 0.72rem; padding: 3px 10px; border-radius: 9999px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+                  <span style="width: 6px; height: 6px; border-radius: 50%; background: ${isActive ? '#10B981' : '#F59E0B'}; display: inline-block;"></span>
+                  ${isActive ? 'Live on Portal' : 'Hidden'}
                 </span>
               </div>
 
-              <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.45; margin-bottom: 12px; min-height: 36px;">
-                ${escapeHtml(game.shortDescription || game.description || 'Carnival campus game.')}
+              <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.45; margin-bottom: 14px; min-height: 38px;">
+                ${escapeHtml(game.shortDescription || game.description || 'Exciting campus carnival game.')}
               </p>
 
               <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px;">
@@ -3146,18 +3247,26 @@ function renderAdminGameCards(games) {
                 <span class="badge" style="font-size: 0.72rem; background: rgba(16, 185, 129, 0.1); color: #6EE7B7; border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 6px; padding: 3px 8px;">
                   🎟️ All-Access Pass
                 </span>
+                ${game.suggestedDuration ? `
+                  <span class="badge" style="font-size: 0.72rem; background: rgba(245, 158, 11, 0.1); color: #FCD34D; border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 6px; padding: 3px 8px;">
+                    ⏱️ ${escapeHtml(game.suggestedDuration)}
+                  </span>
+                ` : ''}
                 <span class="badge" style="font-size: 0.72rem; background: rgba(59, 130, 246, 0.1); color: #93C5FD; border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 6px; padding: 3px 8px;">
+                  📜 ${rulesCount} Rules
+                </span>
+                <span class="badge" style="font-size: 0.70rem; background: rgba(255, 255, 255, 0.05); color: var(--text-dim); border: 1px solid var(--color-border); border-radius: 6px; padding: 3px 6px;">
                   ID: ${escapeHtml(game.id)}
                 </span>
               </div>
             </div>
 
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06);">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.08);">
               <div style="display: flex; gap: 6px;">
                 <button type="button" class="btn-table-action" onclick="window.openEditGameModal('${escapeHtml(game.id)}')" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 600;">
                   ✏️ Edit
                 </button>
-                <button type="button" class="btn-table-action" onclick="window.handleToggleGame('${escapeHtml(game.id)}')" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 600;">
+                <button type="button" class="btn-table-action" onclick="window.handleToggleGame('${escapeHtml(game.id)}')" style="padding: 6px 12px; font-size: 0.8rem; font-weight: 600; color: ${isActive ? '#F59E0B' : '#10B981'};">
                   ${isActive ? '👁️ Hide' : '✅ Show'}
                 </button>
               </div>
@@ -3183,11 +3292,24 @@ window.openAddGameModal = function() {
   if (editId) editId.value = '';
   const feeInput = document.getElementById('gameFeeInput');
   if (feeInput) feeInput.value = '0';
+  const durationInput = document.getElementById('gameDurationInput');
+  if (durationInput) durationInput.value = '3 to 5 minutes';
+  const teamSizeInput = document.getElementById('gameTeamSizeInput');
+  if (teamSizeInput) teamSizeInput.value = 'Individual';
+  const procedureInput = document.getElementById('gameProcedureTextarea');
+  if (procedureInput) procedureInput.value = '';
+  const materialsInput = document.getElementById('gameMaterialsInput');
+  if (materialsInput) materialsInput.value = 'Supplied at arena.';
+  const winningInput = document.getElementById('gameWinningInput');
+  if (winningInput) winningInput.value = 'Highest score or completion speed.';
+  const safetyInput = document.getElementById('gameSafetyTextarea');
+  if (safetyInput) safetyInput.value = 'Closed-toe footwear mandatory.\nAdhere to arena marshal instructions.';
+  
   const activeCheck = document.getElementById('gameActiveCheckbox');
   if (activeCheck) activeCheck.checked = true;
   const activeLabel = document.getElementById('gameActiveStatusText');
   if (activeLabel) {
-    activeLabel.textContent = 'Active';
+    activeLabel.textContent = 'Active (Live on Portal)';
     activeLabel.style.color = '#10B981';
   }
 
@@ -3251,6 +3373,11 @@ window.openEditGameModal = async function(gameId) {
     }
   }
 
+  const durationInput = document.getElementById('gameDurationInput');
+  if (durationInput) durationInput.value = game.suggestedDuration || '';
+  const teamSizeInput = document.getElementById('gameTeamSizeInput');
+  if (teamSizeInput) teamSizeInput.value = game.suggestedTeamSize || game.participationType || '';
+
   const shortDesc = document.getElementById('gameShortDescInput');
   if (shortDesc) shortDesc.value = game.shortDescription || '';
   const desc = document.getElementById('gameDescTextarea');
@@ -3260,13 +3387,26 @@ window.openEditGameModal = async function(gameId) {
   const rulesInput = document.getElementById('gameRulesTextarea');
   if (rulesInput) rulesInput.value = rules;
 
+  const procedure = Array.isArray(game.procedure) ? game.procedure.join('\n') : (game.procedure || '');
+  const procedureInput = document.getElementById('gameProcedureTextarea');
+  if (procedureInput) procedureInput.value = procedure;
+
+  const materialsInput = document.getElementById('gameMaterialsInput');
+  if (materialsInput) materialsInput.value = game.materials || '';
+  const winningInput = document.getElementById('gameWinningInput');
+  if (winningInput) winningInput.value = game.winningCriteria || '';
+
+  const safety = Array.isArray(game.safetyNotes) ? game.safetyNotes.join('\n') : (game.safetyNotes || '');
+  const safetyInput = document.getElementById('gameSafetyTextarea');
+  if (safetyInput) safetyInput.value = safety;
+
   const activeCheck = document.getElementById('gameActiveCheckbox');
   const activeLabel = document.getElementById('gameActiveStatusText');
   if (activeCheck) {
     activeCheck.checked = game.isActive !== false;
     if (activeLabel) {
-      activeLabel.textContent = activeCheck.checked ? 'Active' : 'Hidden / Inactive';
-      activeLabel.style.color = activeCheck.checked ? '#10B981' : '#94A3B8';
+      activeLabel.textContent = activeCheck.checked ? 'Active (Live on Portal)' : 'Hidden / Offline';
+      activeLabel.style.color = activeCheck.checked ? '#10B981' : '#F59E0B';
     }
   }
 
@@ -3293,9 +3433,16 @@ window.handleGameEditorSubmit = async function(event) {
     feeAmount: 0,
     registrationFee: 'Included with All-Access Pass',
     participationType: document.getElementById('gameFormatSelect')?.value || 'Individual',
+    suggestedDuration: document.getElementById('gameDurationInput')?.value?.trim() || '3 to 5 minutes',
+    suggestedTeamSize: document.getElementById('gameTeamSizeInput')?.value?.trim() || 'Individual',
     shortDescription: document.getElementById('gameShortDescInput')?.value?.trim(),
     description: document.getElementById('gameDescTextarea')?.value?.trim(),
+    objective: document.getElementById('gameDescTextarea')?.value?.trim(),
     proposedRules: document.getElementById('gameRulesTextarea')?.value?.split('\n').map(s => s.trim()).filter(Boolean),
+    procedure: document.getElementById('gameProcedureTextarea')?.value?.split('\n').map(s => s.trim()).filter(Boolean),
+    materials: document.getElementById('gameMaterialsInput')?.value?.trim(),
+    winningCriteria: document.getElementById('gameWinningInput')?.value?.trim(),
+    safetyNotes: document.getElementById('gameSafetyTextarea')?.value?.split('\n').map(s => s.trim()).filter(Boolean),
     isActive: document.getElementById('gameActiveCheckbox')?.checked !== false
   };
 
@@ -3346,7 +3493,8 @@ window.handleGameEditorSubmit = async function(event) {
       return false;
     }
 
-    showToast(isEditing ? `✓ Game "${payload.name}" updated successfully!` : `✓ New game "${payload.name}" added to catalogue!`);
+    broadcastGamesUpdate();
+    showToast(isEditing ? `✓ Game "${payload.name}" updated! Changes are live on User Portal.` : `✓ New game "${payload.name}" added! Live on User Portal.`);
     window.closeGameEditorModal();
     await loadAdminGamesData();
     refreshCurrentView();
@@ -3364,17 +3512,19 @@ window.handleGameEditorSubmit = async function(event) {
 
 window.handleToggleGame = async function(gameId) {
   try {
+    const activeCsrf = (typeof getCsrfToken === 'function' ? getCsrfToken() : '') || csrfToken || sessionStorage.getItem('srmu_csrf_token') || '';
     const res = await fetch(`${API_BASE_URL}/api/admin/games-catalogue/${encodeURIComponent(gameId)}/toggle`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken || ''
+        'X-CSRF-Token': activeCsrf
       },
       credentials: 'include'
     });
     const data = await res.json();
     if (res.ok && data.success) {
-      showToast(data.message || 'Status updated.');
+      broadcastGamesUpdate();
+      showToast(data.message ? `✓ ${data.message} Live on User Portal.` : '✓ Status updated & live on User Portal.');
       await loadAdminGamesData();
     } else {
       showToast(data.error || 'Failed to toggle game status.');
@@ -3385,22 +3535,24 @@ window.handleToggleGame = async function(gameId) {
 };
 
 window.handleDeleteGame = async function(gameId, gameName) {
-  if (!confirm(`Are you sure you want to delete "${gameName || gameId}"? This will remove it from the active festival lineup.`)) {
+  if (!confirm(`Are you sure you want to delete "${gameName || gameId}"? This will remove it from the active festival lineup and the live portal.`)) {
     return;
   }
 
   try {
+    const activeCsrf = (typeof getCsrfToken === 'function' ? getCsrfToken() : '') || csrfToken || sessionStorage.getItem('srmu_csrf_token') || '';
     const res = await fetch(`${API_BASE_URL}/api/admin/games-catalogue/${encodeURIComponent(gameId)}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken || ''
+        'X-CSRF-Token': activeCsrf
       },
       credentials: 'include'
     });
     const data = await res.json();
     if (res.ok && data.success) {
-      showToast(`Game "${gameName}" removed.`);
+      broadcastGamesUpdate();
+      showToast(`✓ Game "${gameName}" removed from catalogue & live portal.`);
       await loadAdminGamesData();
     } else {
       showToast(data.error || 'Failed to delete game.');
@@ -3409,3 +3561,4 @@ window.handleDeleteGame = async function(gameId, gameName) {
     showToast('Network error deleting game.');
   }
 };
+

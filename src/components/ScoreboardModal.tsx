@@ -16,6 +16,7 @@ import {
   Zap 
 } from 'lucide-react';
 import { GAMES_DATA, EVENT_DETAILS } from '../data/games';
+import { useRegistration } from '../context/RegistrationContext';
 
 interface ScoreItem {
   id: string;
@@ -122,10 +123,13 @@ export const ScoreboardModal: React.FC<ScoreboardModalProps> = ({ isOpen, onClos
     return () => clearInterval(interval);
   }, [isOpen, selectedGame]);
 
+  const { gamesList } = useRegistration();
+  const displayGames = gamesList && gamesList.length > 0 ? gamesList : GAMES_DATA;
+
   if (!isOpen) return null;
 
   // Active game metadata if a specific game is selected
-  const activeGameData = selectedGame !== 'all' ? GAMES_DATA.find(g => g.id === selectedGame) : null;
+  const activeGameData = selectedGame !== 'all' ? displayGames.find(g => g.id === selectedGame) : null;
   const activeMetrics = selectedGame !== 'all' ? GAME_SCORING_METRICS[selectedGame] : null;
   const registeredCountForActive = selectedGame !== 'all' 
     ? (participantCounts[selectedGame] || 0) 
@@ -183,7 +187,7 @@ export const ScoreboardModal: React.FC<ScoreboardModalProps> = ({ isOpen, onClos
           </div>
         </div>
 
-        {/* Dynamic 6 Games Filter Tabs */}
+        {/* Dynamic Games Filter Tabs */}
         <div className="flex border-b border-[#3D0A17] bg-[#100207] p-2.5 sm:p-3 overflow-x-auto text-xs font-semibold gap-2 no-scrollbar">
           {/* All Activities tab */}
           <button
@@ -195,11 +199,11 @@ export const ScoreboardModal: React.FC<ScoreboardModalProps> = ({ isOpen, onClos
             }`}
           >
             <Trophy className="w-3.5 h-3.5 text-amber-300" />
-            <span>All Activities ({GAMES_DATA.length})</span>
+            <span>All Activities ({displayGames.length})</span>
           </button>
 
-          {/* All 6 canonical games from GAMES_DATA */}
-          {GAMES_DATA.map(game => (
+          {/* All active games from displayGames */}
+          {displayGames.map(game => (
             <button
               key={game.id}
               onClick={() => setSelectedGame(game.id)}

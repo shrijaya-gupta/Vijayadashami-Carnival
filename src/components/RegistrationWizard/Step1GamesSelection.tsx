@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRegistration } from '../../context/RegistrationContext';
 import { GAMES_DATA } from '../../data/games';
 import { Game } from '../../types';
@@ -6,47 +6,11 @@ import { GameGuidelinesModal } from '../GameGuidelinesModal';
 import { Check, Info, ArrowRight, AlertCircle, Trophy, Zap } from 'lucide-react';
 
 export const Step1GamesSelection: React.FC = () => {
-  const { selectedGameIds, toggleGameSelection, nextStep, submitError } = useRegistration();
+  const { selectedGameIds, gamesList, toggleGameSelection, nextStep, submitError } = useRegistration();
   const [selectedGameForModal, setSelectedGameForModal] = useState<Game | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [gamesList, setGamesList] = useState<Game[]>(GAMES_DATA);
 
-  useEffect(() => {
-    fetch('/api/games')
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.success && Array.isArray(data.games) && data.games.length > 0) {
-          const merged: Game[] = data.games.map((g: any) => {
-            const canonical = GAMES_DATA.find(c => c.id === g.id);
-            return {
-              ...(canonical || {}),
-              ...g,
-              id: g.id,
-              name: g.name || (canonical?.name ?? 'Carnival Game'),
-              category: g.category || (canonical?.category ?? 'Fun & Challenge'),
-              participationType: g.participationType || g.suggestedTeamSize || (canonical?.participationType ?? 'Individual'),
-              shortDescription: g.shortDescription || g.description || (canonical?.shortDescription ?? ''),
-              description: g.description || g.shortDescription || (canonical?.description ?? ''),
-              objective: g.objective || g.description || (canonical?.objective ?? ''),
-              approvalStatus: g.approvalStatus || (canonical?.approvalStatus ?? 'Approved & Active'),
-              registrationFee: 'Included with All-Access Pass',
-              feeAmount: 0,
-              suggestedDuration: g.suggestedDuration || (canonical?.suggestedDuration ?? '3 to 5 minutes'),
-              procedure: Array.isArray(g.procedure) && g.procedure.length > 0 ? g.procedure : (canonical?.procedure ?? ['Report to coordinator arena.']),
-              proposedRules: Array.isArray(g.proposedRules) && g.proposedRules.length > 0 ? g.proposedRules : (canonical?.proposedRules ?? ['Standard fair play rules apply.']),
-              materials: g.materials || (canonical?.materials ?? 'Supplied at arena.'),
-              winningCriteria: g.winningCriteria || (canonical?.winningCriteria ?? 'Highest score or completion speed.'),
-              safetyNotes: Array.isArray(g.safetyNotes) && g.safetyNotes.length > 0 ? g.safetyNotes : (canonical?.safetyNotes ?? ['Adhere to field supervisor instructions.']),
-              iconName: g.iconName || (canonical?.iconName ?? 'Gamepad2')
-            };
-          });
-          setGamesList(merged);
-        }
-      })
-      .catch(() => {});
-  }, []);
-
-  const activeCatalog = gamesList.length > 0 ? gamesList : GAMES_DATA;
+  const activeCatalog = (gamesList && gamesList.length > 0) ? gamesList : GAMES_DATA;
 
   return (
     <div className="space-y-6 text-white">

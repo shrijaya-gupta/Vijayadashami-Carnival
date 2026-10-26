@@ -17,6 +17,7 @@ import {
 export const Step3TeamRoster: React.FC = () => {
   const { 
     selectedGameIds, 
+    gamesList,
     gameConfigs, 
     student, 
     setGameFormat, 
@@ -67,7 +68,7 @@ export const Step3TeamRoster: React.FC = () => {
       {/* Selected Games Configuration Cards */}
       <div className="space-y-4">
         {selectedGameIds.map((gameId) => {
-          const gameMeta = GAMES_DATA.find(g => g.id === gameId);
+          const gameMeta = gamesList?.find(g => g.id === gameId) || GAMES_DATA.find(g => g.id === gameId);
           const config = gameConfigs[gameId];
           if (!gameMeta || !config) return null;
 

@@ -25,7 +25,24 @@ async function getAdminGamesList(req, res) {
  */
 async function createAdminGame(req, res) {
   try {
-    const { name, category, participationType, description, shortDescription, feeAmount, proposedRules, procedure, safetyNotes, isActive } = req.body;
+    const { 
+      name, 
+      category, 
+      participationType, 
+      description, 
+      shortDescription, 
+      feeAmount, 
+      proposedRules, 
+      procedure, 
+      safetyNotes, 
+      materials,
+      suggestedDuration,
+      suggestedTeamSize,
+      objective,
+      winningCriteria,
+      iconName,
+      isActive 
+    } = req.body;
 
     if (!name || typeof name !== 'string' || !name.trim()) {
       return res.status(400).json({ success: false, error: 'Game title/name is required.' });
@@ -37,6 +54,12 @@ async function createAdminGame(req, res) {
       participationType: (participationType && String(participationType).trim()) || 'Individual',
       description: (description && String(description).trim()) || (shortDescription && String(shortDescription).trim()) || 'Exciting campus activity.',
       shortDescription: (shortDescription && String(shortDescription).trim()) || (description && String(description).trim()) || 'Exciting campus activity.',
+      objective: (objective && String(objective).trim()) || (description && String(description).trim()) || 'Complete the challenge to win awards.',
+      materials: (materials && String(materials).trim()) || 'Materials provided at arena station.',
+      suggestedDuration: (suggestedDuration && String(suggestedDuration).trim()) || '3 to 5 minutes',
+      suggestedTeamSize: (suggestedTeamSize && String(suggestedTeamSize).trim()) || (participationType && String(participationType).trim()) || 'Individual',
+      winningCriteria: (winningCriteria && String(winningCriteria).trim()) || 'Highest score or completion time.',
+      iconName: iconName || 'Gamepad2',
       feeAmount: Number(feeAmount) >= 0 ? Number(feeAmount) : 0,
       registrationFee: 'Included with All-Access Pass',
       proposedRules: proposedRules || [],

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useRegistration } from '../context/RegistrationContext';
 import { 
   Menu, 
   X, 
@@ -87,19 +86,8 @@ interface NavbarProps {
   onOpenScoreboard?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenScoreboard }) => {
+export const Navbar: React.FC<NavbarProps> = React.memo(({ activeTab, setActiveTab, onOpenScoreboard }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { selectedGameIds, goToStep } = useRegistration();
-
-  const handleProceedToRegister = () => {
-    setActiveTab('register');
-    goToStep(2);
-    setMobileMenuOpen(false);
-    const el = document.getElementById('register');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
 
   const handleNavClick = (tab: 'home' | 'games' | 'register') => {
     setActiveTab(tab);
@@ -166,11 +154,6 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenS
           >
             <UserPlus className="w-3.5 h-3.5 text-[#E5C158] shrink-0" />
             <span>Registration</span>
-            {selectedGameIds.length > 0 && (
-              <span className="w-4 h-4 rounded-full bg-[#E5C158] text-[#881337] font-black text-[9px] flex items-center justify-center shrink-0 ml-0.5 shadow-xs">
-                {selectedGameIds.length}
-              </span>
-            )}
           </button>
 
           <button
@@ -212,21 +195,6 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenS
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
         <div className="md:hidden max-w-7xl mx-auto mt-2.5 p-4 rounded-2xl border border-[#D4AF37]/45 bg-[#14030A]/98 backdrop-blur-2xl shadow-2xl space-y-2">
-          {selectedGameIds.length > 0 && (
-            <button
-              onClick={handleProceedToRegister}
-              className="w-full text-left px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-between bg-gradient-to-r from-[#881337] to-[#B91C1C] text-white border border-[#E5C158]/60 shadow-md"
-            >
-              <div className="flex items-center gap-2">
-                <span className="w-5 h-5 rounded-full bg-[#E5C158] text-[#881337] font-black text-xs flex items-center justify-center">
-                  {selectedGameIds.length}
-                </span>
-                <span>{selectedGameIds.length === 1 ? '1 Game Selected' : `${selectedGameIds.length} Games Selected`}</span>
-              </div>
-              <span className="text-amber-300 font-extrabold">₹{selectedGameIds.length * 5} · Proceed →</span>
-            </button>
-          )}
-
           <button
             onClick={() => handleNavClick('home')}
             className={`w-full text-left px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 ${
@@ -290,4 +258,4 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenS
       )}
     </header>
   );
-};
+});

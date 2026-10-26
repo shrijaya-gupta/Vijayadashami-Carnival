@@ -90,13 +90,14 @@ const LEGACY_GAMES = [
 const VALID_GAME_IDS = GAMES_CATALOGUE.map(g => g.id);
 const origIncludes = VALID_GAME_IDS.includes.bind(VALID_GAME_IDS);
 VALID_GAME_IDS.includes = function(id) {
-  if (origIncludes(id)) return true;
   try {
     const gamesStore = require('../services/gamesStore');
-    return gamesStore.getActiveGameIds().includes(id);
-  } catch (e) {
-    return false;
-  }
+    const activeIds = gamesStore.getActiveGameIds();
+    if (Array.isArray(activeIds) && activeIds.length > 0) {
+      return activeIds.includes(id);
+    }
+  } catch (e) {}
+  return origIncludes(id);
 };
 
 // All known game IDs (active + legacy) for database schema validation & historical queries
