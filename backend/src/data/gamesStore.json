@@ -109,11 +109,11 @@
       "Space chairs safely to avoid pinching fingers."
     ],
     "iconName": "Music",
-    "isActive": false,
+    "isActive": true,
     "isLegacy": false,
     "createdAt": "2026-10-26T07:54:23.044966+00:00",
     "fee": 0,
-    "updatedAt": "2026-10-26T08:01:34.578Z"
+    "updatedAt": "2026-10-26T07:54:23.044966+00:00"
   },
   {
     "id": "human-knot",
@@ -225,34 +225,5 @@
     "createdAt": "2026-10-26T07:54:23.349912+00:00",
     "fee": 0,
     "updatedAt": "2026-10-26T07:54:23.349912+00:00"
-  },
-  {
-    "id": "cloud-supabase-test-arena",
-    "name": "Cloud Supabase Test Arena",
-    "category": "Database Verification",
-    "feeAmount": 0,
-    "fee": 0,
-    "registrationFee": "Included with All-Access Pass",
-    "isActive": true,
-    "shortDescription": "Verifying real-time Supabase cloud persistence",
-    "description": "Full database persistence test",
-    "objective": "Full database persistence test",
-    "participationType": "Individual",
-    "suggestedTeamSize": "Individual",
-    "suggestedDuration": "3 to 5 minutes",
-    "procedure": [
-      "Report to arena coordinator."
-    ],
-    "proposedRules": [
-      "Must persist in cloud database"
-    ],
-    "materials": "Materials provided at arena station.",
-    "winningCriteria": "Highest score or completion time.",
-    "safetyNotes": [
-      "Follow supervisor instructions."
-    ],
-    "iconName": "Gamepad2",
-    "createdAt": "2026-10-26T08:00:11.361919+00:00",
-    "updatedAt": "2026-10-26T08:00:11.361919+00:00"
   }
 ]
