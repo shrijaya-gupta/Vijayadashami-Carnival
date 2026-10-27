@@ -594,20 +594,20 @@ function renderOverviewRecent(recent) {
     const dateStr = formatDate(r.createdAt);
     return `
       <tr>
-        <td data-label="ID"><span class="reg-id-badge cursor-pointer" onclick="openRegistrationModal('${escapeHtml(r.registrationId)}')">${escapeHtml(r.registrationId)}</span></td>
-        <td data-label="Student"><strong style="color: var(--text-main); font-weight: 700;">${escapeHtml(r.studentName)}</strong></td>
-        <td data-label="Course">${escapeHtml(r.course)}</td>
-        <td data-label="Games">${r.gamesCount} game${r.gamesCount !== 1 ? 's' : ''}</td>
-        <td data-label="Status"><span class="status-pill ${statusClass}">${escapeHtml(r.status || 'confirmed')}</span></td>
-        <td data-label="Date">${dateStr}</td>
-        <td data-label="Action">
-          <div class="action-btn-group">
+        <td><span class="reg-id-badge cursor-pointer" onclick="openRegistrationModal('${escapeHtml(r.registrationId)}')">${escapeHtml(r.registrationId)}</span></td>
+        <td><span class="participant-name-single" title="${escapeHtml(r.studentName)}">${escapeHtml(r.studentName)}</span></td>
+        <td><span class="participant-academic-single">${escapeHtml(r.course || '—')}</span></td>
+        <td><span class="fee-badge-single" style="background:#F1F5F9; border-color:#E2E8F0; color:#334155;">${r.gamesCount} game${r.gamesCount !== 1 ? 's' : ''}</span></td>
+        <td><span class="status-pill ${statusClass}">${escapeHtml(r.status || 'confirmed')}</span></td>
+        <td style="font-size:0.8rem; color:#64748B;">${dateStr}</td>
+        <td>
+          <div class="action-btn-group-single">
             <button type="button" class="btn-table-details" onclick="openRegistrationModal('${escapeHtml(r.registrationId)}')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
               <span>Details</span>
             </button>
-            <button type="button" class="btn-table-delete" onclick="window.deleteRegistrationQuick('${escapeHtml(r.registrationId)}', '${escapeHtml(r.studentName)}')" title="Delete participant">
+            <button type="button" class="btn-table-delete-single" onclick="window.deleteRegistrationQuick('${escapeHtml(r.registrationId)}', '${escapeHtml(r.studentName)}')" title="Delete participant">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-              <span>Delete</span>
             </button>
           </div>
         </td>
@@ -760,7 +760,7 @@ async function loadRegistrationsData(isSilent = false) {
 
     // Render Table Rows
     if (!registrations || registrations.length === 0) {
-      tbody.innerHTML = `<tr class="table-state-row"><td colspan="6" style="text-align: center; color: var(--text-dim); padding: 40px;">No registrations match your search or filter criteria.</td></tr>`;
+      tbody.innerHTML = `<tr class="table-state-row"><td colspan="7" style="text-align: center; color: var(--text-dim); padding: 40px;">No registrations match your search or filter criteria.</td></tr>`;
       tbody.style.opacity = '1';
       return;
     }
@@ -780,47 +780,36 @@ async function loadRegistrationsData(isSilent = false) {
       const subInfo = [
         student.course || '',
         student.branch ? `(${student.branch})` : ''
-      ].filter(Boolean).join(' • ');
+      ].filter(Boolean).join(' ');
 
       return `
         <tr>
-          <td data-label="ID">
+          <td>
             <span class="reg-id-badge cursor-pointer" onclick="openRegistrationModal('${escapeHtml(reg.registrationId)}')">${escapeHtml(reg.registrationId)}</span>
           </td>
-          <td data-label="Student">
-            <div class="participant-cell-inline">
-              <span class="participant-name">${escapeHtml(student.fullName || 'Anonymous')}</span>
-              ${subInfo ? `<span class="participant-meta-inline">${escapeHtml(subInfo)}</span>` : ''}
-            </div>
+          <td>
+            <span class="participant-name-single" title="${escapeHtml(student.fullName || 'Anonymous')}">${escapeHtml(student.fullName || 'Anonymous')}</span>
           </td>
-          <td data-label="Fee">
-            <div class="fee-badge-inline">
-              <span class="fee-amount-badge">₹${fee}</span>
-              <span class="fee-badge-sub">Pass</span>
-            </div>
+          <td>
+            <span class="participant-academic-single" title="${escapeHtml(subInfo || '—')}">${escapeHtml(subInfo || '—')}</span>
           </td>
-          <td data-label="Payment">
-            <div class="payment-cell-inline">
-              <span class="status-pill ${paymentClass}">${escapeHtml(paymentLabel)}</span>
-              ${reg.paymentReference ? `
-                <div class="payment-ref-box" title="Submitted UTR: ${escapeHtml(reg.paymentReference)}">
-                  <span class="ref-label">Ref:</span>
-                  <span>${escapeHtml(reg.paymentReference)}</span>
-                </div>
-              ` : ''}
-            </div>
+          <td>
+            <span class="fee-badge-single">₹${fee}</span>
           </td>
-          <td data-label="Status">
+          <td>
+            <span class="status-pill ${paymentClass}">${escapeHtml(paymentLabel)}</span>
+          </td>
+          <td>
             <span class="status-pill ${statusClass}">${escapeHtml(reg.status || 'confirmed')}</span>
           </td>
-          <td data-label="Action">
-            <div class="action-btn-group">
+          <td>
+            <div class="action-btn-group-single">
               <button type="button" class="btn-table-details" onclick="openRegistrationModal('${escapeHtml(reg.registrationId)}')" title="View complete details">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                 <span>Details</span>
               </button>
-              <button type="button" class="btn-table-delete" onclick="window.deleteRegistrationQuick('${escapeHtml(reg.registrationId)}', '${escapeHtml(student.fullName || '')}')" title="Delete participant">
+              <button type="button" class="btn-table-delete-single" onclick="window.deleteRegistrationQuick('${escapeHtml(reg.registrationId)}', '${escapeHtml(student.fullName || '')}')" title="Delete participant">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                <span>Delete</span>
               </button>
             </div>
           </td>
@@ -1847,7 +1836,7 @@ window.openRegistrationModal = async function(registrationId) {
       const isPendingVer = data.paymentStatus === 'payment_verification_pending';
       const payClass = isPaid ? 'status-paid' : (isPendingVer ? 'status-payment_verification_pending' : (data.paymentStatus === 'payment_failed' ? 'status-payment_failed' : 'status-payment_pending'));
       const payLabel = isPaid ? 'Payment Verified' : (isPendingVer ? 'Payment Verification Pending' : (data.paymentStatus === 'payment_failed' ? 'Payment Failed' : 'Payment Pending'));
-      const utrInfo = data.paymentReference ? `<div style="font-size: 0.75rem; color: #FCD34D; margin-top: 4px;">UTR/Ref: ${escapeHtml(data.paymentReference)}</div>` : '';
+      const utrInfo = data.paymentReference ? `<div style="font-size: 0.75rem; color: #64748B; font-weight: 600; margin-top: 4px;">UTR/Ref: <strong style="color: #0F172A;">${escapeHtml(data.paymentReference)}</strong></div>` : '';
       modalPayEl.innerHTML = `<span class="status-pill ${payClass}">${escapeHtml(payLabel)}</span>${utrInfo}`;
     }
 
@@ -1876,7 +1865,7 @@ window.openRegistrationModal = async function(registrationId) {
         const dateStr = data.paymentVerifiedAt ? ` on ${formatDate(data.paymentVerifiedAt)}` : '';
         payWorkflowDesc.innerHTML = `<span style="color: var(--emerald-light);">✓ Payment verified ${verifier}${dateStr}. Registration fee settled.</span>`;
       } else if (isPendingVer) {
-        payWorkflowDesc.innerHTML = `<span style="color: #FCD34D;">Student submitted transaction reference. Compare with official bank statement or desk cash before marking verified.</span>`;
+        payWorkflowDesc.innerHTML = `<span style="color: #92400E; font-weight: 600;">Student submitted transaction reference. Compare with official bank statement or desk cash before marking verified.</span>`;
       } else if (isFailed) {
         payWorkflowDesc.innerHTML = `<span style="color: var(--red-light);">Payment verification was marked as FAILED/INVALID. Can be reviewed or reset.</span>`;
       } else {

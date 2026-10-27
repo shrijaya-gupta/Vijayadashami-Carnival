@@ -350,8 +350,8 @@
                   <tr>
                     <th>Registration ID</th>
                     <th>Student Name</th>
-                    <th>Course</th>
-                    <th>Games Selected</th>
+                    <th>Course &amp; Branch</th>
+                    <th>Games</th>
                     <th>Status</th>
                     <th>Registered At</th>
                     <th>Action</th>
@@ -439,11 +439,12 @@
                 <thead>
                   <tr>
                     <th>Registration ID</th>
-                    <th>Participant Details</th>
+                    <th>Student Name</th>
+                    <th>Course &amp; Branch</th>
                     <th>Fee</th>
                     <th>Payment</th>
                     <th>Status</th>
-                    <th>Actions</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody id="registrationsTbody">
@@ -1230,7 +1231,7 @@
         </div>
         <div class="detail-item">
           <span class="detail-label">Registration Fee</span>
-          <span id="modalRegistrationFee" class="detail-val" style="color: #FCD34D; font-weight: 800;">₹0</span>
+          <span id="modalRegistrationFee" class="detail-val" style="color: #721224; font-weight: 800;">₹0</span>
         </div>
         <div class="detail-item">
           <span class="detail-label">Payment Status</span>
@@ -1253,13 +1254,13 @@
       </div>
 
       <!-- Phase 5: Payment Audit & Desk Verification Actions -->
-      <div id="modalPayActionsCard" style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+      <div id="modalPayActionsCard" style="background: #FFFBEB; border: 1.5px solid #FDE68A; border-radius: 12px; padding: 14px 18px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
         <div>
-          <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #FCD34D; display: block;">Payment Audit &amp; Verification</span>
+          <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #92400E; display: block; letter-spacing: 0.05em;">Payment Audit &amp; Verification</span>
           <span id="modalPayWorkflowDesc" style="font-size: 0.88rem; font-weight: 700; color: var(--text-main);">Review submitted UPI UTR or desk receipt before verifying</span>
           <div id="modalPayReferenceDisplay" style="margin-top: 6px; font-size: 0.82rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px;">
             <span>Transaction UTR / Ref:</span>
-            <code id="modalUtrCode" style="background: var(--carnival-gold-bg); padding: 2px 8px; border-radius: 4px; color: var(--carnival-maroon); font-family: monospace; font-weight: 700; border: 1px solid var(--carnival-gold-light);">&mdash;</code>
+            <code id="modalUtrCode" style="background: #FEF3C7; padding: 2px 8px; border-radius: 4px; color: #721224; font-family: monospace; font-weight: 700; border: 1px solid #FDE68A;">&mdash;</code>
             <button type="button" id="btnCopyModalUtr" class="btn-table-action" style="padding: 2px 8px; font-size: 0.7rem;" title="Copy UTR to clipboard">Copy</button>
           </div>
         </div>
