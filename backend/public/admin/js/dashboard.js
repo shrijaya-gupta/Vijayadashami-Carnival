@@ -1992,39 +1992,10 @@ window.openRegistrationModal = async function(registrationId) {
       payStatusSelect.value = (data.paymentStatus === 'pending' || data.paymentStatus === 'pending_desk_collection') ? 'payment_pending' : (data.paymentStatus || 'payment_pending');
     }
 
-    // Populate selected games & rosters
+    // Keep games empty - Flat ₹10 Carnival Pass covers all entries
     const gamesWrap = document.getElementById('modalGamesContainer');
     if (gamesWrap) {
-      gamesWrap.innerHTML = (data.selectedGames || []).map(g => {
-        const isTeam = g.participationType === 'team';
-        let teamHtml = '';
-
-        if (isTeam) {
-          const membersList = (g.teamMembers && g.teamMembers.length > 0)
-            ? g.teamMembers.map(m => `<li><strong>${escapeHtml(m.name)}</strong> ${m.roll ? `(Roll: ${escapeHtml(m.roll)})` : ''} ${m.contact ? `&bull; Phone: ${escapeHtml(m.contact)}` : ''}</li>`).join('')
-            : '<li><em>No additional members listed.</em></li>';
-
-          teamHtml = `
-            <div style="background: var(--bg-surface-secondary); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 10px 14px; margin-top: 8px;">
-              <div style="font-size: 0.82rem; font-weight: 700; color: #92400E;">Team Name: ${escapeHtml(g.teamName || 'Squad')}</div>
-              <div style="font-size: 0.78rem; color: var(--text-dim); margin-top: 4px;">Roster Members:</div>
-              <ul style="padding-left: 20px; font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">
-                ${membersList}
-              </ul>
-            </div>
-          `;
-        }
-
-        return `
-          <div style="margin-bottom: 12px; border-bottom: 1px solid var(--color-border-subtle); padding-bottom: 10px;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <strong style="color: var(--text-main); font-size: 0.95rem;">${escapeHtml(g.gameName || g.gameId)}</strong>
-              <span class="status-pill ${isTeam ? 'status-pending' : 'status-confirmed'}">${isTeam ? 'Team Entry' : 'Solo / Individual'}</span>
-            </div>
-            ${teamHtml}
-          </div>
-        `;
-      }).join('');
+      gamesWrap.innerHTML = '';
     }
 
     modal.classList.add('is-open');

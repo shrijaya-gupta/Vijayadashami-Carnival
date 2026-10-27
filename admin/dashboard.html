@@ -13,7 +13,96 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@600;700;800;900&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
   <!-- Admin Stylesheet -->
-  <link rel="stylesheet" href="css/admin.css?v=3.5.0">
+  <link rel="stylesheet" href="css/admin.css?v=4.0.0">
+
+  <style>
+    /* GUARANTEED SINGLE-LINE HORIZONTAL TABLE ON ALL PHONES & SCREENS */
+    .table-responsive {
+      width: 100% !important;
+      max-width: 100% !important;
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+      display: block !important;
+      background: #FFFFFF !important;
+      border-radius: 12px !important;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06) !important;
+    }
+
+    .data-table {
+      width: 100% !important;
+      min-width: 620px !important;
+      display: table !important;
+      border-collapse: collapse !important;
+      white-space: nowrap !important;
+      table-layout: auto !important;
+      margin: 0 !important;
+    }
+
+    .data-table thead {
+      display: table-header-group !important;
+      background: #F8FAFC !important;
+      border-bottom: 2px solid #E2E8F0 !important;
+    }
+
+    .data-table thead tr {
+      display: table-row !important;
+      height: 44px !important;
+    }
+
+    .data-table th {
+      display: table-cell !important;
+      padding: 10px 14px !important;
+      font-size: 0.72rem !important;
+      font-weight: 700 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.05em !important;
+      color: #64748B !important;
+      white-space: nowrap !important;
+      border: none !important;
+      border-bottom: 2px solid #E2E8F0 !important;
+    }
+
+    .data-table tbody {
+      display: table-row-group !important;
+    }
+
+    .data-table tbody tr,
+    .data-table tr {
+      display: table-row !important;
+      height: 48px !important;
+      background: transparent !important;
+      border: none !important;
+      border-bottom: 1px solid #E2E8F0 !important;
+      border-left: none !important;
+      box-shadow: none !important;
+      border-radius: 0 !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    .data-table tbody tr:hover {
+      background-color: #F8FAFC !important;
+    }
+
+    .data-table td {
+      display: table-cell !important;
+      padding: 10px 14px !important;
+      vertical-align: middle !important;
+      white-space: nowrap !important;
+      border: none !important;
+      border-bottom: 1px solid #E2E8F0 !important;
+      font-size: 0.86rem !important;
+      color: #0F172A !important;
+    }
+
+    .data-table tr td::before,
+    .data-table tr th::before,
+    .data-table td::before,
+    .data-table th::before {
+      display: none !important;
+      content: none !important;
+    }
+  </style>
 </head>
 <body>
 
@@ -1208,7 +1297,7 @@
             <a id="modalWhatsAppStudent" href="#" target="_blank" rel="noopener noreferrer" class="btn-quick-contact btn-quick-wa" title="WhatsApp Message">💬 WhatsApp</a>
           </div>
         </div>
-        <div class="detail-item">
+        <div class="detail-item" style="display: none !important;" aria-hidden="true">
           <span class="detail-label">WhatsApp Event Alerts</span>
           <span id="modalWhatsAppConsent" class="detail-val">&mdash;</span>
         </div>
@@ -1236,7 +1325,7 @@
           <span class="detail-label">Payment Status</span>
           <span id="modalPaymentStatus" class="detail-val">&mdash;</span>
         </div>
-        <div class="detail-item">
+        <div class="detail-item" style="display: none !important;" aria-hidden="true">
           <span class="detail-label">Attendance Verification</span>
           <span id="modalParticipationStatus">&mdash;</span>
         </div>
@@ -1246,11 +1335,8 @@
         </div>
       </div>
 
-      <!-- Selected Games & Squad Details -->
-      <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--text-main); margin-bottom: 10px;">Selected Games &amp; Squad Rosters</h4>
-      <div id="modalGamesContainer" class="games-list-card">
-        <!-- Populated via JS -->
-      </div>
+      <!-- Games container hidden in background so JS runs without error -->
+      <div id="modalGamesContainer" style="display: none !important;" aria-hidden="true"></div>
 
       <!-- Phase 5: Payment Audit & Desk Verification Actions -->
       <div id="modalPayActionsCard" style="background: #FFFBEB; border: 1.5px solid #FDE68A; border-radius: 12px; padding: 14px 18px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
@@ -1554,6 +1640,6 @@
 
   <!-- Offline QR Scanner Library & Controller Scripts -->
   <script src="js/html5-qrcode.min.js"></script>
-  <script src="js/dashboard.js?v=3.5.0"></script>
+  <script src="js/dashboard.js?v=4.0.0"></script>
 </body>
 </html>
