@@ -3254,160 +3254,92 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
     justify-content: center;
   }
 
-  /* Payment Table -> Mobile Elevated Card Transformation */
+  /* Payment Table -> Single-Line Horizontal Scrollable Table */
   .payments-table-responsive {
-    overflow-x: visible;
+    width: 100%;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
   }
 
   .payments-data-table {
-    display: block;
-    width: 100%;
-    border: none;
+    display: table !important;
+    width: 100% !important;
+    min-width: 620px !important;
+    border-collapse: collapse !important;
+    white-space: nowrap !important;
+    table-layout: auto !important;
   }
 
   .payments-data-table thead {
-    display: none !important;
+    display: table-header-group !important;
   }
 
   .payments-data-table tbody {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    width: 100%;
+    display: table-row-group !important;
   }
 
   .payments-data-table tr.payment-row {
-    display: flex;
-    flex-direction: column;
-    background: #FFFFFF;
-    border: 1.5px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    padding: 14px 16px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    position: relative;
-    border-left: 5px solid var(--carnival-gold);
-    gap: 6px;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-  }
-
-  .payments-data-table tr.payment-row:active {
-    background: var(--bg-surface-hover);
-    transform: scale(0.99);
-  }
-
-  .payments-data-table tr.payment-status-paid {
-    border-left-color: var(--emerald-light);
-  }
-
-  .payments-data-table tr.payment-status-payment_verification_pending {
-    border-left-color: var(--amber-light);
-    background: linear-gradient(180deg, #FFFDF8 0%, #FFFFFF 100%);
-  }
-
-  .payments-data-table tr.payment-status-payment_pending {
-    border-left-color: var(--purple-light);
-  }
-
-  .payments-data-table tr.payment-status-payment_failed {
-    border-left-color: var(--red-light);
+    display: table-row !important;
+    height: 48px !important;
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid var(--color-border-subtle) !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
   }
 
   .payments-data-table tr.payment-row td {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 6px 0;
-    border-bottom: 1px dashed var(--color-border-subtle);
-    font-size: 0.88rem;
-    gap: 8px;
-    min-width: 0;
+    display: table-cell !important;
+    padding: 10px 14px !important;
+    vertical-align: middle !important;
+    white-space: nowrap !important;
+    border-bottom: 1px solid var(--color-border-subtle) !important;
+    font-size: 0.84rem;
   }
 
   .payments-data-table tr.payment-row td::before {
-    content: attr(data-label);
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    flex-shrink: 0;
-  }
-
-  .payments-data-table tr.payment-row td[data-label="ID"] .reg-id-badge {
-    font-size: 0.82rem;
-    font-weight: 800;
-  }
-
-  .payments-data-table tr.payment-row td[data-label="Student"] strong {
-    font-size: 0.98rem;
-    color: var(--carnival-maroon);
-    text-align: right;
-    word-break: break-word;
-  }
-
-  .payments-data-table tr.payment-row td[data-label="UTR / Ref"] .utr-code-badge {
-    font-size: 0.78rem;
-    max-width: 180px;
+    display: none !important;
+    content: none !important;
   }
 
   .payments-data-table tr.payment-row td[data-label="Action"] {
-    border-bottom: none;
-    padding-top: 10px;
-    padding-bottom: 2px;
-    flex-direction: column;
-    align-items: stretch;
-    width: 100%;
+    display: table-cell !important;
+    padding: 10px 14px !important;
   }
 
   .payments-data-table tr.payment-row td[data-label="Action"]::before {
     display: none !important;
+    content: none !important;
   }
 
   .payments-data-table tr.payment-row .action-btn-group {
-    display: flex;
-    width: 100%;
-    gap: 8px;
-    flex-wrap: wrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
   }
 
   .payments-data-table tr.payment-row .btn-table-action {
-    flex: 1 1 0;
-    min-width: 80px;
-    min-height: 42px;
-    font-size: 0.86rem;
+    padding: 6px 12px;
+    font-size: 0.82rem;
     font-weight: 700;
-    justify-content: center;
     border-radius: var(--radius-md);
-    text-align: center;
-  }
-
-  .payments-data-table tr.payment-row .btn-verify-pay {
-    background: linear-gradient(135deg, #059669 0%, #047857 100%);
-    color: #FFFFFF;
-    border: none;
-    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.35);
-    flex: 1.4 1 0;
   }
 
   .payments-data-table tr.table-state-row {
-    display: block;
-    width: 100%;
-    background: #FFFFFF;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    padding: 24px 16px;
-    text-align: center;
+    display: table-row !important;
   }
 
   .payments-data-table tr.table-state-row td {
-    display: block;
-    text-align: center;
-    border: none;
-    padding: 0;
+    display: table-cell !important;
+    text-align: center !important;
+    padding: 30px 16px !important;
   }
 
   .payments-data-table tr.table-state-row td::before {
     display: none !important;
+    content: none !important;
   }
 
   /* All Registrations & Overview .data-table -> Clean Single-Line Horizontal Table */

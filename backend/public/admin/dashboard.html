@@ -13,11 +13,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@600;700;800;900&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
   <!-- Admin Stylesheet -->
-  <link rel="stylesheet" href="css/admin.css?v=4.0.0">
+  <link rel="stylesheet" href="css/admin.css?v=4.1.0">
 
   <style>
     /* GUARANTEED SINGLE-LINE HORIZONTAL TABLE ON ALL PHONES & SCREENS */
-    .table-responsive {
+    .table-responsive,
+    .payments-table-responsive {
       width: 100% !important;
       max-width: 100% !important;
       overflow-x: auto !important;
@@ -28,7 +29,8 @@
       box-shadow: 0 1px 4px rgba(0,0,0,0.06) !important;
     }
 
-    .data-table {
+    .data-table,
+    .payments-data-table {
       width: 100% !important;
       min-width: 620px !important;
       display: table !important;
@@ -38,18 +40,21 @@
       margin: 0 !important;
     }
 
-    .data-table thead {
+    .data-table thead,
+    .payments-data-table thead {
       display: table-header-group !important;
       background: #F8FAFC !important;
       border-bottom: 2px solid #E2E8F0 !important;
     }
 
-    .data-table thead tr {
+    .data-table thead tr,
+    .payments-data-table thead tr {
       display: table-row !important;
       height: 44px !important;
     }
 
-    .data-table th {
+    .data-table th,
+    .payments-data-table th {
       display: table-cell !important;
       padding: 10px 14px !important;
       font-size: 0.72rem !important;
@@ -62,12 +67,16 @@
       border-bottom: 2px solid #E2E8F0 !important;
     }
 
-    .data-table tbody {
+    .data-table tbody,
+    .payments-data-table tbody {
       display: table-row-group !important;
     }
 
     .data-table tbody tr,
-    .data-table tr {
+    .data-table tr,
+    .payments-data-table tbody tr,
+    .payments-data-table tr,
+    .payments-data-table tr.payment-row {
       display: table-row !important;
       height: 48px !important;
       background: transparent !important;
@@ -80,11 +89,14 @@
       margin: 0 !important;
     }
 
-    .data-table tbody tr:hover {
+    .data-table tbody tr:hover,
+    .payments-data-table tbody tr:hover {
       background-color: #F8FAFC !important;
     }
 
-    .data-table td {
+    .data-table td,
+    .payments-data-table td,
+    .payments-data-table tr.payment-row td {
       display: table-cell !important;
       padding: 10px 14px !important;
       vertical-align: middle !important;
@@ -98,7 +110,11 @@
     .data-table tr td::before,
     .data-table tr th::before,
     .data-table td::before,
-    .data-table th::before {
+    .data-table th::before,
+    .payments-data-table tr td::before,
+    .payments-data-table tr th::before,
+    .payments-data-table td::before,
+    .payments-data-table th::before {
       display: none !important;
       content: none !important;
     }
@@ -643,7 +659,6 @@
                   <tr>
                     <th>Registration ID</th>
                     <th>Student Name</th>
-                    <th>Selected Games</th>
                     <th>Attendance Verification</th>
                     <th>Certificate Status</th>
                     <th>Actions</th>
@@ -992,7 +1007,6 @@
                   <tr>
                     <th>Registration ID</th>
                     <th>Student Name</th>
-                    <th>Games Selected</th>
                     <th>Fee Due</th>
                     <th>Payment Status</th>
                     <th>Submitted UTR / Ref</th>
@@ -1640,6 +1654,6 @@
 
   <!-- Offline QR Scanner Library & Controller Scripts -->
   <script src="js/html5-qrcode.min.js"></script>
-  <script src="js/dashboard.js?v=4.0.0"></script>
+  <script src="js/dashboard.js?v=4.1.0"></script>
 </body>
 </html>

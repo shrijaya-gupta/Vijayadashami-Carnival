@@ -1295,7 +1295,7 @@ async function loadPaymentsData(isSilent = false) {
     console.error('Failed to load payment records:', err);
     tbody.style.opacity = '1';
     if (!hasExistingRows) {
-      tbody.innerHTML = `<tr class="table-state-row"><td colspan="8" style="text-align: center; color: var(--red-light); padding: 30px;">Error loading payment records: ${escapeHtml(err.message)}</td></tr>`;
+      tbody.innerHTML = `<tr class="table-state-row"><td colspan="7" style="text-align: center; color: var(--red-light); padding: 30px;">Error loading payment records: ${escapeHtml(err.message)}</td></tr>`;
     } else {
       showToast('Notice: Could not refresh payment records. Showing cached data.');
     }
@@ -1307,13 +1307,12 @@ function renderPaymentsRows(registrations) {
   if (!tbody) return;
 
   if (registrations.length === 0) {
-    tbody.innerHTML = `<tr class="table-state-row"><td colspan="8" style="text-align: center; color: var(--text-dim); padding: 36px;">No payment records match your search or filter criteria.</td></tr>`;
+    tbody.innerHTML = `<tr class="table-state-row"><td colspan="7" style="text-align: center; color: var(--text-dim); padding: 36px;">No payment records match your search or filter criteria.</td></tr>`;
     return;
   }
 
   tbody.innerHTML = registrations.map(reg => {
     const student = reg.student || {};
-    const games = reg.selectedGames || [];
     const fee = reg.totalAmount != null ? reg.totalAmount : (reg.feeAmount != null ? reg.feeAmount : 10);
     const dateStr = formatDate(reg.createdAt);
 
@@ -1334,11 +1333,6 @@ function renderPaymentsRows(registrations) {
       payBadgeClass = 'status-payment_failed';
       payLabel = 'Payment Failed';
     }
-
-    const gamesSummary = games.map(g => g.gameName || g.gameId).join(', ');
-    const gamesDisplay = games.length > 0 
-      ? `<span title="${escapeHtml(gamesSummary)}"><strong>${games.length}</strong> game${games.length > 1 ? 's' : ''}</span>`
-      : '0 games';
 
     let utrDisplay = '<span style="color: var(--text-dim); font-size: 0.78rem;">None submitted</span>';
     if (reg.paymentReference) {
@@ -1381,7 +1375,6 @@ function renderPaymentsRows(registrations) {
           </span>
         </td>
         <td data-label="Student"><strong style="color: var(--text-main); font-weight: 700;">${escapeHtml(student.fullName)}</strong></td>
-        <td data-label="Games">${gamesDisplay}</td>
         <td data-label="Fee"><span class="fee-amount-badge">₹${fee}</span></td>
         <td data-label="Payment"><span class="status-pill ${payBadgeClass}">${escapeHtml(payLabel)}</span></td>
         <td data-label="UTR / Ref">${utrDisplay}</td>
@@ -2213,7 +2206,7 @@ function renderCertificatesRows(participants) {
   if (!tbody) return;
 
   if (participants.length === 0) {
-    tbody.innerHTML = `<tr class="table-state-row"><td colspan="6" style="text-align: center; color: var(--text-dim); padding: 32px;">No matching participant records found.</td></tr>`;
+    tbody.innerHTML = `<tr class="table-state-row"><td colspan="5" style="text-align: center; color: var(--text-dim); padding: 32px;">No matching participant records found.</td></tr>`;
     return;
   }
 
@@ -2226,10 +2219,6 @@ function renderCertificatesRows(participants) {
     const partPill = isVerified
       ? `<span class="status-pill status-verified">Verified</span>`
       : `<span class="status-pill status-unverified">Unverified</span>`;
-
-    // Games summary
-    const gamesCount = (p.selectedGames || []).length;
-    const gamesNames = (p.selectedGames || []).map(g => g.gameName).join(', ');
 
     // Cert Status
     let certStatusHtml = `<span style="color: var(--text-dim); font-size: 0.8rem;">Not Issued</span>`;
@@ -2286,12 +2275,6 @@ function renderCertificatesRows(participants) {
         <td data-label="Participant">
           <div style="font-weight: 700; color: var(--text-main);">${escapeHtml(p.studentName)}</div>
           <div style="font-size: 0.75rem; color: var(--text-dim);">${escapeHtml(p.course)} &bull; ${escapeHtml(p.branch)}</div>
-        </td>
-        <td data-label="Games">
-          <div style="font-weight: 600; color: var(--text-main);">${gamesCount} challenge${gamesCount !== 1 ? 's' : ''}</div>
-          <div style="font-size: 0.72rem; color: var(--text-dim); max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(gamesNames)}">
-            ${escapeHtml(gamesNames)}
-          </div>
         </td>
         <td data-label="Attendance">${partPill}</td>
         <td data-label="Certificate">
