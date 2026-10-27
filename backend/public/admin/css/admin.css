@@ -1118,42 +1118,49 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 }
 
 .table-responsive {
-  width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+  width: 100% !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
 }
 
 .data-table {
-  width: 100%;
-  border-collapse: collapse;
+  width: 100% !important;
+  display: table !important;
+  border-collapse: collapse !important;
   text-align: left;
   font-size: 0.88rem;
+  white-space: nowrap !important;
 }
 
 .data-table thead {
+  display: table-header-group !important;
   background: var(--bg-surface-secondary);
   border-bottom: 1px solid var(--color-border);
 }
 
 .data-table th {
-  padding: 13px 16px;
+  padding: 12px 14px;
   font-size: 0.74rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   color: var(--text-muted);
-  white-space: nowrap;
+  white-space: nowrap !important;
 }
 
-.data-table td {
-  padding: 13px 16px;
-  color: var(--text-main);
-  border-bottom: 1px solid var(--color-border-subtle);
-  vertical-align: middle;
-  white-space: nowrap;
+.data-table tbody {
+  display: table-row-group !important;
 }
 
 .data-table tbody tr {
+  display: table-row !important;
+  height: 50px !important;
+  border-bottom: 1px solid var(--color-border-subtle) !important;
+  background: transparent !important;
+  border-left: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
   transition: background-color 0.15s ease;
 }
 
@@ -1163,6 +1170,21 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 
 .data-table tbody tr:last-child td {
   border-bottom: none;
+}
+
+.data-table td {
+  display: table-cell !important;
+  padding: 11px 14px !important;
+  color: var(--text-main);
+  border-bottom: 1px solid var(--color-border-subtle) !important;
+  vertical-align: middle !important;
+  white-space: nowrap !important;
+}
+
+.data-table td::before,
+.data-table th::before {
+  display: none !important;
+  content: none !important;
 }
 
 /* Pagination Bar */

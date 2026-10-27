@@ -585,7 +585,7 @@ function renderOverviewRecent(recent) {
   if (!tbody) return;
 
   if (recent.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-dim); padding: 30px;">No registrations recorded yet.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-dim); padding: 30px;">No registrations recorded yet.</td></tr>`;
     return;
   }
 
@@ -597,7 +597,6 @@ function renderOverviewRecent(recent) {
         <td><span class="reg-id-badge cursor-pointer" onclick="openRegistrationModal('${escapeHtml(r.registrationId)}')">${escapeHtml(r.registrationId)}</span></td>
         <td><span class="participant-name-single" title="${escapeHtml(r.studentName)}">${escapeHtml(r.studentName)}</span></td>
         <td><span class="participant-academic-single">${escapeHtml(r.course || '—')}</span></td>
-        <td><span class="fee-badge-single" style="background:#F1F5F9; border-color:#E2E8F0; color:#334155;">${r.gamesCount} game${r.gamesCount !== 1 ? 's' : ''}</span></td>
         <td><span class="status-pill ${statusClass}">${escapeHtml(r.status || 'confirmed')}</span></td>
         <td style="font-size:0.8rem; color:#64748B;">${dateStr}</td>
         <td>
