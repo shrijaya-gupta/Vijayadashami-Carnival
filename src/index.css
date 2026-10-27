@@ -1,10 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@500;600;700;800;900&family=Rozha+One&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   :root {
     --bg-page: #FAF7F2;
     --text-primary: #1C1917;
@@ -136,17 +141,15 @@
   pointer-events: none;
 }
 
-/* Ambient Breathe Glow - Hardware Composited */
+/* Ambient Breathe Glow - Compositor Thread Only */
 @keyframes auraPulse {
-  0%, 100% { opacity: 0.35; transform: scale3d(1, 1, 1); }
-  50% { opacity: 0.62; transform: scale3d(1.05, 1.05, 1); }
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.65; }
 }
 
 .animate-aura-pulse {
   animation: auraPulse 7s ease-in-out infinite;
-  will-change: transform, opacity;
-  transform: translateZ(0);
-  backface-visibility: hidden;
+  will-change: opacity;
 }
 
 /* Luxury button shine sweep */

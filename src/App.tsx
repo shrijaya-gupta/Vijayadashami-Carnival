@@ -32,7 +32,7 @@ const CarnivalApp: React.FC = () => {
     }
   }, []);
 
-  const handleRegisterClick = () => {
+  const handleRegisterClick = React.useCallback(() => {
     setActiveTab('home');
     goToStep(2);
     setTimeout(() => {
@@ -44,9 +44,9 @@ const CarnivalApp: React.FC = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     }, 50);
-  };
+  }, [goToStep]);
 
-  const handleExploreGamesClick = () => {
+  const handleExploreGamesClick = React.useCallback(() => {
     setActiveTab('games');
     setTimeout(() => {
       const el = document.getElementById('games');
@@ -57,24 +57,25 @@ const CarnivalApp: React.FC = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     }, 50);
-  };
+  }, []);
 
-  const handleToggleGame = (gameId: string) => {
+  const handleToggleGame = React.useCallback((_gameId: string) => {
     handleRegisterClick();
-  };
+  }, [handleRegisterClick]);
 
-  const handleProceedFromSelectionBar = () => {
+  const handleProceedFromSelectionBar = React.useCallback(() => {
     handleRegisterClick();
-  };
+  }, [handleRegisterClick]);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0E0207] text-stone-100 transition-colors relative overflow-x-hidden selection:bg-amber-500 selection:text-black">
-      {/* Dynamic Background Ambient Aurora Orbs */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden transform-gpu will-change-transform" style={{ contain: 'strict' }}>
-        <div className="absolute top-[-10%] left-[-10%] w-[550px] h-[550px] rounded-full bg-gradient-to-br from-rose-900/20 via-amber-600/10 to-transparent blur-[80px] sm:blur-[100px] animate-aura-pulse" />
-        <div className="absolute top-[40%] right-[-10%] w-[600px] h-[600px] rounded-full bg-gradient-to-bl from-amber-600/15 via-rose-950/20 to-transparent blur-[90px] sm:blur-[110px] animate-aura-pulse" style={{ animationDelay: '3s' }} />
-        <div className="absolute bottom-[-10%] left-[20%] w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-rose-950/25 via-yellow-600/10 to-transparent blur-[80px] sm:blur-[100px] animate-aura-pulse" style={{ animationDelay: '5s' }} />
-      </div>
+      {/* High-Performance Hardware-Accelerated Ambient Aurora Backdrop (Zero Blur Filter Cost) */}
+      <div 
+        className="fixed inset-0 pointer-events-none z-0" 
+        style={{
+          background: 'radial-gradient(circle at 10% 8%, rgba(136,19,55,0.22) 0%, transparent 45%), radial-gradient(circle at 90% 45%, rgba(217,119,6,0.12) 0%, transparent 50%), radial-gradient(circle at 25% 85%, rgba(136,19,55,0.18) 0%, transparent 45%)'
+        }}
+      />
 
       {/* Top Ribbon Notice with Bunting Flags & Countdown */}
       <TopBanner onProceedClick={handleRegisterClick} />

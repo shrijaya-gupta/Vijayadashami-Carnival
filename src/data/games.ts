@@ -216,10 +216,10 @@ export const EVENT_DETAILS = {
   venue: "SRMU B5-408",
   eventDate: "Thursday, 29 October 2026",
   eventTime: "11:00 AM",
-  deadlineDate: "Monday, 26 October 2026",
-  deadlineTime: "11:59 PM",
+  deadlineDate: "Thursday, 29 October 2026",
+  deadlineTime: "10:30 AM",
   registrationFeePerGame: 5,
   currencySymbol: "₹",
   eventTimestamp: new Date("2026-10-29T11:00:00+05:30").getTime(),
-  deadlineTimestamp: new Date("2026-10-26T23:59:59+05:30").getTime(),
+  deadlineTimestamp: new Date("2026-10-29T10:30:00+05:30").getTime(),
 };

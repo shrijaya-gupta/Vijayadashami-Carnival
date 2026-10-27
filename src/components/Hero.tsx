@@ -26,6 +26,27 @@ export const Hero: React.FC<HeroProps> = React.memo(({
   onWatchIntroClick 
 }) => {
   const [showVideoModal, setShowVideoModal] = useState(false);
+  const mobileVideoRef = useRef<HTMLVideoElement>(null);
+
+  // Pause offscreen mobile video to save GPU/CPU decoding resources
+  useEffect(() => {
+    const video = mobileVideoRef.current;
+    if (!video) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.05 }
+    );
+
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, []);
 
   const handleWatchIntro = () => {
     if (onWatchIntroClick) {
@@ -76,6 +97,7 @@ export const Hero: React.FC<HeroProps> = React.memo(({
           ========================================================================= */}
       <div className="block lg:hidden relative w-full aspect-[4/3] xs:aspect-[16/10] sm:aspect-[16/9] overflow-hidden bg-[#100308]">
         <video 
+          ref={mobileVideoRef}
           autoPlay 
           loop
           muted 
