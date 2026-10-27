@@ -181,6 +181,9 @@ async function checkSession() {
 
     currentAdmin = data.admin;
     csrfToken = data.csrfToken || sessionStorage.getItem('srmu_csrf_token');
+    if (data.csrfToken) {
+      sessionStorage.setItem('srmu_csrf_token', data.csrfToken);
+    }
 
     // Update UI identity elements
     const nameEl = document.getElementById('sidebarAdminName');
@@ -201,19 +204,18 @@ async function checkSession() {
 
 async function handleLogout() {
   try {
-    await fetch(`${API_BASE_URL}/api/admin/logout`, {
+    await adminApiFetch(`${API_BASE_URL}/api/admin/logout`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken || ''
-      },
-      credentials: 'include'
+        'Content-Type': 'application/json'
+      }
     });
   } catch (err) {
     console.warn('Logout network error:', err);
   } finally {
     sessionStorage.removeItem('srmu_csrf_token');
     sessionStorage.removeItem('srmu_admin_user');
+    csrfToken = null;
     window.location.replace('login.html');
   }
 }
@@ -1406,12 +1408,8 @@ window.deleteRegistrationQuick = async function(registrationId, studentName) {
   if (!window.confirm(confirmMsg)) return;
 
   try {
-    const res = await fetch(`${API_BASE_URL}/api/admin/registrations/${encodeURIComponent(registrationId)}`, {
-      method: 'DELETE',
-      headers: {
-        'X-CSRF-Token': csrfToken || ''
-      },
-      credentials: 'include'
+    const res = await adminApiFetch(`${API_BASE_URL}/api/admin/registrations/${encodeURIComponent(registrationId)}`, {
+      method: 'DELETE'
     });
 
     const data = await res.json().catch(() => null);
@@ -1423,7 +1421,9 @@ window.deleteRegistrationQuick = async function(registrationId, studentName) {
     
     // Close modal if open for this registration
     if (activeRegistrationInModal && activeRegistrationInModal.registrationId === registrationId) {
-      closeModal();
+      if (typeof window.closeRegistrationModal === 'function') {
+        window.closeRegistrationModal();
+      }
     }
 
     // Refresh active data
@@ -1446,14 +1446,12 @@ window.markPaymentVerifiedQuick = async function(registrationId, utr) {
   if (!window.confirm(confirmMsg)) return;
 
   try {
-    const res = await fetch(`${API_BASE_URL}/api/admin/registrations/${encodeURIComponent(registrationId)}`, {
+    const res = await adminApiFetch(`${API_BASE_URL}/api/admin/registrations/${encodeURIComponent(registrationId)}`, {
       method: 'PATCH',
       headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken || ''
+        'Content-Type': 'application/json'
       },
-      credentials: 'include',
-      body: JSON.stringify({ paymentStatus: 'paid' })
+      body: JSON.stringify({ paymentStatus: 'paid', status: 'confirmed' })
     });
 
     const data = await res.json();
@@ -1472,15 +1470,14 @@ window.collectCashAndCheckIn = async function(registrationId, fee) {
   if (!window.confirm(`COLLECT CASH & CHECK-IN for ${registrationId}?\nRegistration Fee: ₹${fee}\n\nMark payment verified via campus desk cash collection?`)) return;
 
   try {
-    const res = await fetch(`${API_BASE_URL}/api/admin/registrations/${encodeURIComponent(registrationId)}`, {
+    const res = await adminApiFetch(`${API_BASE_URL}/api/admin/registrations/${encodeURIComponent(registrationId)}`, {
       method: 'PATCH',
       headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken || ''
+        'Content-Type': 'application/json'
       },
-      credentials: 'include',
       body: JSON.stringify({ 
         paymentStatus: 'paid',
+        status: 'confirmed',
         paymentReference: `CASH-DESK-${Date.now().toString().slice(-6)}`
       })
     });
@@ -1501,6 +1498,7 @@ async function initPaymentQrConfig() {
   const form = document.getElementById('qrConfigForm');
   const upiIdInput = document.getElementById('inputQrUpiId');
   const upiNameInput = document.getElementById('inputQrUpiName');
+  const paymentMobileInput = document.getElementById('inputPaymentMobile');
   const qrUrlInput = document.getElementById('inputQrImageUrl');
   const passFeeInput = document.getElementById('inputPassFee');
   const requireUtrInput = document.getElementById('inputRequireUtr');
@@ -1528,6 +1526,7 @@ async function initPaymentQrConfig() {
       const { data } = await res.json();
       if (data) {
         if (upiIdInput && data.upi_id) upiIdInput.value = data.upi_id;
+        if (paymentMobileInput && data.payment_mobile) paymentMobileInput.value = data.payment_mobile;
         if (upiNameInput && data.upi_name) upiNameInput.value = data.upi_name;
         if (qrUrlInput) {
           qrUrlInput.value = data.qr_image_url || '';
@@ -1568,7 +1567,8 @@ async function initPaymentQrConfig() {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const upi_id = upiIdInput ? upiIdInput.value.trim() : 'guptashrijaya-1@oksbi';
-    const upi_name = upiNameInput ? upiNameInput.value.trim() : 'Shrijaya Gupta (SRMU B5-408 Carnival Desk)';
+    const payment_mobile = paymentMobileInput ? paymentMobileInput.value.trim() : '8858500856';
+    const upi_name = upiNameInput ? upiNameInput.value.trim() : 'Shrijaya Gupta';
     const qr_image_url = qrUrlInput ? qrUrlInput.value.trim() : '/assets/official-upi-qr.jpg';
     const pass_fee = passFeeInput ? Math.max(0, parseInt(passFeeInput.value, 10) || 10) : 10;
     const require_utr = requireUtrInput ? requireUtrInput.value === 'true' : true;
@@ -1588,6 +1588,7 @@ async function initPaymentQrConfig() {
         body: JSON.stringify({
           upi_id,
           upi_name,
+          payment_mobile,
           qr_image_url,
           is_qr_active: Boolean(qr_image_url),
           pass_fee,
@@ -1629,14 +1630,16 @@ async function initPaymentQrConfig() {
 
 window.updatePaymentStatusDirect = async function(registrationId, paymentStatus) {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/admin/registrations/${encodeURIComponent(registrationId)}`, {
+    const updateBody = { paymentStatus };
+    if (paymentStatus === 'paid') {
+      updateBody.status = 'confirmed';
+    }
+    const res = await adminApiFetch(`${API_BASE_URL}/api/admin/registrations/${encodeURIComponent(registrationId)}`, {
       method: 'PATCH',
       headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken || ''
+        'Content-Type': 'application/json'
       },
-      credentials: 'include',
-      body: JSON.stringify({ paymentStatus })
+      body: JSON.stringify(updateBody)
     });
 
     const data = await res.json();
@@ -1723,7 +1726,7 @@ window.openRegistrationModal = async function(registrationId) {
   if (!modal) return;
 
   try {
-    const res = await fetch(`${API_BASE_URL}/api/admin/registrations/${registrationId}`, {
+    const res = await fetch(`${API_BASE_URL}/api/admin/registrations/${encodeURIComponent(registrationId)}`, {
       credentials: 'include'
     });
 
@@ -1733,25 +1736,55 @@ window.openRegistrationModal = async function(registrationId) {
     }
 
     const { data } = await res.json();
+    if (!data) {
+      showToast('No registration data returned by server.');
+      return;
+    }
     activeRegistrationInModal = data;
 
+    const student = data.student || {};
+    const studentFullName = student.fullName || student.name || 'Anonymous Student';
+
     // Populate modal fields
-    document.getElementById('modalRegIdBadge').textContent = data.registrationId;
-    document.getElementById('modalStudentName').textContent = data.student.fullName;
+    const regBadge = document.getElementById('modalRegIdBadge');
+    if (regBadge) regBadge.textContent = data.registrationId || '';
+
+    const nameEl = document.getElementById('modalStudentName');
+    if (nameEl) nameEl.textContent = studentFullName;
+
     const rollWrap = document.getElementById('modalStudentRollWrap');
-    const rollVal = data.student.rollNumber && data.student.rollNumber !== 'N/A' ? data.student.rollNumber : '';
+    const rollVal = student.rollNumber && student.rollNumber !== 'N/A' ? student.rollNumber : '';
     if (rollWrap) {
       if (rollVal) {
         rollWrap.style.display = '';
-        document.getElementById('modalStudentRoll').textContent = rollVal;
+        const rollEl = document.getElementById('modalStudentRoll');
+        if (rollEl) rollEl.textContent = rollVal;
       } else {
         rollWrap.style.display = 'none';
       }
     }
-    document.getElementById('modalCreatedAt').textContent = formatDate(data.createdAt);
 
-    // Direct phone call & WhatsApp links
-    const rawMobile = data.student.mobileNumber ? String(data.student.mobileNumber).replace(/[^0-9]/g, '') : '';
+    const createdEl = document.getElementById('modalCreatedAt');
+    if (createdEl) createdEl.textContent = formatDate(data.createdAt);
+
+    // Direct mobile display & phone call / WhatsApp links
+    const mobileEl = document.getElementById('modalStudentMobile');
+    if (mobileEl) {
+      mobileEl.textContent = student.mobileNumber || 'N/A';
+    }
+
+    // Academic Profile (Course, Branch, Year)
+    const academicEl = document.getElementById('modalStudentAcademic');
+    if (academicEl) {
+      const parts = [
+        student.course,
+        student.branch ? `(${student.branch})` : '',
+        student.academicYear ? `Year ${student.academicYear}` : ''
+      ].filter(Boolean);
+      academicEl.textContent = parts.length > 0 ? parts.join(' • ') : 'N/A';
+    }
+
+    const rawMobile = student.mobileNumber ? String(student.mobileNumber).replace(/[^0-9]/g, '') : '';
     const clean10 = rawMobile.length >= 10 ? rawMobile.slice(-10) : rawMobile;
     const callBtn = document.getElementById('modalCallStudent');
     const waBtn = document.getElementById('modalWhatsAppStudent');
@@ -1765,7 +1798,7 @@ window.openRegistrationModal = async function(registrationId) {
     }
     if (waBtn) {
       if (clean10) {
-        const textMsg = encodeURIComponent(`Namaste ${data.student.fullName}, regards from Vijayadashami Carnival (SRMU B5-408 Desk). Regarding your Registration ID: ${data.registrationId}:`);
+        const textMsg = encodeURIComponent(`Namaste ${studentFullName}, regards from Vijayadashami Carnival (SRMU B5-408 Desk). Regarding your Registration ID: ${data.registrationId}:`);
         waBtn.href = `https://wa.me/91${clean10}?text=${textMsg}`;
         waBtn.style.display = 'inline-flex';
       } else {
@@ -1776,14 +1809,16 @@ window.openRegistrationModal = async function(registrationId) {
     // WhatsApp Consent badge
     const consentEl = document.getElementById('modalWhatsAppConsent');
     if (consentEl) {
-      const consented = data.student.whatsAppConsent !== false;
+      const consented = student.whatsAppConsent !== false;
       consentEl.innerHTML = consented
         ? `<span style="color: var(--emerald-light); font-weight: 700; font-size: 0.82rem;">✓ Subscribed for Event Alerts</span>`
         : `<span style="color: var(--text-dim); font-size: 0.82rem;">Not Opted In</span>`;
     }
 
-    const statusPill = `<span class="status-pill status-${data.status || 'confirmed'}">${escapeHtml(data.status || 'confirmed')}</span>`;
-    document.getElementById('modalStatusBadgeWrap').innerHTML = statusPill;
+    const statusBadgeWrap = document.getElementById('modalStatusBadgeWrap');
+    if (statusBadgeWrap) {
+      statusBadgeWrap.innerHTML = `<span class="status-pill status-${data.status || 'confirmed'}">${escapeHtml(data.status || 'confirmed')}</span>`;
+    }
 
     // Fee & Payment Status
     const modalFeeEl = document.getElementById('modalRegistrationFee');
@@ -2007,6 +2042,8 @@ function initModalActions() {
     activeRegistrationInModal = null;
   };
 
+  window.closeRegistrationModal = closeModal;
+
   closeBtn?.addEventListener('click', closeModal);
 
   modal?.addEventListener('click', (e) => {
@@ -2028,13 +2065,11 @@ function initModalActions() {
     saveStatusBtn.disabled = true;
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/registrations/${activeRegistrationInModal.registrationId}`, {
+      const res = await adminApiFetch(`${API_BASE_URL}/api/admin/registrations/${encodeURIComponent(activeRegistrationInModal.registrationId)}`, {
         method: 'PATCH',
         headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': csrfToken || ''
+          'Content-Type': 'application/json'
         },
-        credentials: 'include',
         body: JSON.stringify({ status: newStatus, paymentStatus: newPaymentStatus })
       });
 
@@ -2419,13 +2454,11 @@ window.handleInstantQrLookup = async function(e) {
 
 window.markInstantAttendance = async function(registrationId) {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/admin/certificates/verify-participation/${encodeURIComponent(registrationId)}`, {
+    const res = await adminApiFetch(`${API_BASE_URL}/api/admin/certificates/verify-participation/${encodeURIComponent(registrationId)}`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken || ''
-      },
-      credentials: 'include'
+        'Content-Type': 'application/json'
+      }
     });
 
     const data = await res.json();
@@ -2447,13 +2480,11 @@ window.verifyParticipantAttendance = async function(registrationId) {
   }
 
   try {
-    const res = await fetch(`${API_BASE_URL}/api/admin/certificates/verify-participation/${encodeURIComponent(registrationId)}`, {
+    const res = await adminApiFetch(`${API_BASE_URL}/api/admin/certificates/verify-participation/${encodeURIComponent(registrationId)}`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken || ''
-      },
-      credentials: 'include'
+        'Content-Type': 'application/json'
+      }
     });
 
     const data = await res.json();
@@ -2474,13 +2505,11 @@ window.revokeParticipantAttendance = async function(registrationId) {
   }
 
   try {
-    const res = await fetch(`${API_BASE_URL}/api/admin/certificates/revoke-verification/${encodeURIComponent(registrationId)}`, {
+    const res = await adminApiFetch(`${API_BASE_URL}/api/admin/certificates/revoke-verification/${encodeURIComponent(registrationId)}`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken || ''
-      },
-      credentials: 'include'
+        'Content-Type': 'application/json'
+      }
     });
 
     const data = await res.json();
@@ -2501,13 +2530,11 @@ window.issueParticipantCertificate = async function(registrationId) {
   }
 
   try {
-    const res = await fetch(`${API_BASE_URL}/api/admin/certificates/issue/${encodeURIComponent(registrationId)}`, {
+    const res = await adminApiFetch(`${API_BASE_URL}/api/admin/certificates/issue/${encodeURIComponent(registrationId)}`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken || ''
-      },
-      credentials: 'include'
+        'Content-Type': 'application/json'
+      }
     });
 
     const data = await res.json();
@@ -2528,14 +2555,12 @@ window.revokeIssuedCertificate = async function(certificateId) {
   if (reason === null) return; // user cancelled
 
   try {
-    const res = await fetch(`${API_BASE_URL}/api/admin/certificates/${encodeURIComponent(certificateId)}/revoke`, {
+    const res = await adminApiFetch(`${API_BASE_URL}/api/admin/certificates/${encodeURIComponent(certificateId)}/revoke`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken || ''
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ reason }),
-      credentials: 'include'
+      body: JSON.stringify({ reason })
     });
 
     const data = await res.json();
@@ -3042,14 +3067,11 @@ window.admitScannedStudent = async function(regId) {
     btn.innerHTML = '<span class="table-loading-spinner" style="width: 14px; height: 14px; display: inline-block;"></span> Admitting...';
   }
   try {
-    const csrfToken = getCsrfToken();
-    const res = await fetch(`${API_BASE_URL}/api/admin/certificates/verify-participation/${encodeURIComponent(regId)}`, {
+    const res = await adminApiFetch(`${API_BASE_URL}/api/admin/certificates/verify-participation/${encodeURIComponent(regId)}`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken || ''
-      },
-      credentials: 'include'
+        'Content-Type': 'application/json'
+      }
     });
     const data = await res.json();
     if (res.ok && data.success) {
@@ -3077,14 +3099,11 @@ window.admitScannedStudent = async function(regId) {
 
 window.approveScannedPayment = async function(regId) {
   try {
-    const csrfToken = getCsrfToken();
-    const res = await fetch(`${API_BASE_URL}/api/admin/registrations/${encodeURIComponent(regId)}`, {
+    const res = await adminApiFetch(`${API_BASE_URL}/api/admin/registrations/${encodeURIComponent(regId)}`, {
       method: 'PATCH',
       headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken || ''
+        'Content-Type': 'application/json'
       },
-      credentials: 'include',
       body: JSON.stringify({
         paymentStatus: 'paid',
         status: 'confirmed',

@@ -15,12 +15,15 @@ import {
   HelpCircle,
   Banknote,
   QrCode,
-  Lock
+  Lock,
+  Sparkles,
+  ExternalLink
 } from 'lucide-react';
 
 interface EventConfigState {
   upi_id?: string;
   upi_name?: string;
+  payment_mobile?: string;
   qr_image_url?: string;
   is_qr_active?: boolean;
   require_utr?: boolean;
@@ -36,6 +39,7 @@ export const Step5Payment: React.FC = () => {
   const [paymentMode, setPaymentMode] = useState<'online_upi' | 'cash_desk'>('online_upi');
   const [utrNumber, setUtrNumber] = useState('');
   const [localUtrError, setLocalUtrError] = useState<string | null>(null);
+  const [copiedMobile, setCopiedMobile] = useState(false);
   const [copiedUpi, setCopiedUpi] = useState(false);
   const [showUtrHelp, setShowUtrHelp] = useState(false);
   const [config, setConfig] = useState<EventConfigState | null>(null);
@@ -55,14 +59,57 @@ export const Step5Payment: React.FC = () => {
   }, []);
 
   const receiverUpi = config?.upi_id || 'guptashrijaya-1@oksbi';
-  const receiverName = config?.upi_name || 'Shrijaya Gupta (SRMU B5-408 Carnival Desk)';
+  const rawReceiverName = config?.upi_name || 'Shrijaya Gupta';
+  const cleanReceiverName = rawReceiverName.replace(/\s*\(.*?\)\s*/g, '').trim() || 'Shrijaya Gupta';
+  const paymentMobile = config?.payment_mobile || '8858500856';
   const qrImage = config?.qr_image_url || '/assets/official-upi-qr.jpg';
   const isRegOpen = config?.registration_open !== false;
   const allowCash = config?.payment_mode === 'both';
   const requireUtr = config?.require_utr !== false;
 
-  const handleCopyUpi = () => {
-    navigator.clipboard.writeText(receiverUpi);
+  const copyToClipboard = async (text: string): Promise<boolean> => {
+    // 1. Try modern clipboard API (supported in HTTPS / localhost)
+    if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch (e) {
+        console.warn('navigator.clipboard failed, attempting fallback...', e);
+      }
+    }
+
+    // 2. Reliable fallback for mobile browsers & HTTP/insecure LAN network
+    try {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
+      textArea.style.top = '-999999px';
+      textArea.style.opacity = '0';
+      textArea.setAttribute('readonly', '');
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      textArea.setSelectionRange(0, textArea.value.length);
+      const successful = document.execCommand('copy');
+      document.body.removeChild(textArea);
+      return successful;
+    } catch (e) {
+      console.error('Fallback execCommand copy failed:', e);
+      return false;
+    }
+  };
+
+  const handleCopyMobile = async (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    await copyToClipboard(paymentMobile);
+    setCopiedMobile(true);
+    setTimeout(() => setCopiedMobile(false), 2000);
+  };
+
+  const handleCopyUpi = async (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    await copyToClipboard(receiverUpi);
     setCopiedUpi(true);
     setTimeout(() => setCopiedUpi(false), 2000);
   };
@@ -245,14 +292,15 @@ export const Step5Payment: React.FC = () => {
       {paymentMode === 'online_upi' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 items-start">
           
-          {/* QR Code & Payee Details */}
+          {/* Official Carnival UPI Payment Card */}
           <div className="p-4 sm:p-5 rounded-2xl bg-[#20050E]/90 border border-[#D4AF37]/35 shadow-sm flex flex-col items-center text-center space-y-4">
+            
             <span className="text-xs font-bold uppercase tracking-wider text-[#E5C158] flex items-center gap-1.5">
               <Flame className="w-3.5 h-3.5 text-amber-400" />
               Official Carnival UPI QR
             </span>
 
-            {/* Official QR Container */}
+            {/* Official QR Code */}
             <div className="w-48 h-48 sm:w-56 sm:h-56 rounded-2xl p-2 bg-white border-2 border-[#D4AF37] shadow-xl flex items-center justify-center overflow-hidden">
               <img 
                 src={qrImage} 
@@ -261,36 +309,70 @@ export const Step5Payment: React.FC = () => {
               />
             </div>
 
-            <div className="w-full space-y-2.5 text-xs">
-              {/* 1-Click Mobile UPI App Launch (GPay, PhonePe, Paytm, BHIM) */}
-              <a
-                href={`upi://pay?pa=${encodeURIComponent(receiverUpi)}&pn=${encodeURIComponent(receiverName)}&am=${totalFee}&cu=INR&tn=SRMU%20Carnival%20Pass`}
-                className="w-full py-2.5 px-3 rounded-xl font-bold text-xs bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white flex items-center justify-center gap-2 border border-emerald-400 shadow-md shadow-emerald-950/40 active:scale-95 transition-all text-center"
+            {/* Payment Details: Mobile Number, UPI ID, Payee */}
+            <div className="w-full space-y-2 text-xs">
+              
+              {/* Mobile Number with 1-Click Copy */}
+              <div 
+                onClick={handleCopyMobile}
+                className="flex items-center justify-between p-3 rounded-xl bg-black/50 hover:bg-black/70 border border-emerald-500/40 text-stone-200 cursor-pointer active:scale-[0.99] transition-all group"
+                title="Click anywhere to copy Mobile Number"
               >
-                <Smartphone className="w-3.5 h-3.5" />
-                <span>Pay ₹{totalFee} via UPI App (PhonePe / GPay)</span>
-              </a>
-
-              {/* UPI ID with 1-Click Copy */}
-              <div className="flex items-center justify-between p-2.5 rounded-xl bg-black/40 border border-white/10 text-stone-200">
-                <span className="font-semibold text-stone-400">UPI ID:</span>
-                <div className="flex items-center gap-1.5">
-                  <span className="font-mono font-bold text-amber-200 text-xs sm:text-sm">{receiverUpi}</span>
+                <span className="font-semibold text-stone-300 text-xs">Mobile Number:</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono font-bold text-emerald-300 text-sm tracking-wide select-all">{paymentMobile}</span>
                   <button
                     type="button"
-                    onClick={handleCopyUpi}
-                    className="p-1 rounded hover:bg-white/10 text-amber-300 transition-colors cursor-pointer"
-                    title="Copy UPI ID"
+                    onClick={handleCopyMobile}
+                    className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 transition-colors cursor-pointer flex items-center gap-1 shrink-0"
+                    title="Copy Mobile Number"
                   >
-                    {copiedUpi ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copiedMobile ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-400 stroke-[3]" />
+                        <span className="text-[10px] font-bold text-emerald-300">Copied!</span>
+                      </>
+                    ) : (
+                      <Copy className="w-3.5 h-3.5" />
+                    )}
                   </button>
                 </div>
               </div>
 
-              <div className="text-[11px] text-stone-400">
-                Payee: <strong className="text-stone-300">{receiverName}</strong>
+              {/* UPI ID with 1-Click Copy */}
+              <div 
+                onClick={handleCopyUpi}
+                className="flex items-center justify-between p-3 rounded-xl bg-black/50 hover:bg-black/70 border border-[#D4AF37]/40 text-stone-200 cursor-pointer active:scale-[0.99] transition-all group"
+                title="Click anywhere to copy UPI ID"
+              >
+                <span className="font-semibold text-stone-300 text-xs">UPI ID:</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono font-bold text-amber-200 text-xs sm:text-sm tracking-wide select-all">{receiverUpi}</span>
+                  <button
+                    type="button"
+                    onClick={handleCopyUpi}
+                    className="p-1.5 rounded-lg bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 transition-colors cursor-pointer flex items-center gap-1 shrink-0"
+                    title="Copy UPI ID"
+                  >
+                    {copiedUpi ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-400 stroke-[3]" />
+                        <span className="text-[10px] font-bold text-emerald-300">Copied!</span>
+                      </>
+                    ) : (
+                      <Copy className="w-3.5 h-3.5" />
+                    )}
+                  </button>
+                </div>
               </div>
+
+              {/* Payee Name */}
+              <div className="text-[11px] text-stone-400">
+                Payee: <strong className="text-stone-300">{cleanReceiverName}</strong>
+              </div>
+
             </div>
+
           </div>
 
           {/* Amount & Strict UTR Number Input */}

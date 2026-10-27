@@ -46,7 +46,8 @@ const memoryStore = {
   eventConfig: {
     id: 'payment_config',
     upi_id: 'guptashrijaya-1@oksbi',
-    upi_name: 'Shrijaya Gupta (SRMU B5-408 Carnival Desk)',
+    upi_name: 'Shrijaya Gupta',
+    payment_mobile: '8858500856',
     qr_image_url: '/assets/official-upi-qr.jpg',
     is_qr_active: true,
     announcement: 'Registrations are open! ₹10 flat fee for all carnival activities.'
@@ -227,7 +228,8 @@ module.exports = {
     return {
       id: 'payment_config',
       upi_id: raw?.upi_id || 'guptashrijaya-1@oksbi',
-      upi_name: raw?.upi_name || 'Shrijaya Gupta (SRMU B5-408 Carnival Desk)',
+      upi_name: raw?.upi_name || 'Shrijaya Gupta',
+      payment_mobile: extra.payment_mobile || '8858500856',
       qr_image_url: raw?.qr_image_url || '/assets/official-upi-qr.jpg',
       is_qr_active: raw?.is_qr_active !== false,
       require_utr: extra.require_utr !== false, // default true: strictly requires UTR
@@ -243,6 +245,7 @@ module.exports = {
   async updateEventConfig(configData) {
     const current = await this.getEventConfig();
     const extra = {
+      payment_mobile: configData.payment_mobile ? String(configData.payment_mobile).trim() : (current.payment_mobile || '8858500856'),
       require_utr: configData.require_utr !== undefined ? Boolean(configData.require_utr) : current.require_utr,
       pass_fee: configData.pass_fee !== undefined ? Math.max(0, parseInt(configData.pass_fee, 10) || 10) : current.pass_fee,
       registration_open: configData.registration_open !== undefined ? Boolean(configData.registration_open) : current.registration_open,

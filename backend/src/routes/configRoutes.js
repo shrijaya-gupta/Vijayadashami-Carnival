@@ -71,7 +71,8 @@ router.get('/payment-qr', async (req, res) => {
       success: true,
       data: {
         upi_id: 'guptashrijaya-1@oksbi',
-        upi_name: 'Shrijaya Gupta (SRMU B5-408 Carnival Desk)',
+        upi_name: 'Shrijaya Gupta',
+        payment_mobile: '8858500856',
         qr_image_url: '/assets/official-upi-qr.jpg',
         is_qr_active: true,
         require_utr: true,
@@ -92,6 +93,7 @@ const handleUpdateEventConfig = async (req, res) => {
     const { 
       upi_id, 
       upi_name, 
+      payment_mobile,
       qr_image_url, 
       is_qr_active,
       require_utr,
@@ -103,9 +105,10 @@ const handleUpdateEventConfig = async (req, res) => {
     } = req.body || {};
 
     const updated = await db.updateEventConfig({
-      upi_id,
-      upi_name,
-      qr_image_url,
+      upi_id, 
+      upi_name, 
+      payment_mobile,
+      qr_image_url, 
       is_qr_active,
       require_utr,
       pass_fee,

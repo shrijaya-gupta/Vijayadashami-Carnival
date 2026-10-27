@@ -766,10 +766,19 @@
                 <input type="text" id="inputQrUpiId" class="filter-input" placeholder="e.g. guptashrijaya-1@oksbi" value="guptashrijaya-1@oksbi">
               </div>
 
+              <!-- Payment Mobile Number (Zero Warning Direct Payment) -->
+              <div class="form-group">
+                <label for="inputPaymentMobile" class="form-label">Official Payment Mobile Number (PhonePe / GPay)</label>
+                <input type="tel" id="inputPaymentMobile" class="filter-input" placeholder="e.g. 8858500856" value="8858500856">
+                <span class="field-hint" style="font-size:11px; color:#a8a29e; margin-top:3px; display:block;">
+                  Direct number transfer (PhonePe / GPay / Paytm) avoids unverified UPI warnings.
+                </span>
+              </div>
+
               <!-- Payee Name -->
               <div class="form-group">
                 <label for="inputQrUpiName" class="form-label">Payee / Account Name</label>
-                <input type="text" id="inputQrUpiName" class="filter-input" placeholder="e.g. Shrijaya Gupta (SRMU B5-408 Carnival Desk)" value="Shrijaya Gupta (SRMU B5-408 Carnival Desk)">
+                <input type="text" id="inputQrUpiName" class="filter-input" placeholder="e.g. Shrijaya Gupta" value="Shrijaya Gupta">
               </div>
 
               <!-- QR Code Link -->
@@ -1177,7 +1186,7 @@
           <span id="modalRegIdBadge" class="reg-id-badge" style="font-size: 1.1rem; padding: 4px 12px;">SRMU-2026-XXXXXX</span>
           <h3 id="modalRegTitle" style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-top: 6px;">Registration Details</h3>
         </div>
-        <button type="button" id="btnModalClose" class="modal-close-btn" aria-label="Close registration details modal">
+        <button type="button" id="btnModalClose" class="modal-close-btn" aria-label="Close registration details modal" onclick="if(typeof window.closeRegistrationModal==='function') window.closeRegistrationModal();">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>

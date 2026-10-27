@@ -188,42 +188,5 @@
     "createdAt": "2026-10-26T07:54:23.349912+00:00",
     "fee": 0,
     "updatedAt": "2026-10-26T07:54:23.349912+00:00"
-  },
-  {
-    "id": "human-knot",
-    "name": "Human Knot",
-    "category": "Teamwork & Coordination",
-    "participationType": "Team / Group",
-    "shortDescription": "Work together as a squad to untangle your human circle without breaking grip.",
-    "description": "Collaborative physical puzzle where participants grasp hands across a circle and maneuver to untangle without releasing contact.",
-    "objective": "Untangle the entire cluster into a clean unbroken circle within the time limit.",
-    "approvalStatus": "Approved & Active",
-    "registrationFee": "Included with All-Access Pass",
-    "feeAmount": 0,
-    "suggestedTeamSize": "Team / Group (6 to 10 players)",
-    "suggestedDuration": "Provisional: 5 to 8 minutes per squad attempt",
-    "procedure": [
-      "Form a tight standing circle facing towards the center.",
-      "Reach across with both hands to grab hands of two different opposite teammates.",
-      "Communicate, step over, duck under, and rotate to unravel the tangle.",
-      "Conclude when all squad members stand in a continuous open circle."
-    ],
-    "proposedRules": [
-      "Never release handholds; grips may pivot and adjust, but fingers must stay connected.",
-      "Work calmly without forceful pulling or jerky movements.",
-      "Time penalty applies if a hand connection is broken."
-    ],
-    "materials": "Open floor arena, official stopwatch, team bandanas.",
-    "winningCriteria": "Shortest time to completely untangle into an unbroken circle.",
-    "safetyNotes": [
-      "Maintain gentle motion to prevent wrist or shoulder strain.",
-      "Clear perimeter of 3 meters around each active team circle."
-    ],
-    "iconName": "Users",
-    "isActive": true,
-    "isLegacy": false,
-    "createdAt": "2026-10-27T00:54:25.595867+00:00",
-    "fee": 0,
-    "updatedAt": "2026-10-27T00:54:25.595867+00:00"
   }
 ]

@@ -1943,7 +1943,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   inset: 0;
   background: rgba(15, 23, 42, 0.65);
   backdrop-filter: blur(4px);
-  z-index: 1000;
+  z-index: 2500;
   align-items: center;
   justify-content: center;
   padding: 20px;
@@ -2929,10 +2929,42 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
     height: 36px;
   }
 
+  .modal-overlay {
+    padding: 12px;
+    z-index: 2500;
+  }
+
   .modal-content-card {
-    padding: 22px 18px;
-    margin: 10px;
-    max-width: calc(100vw - 20px);
+    padding: 20px 16px 26px;
+    margin: auto;
+    max-width: 100%;
+    max-height: 88vh;
+    border-radius: var(--radius-lg);
+  }
+
+  .modal-details-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .modal-actions-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .modal-actions-row > div {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .modal-actions-row .btn-update-status,
+  .modal-actions-row .btn-delete-record {
+    width: 100%;
+    min-height: 44px;
+    justify-content: center;
   }
 
   /* Scanner Mobile Optimization (Phones & Tablets) */
@@ -3239,6 +3271,142 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 
   .payments-data-table tr.table-state-row td::before {
     display: none !important;
+  }
+
+  /* All Registrations & Overview .data-table -> Mobile Elevated Card Transformation */
+  .table-responsive {
+    overflow-x: visible;
+  }
+
+  .data-table {
+    display: block;
+    width: 100%;
+    border: none;
+  }
+
+  .data-table thead {
+    display: none !important;
+  }
+
+  .data-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .data-table tr {
+    display: flex;
+    flex-direction: column;
+    background: #FFFFFF;
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 14px 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    position: relative;
+    border-left: 5px solid var(--carnival-maroon);
+    gap: 6px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .data-table tr:active {
+    background: var(--bg-surface-hover);
+    transform: scale(0.99);
+  }
+
+  .data-table tr td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--color-border-subtle);
+    font-size: 0.88rem;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .data-table tr td::before {
+    content: attr(data-label);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+  }
+
+  .data-table tr td[data-label="ID"] .reg-id-badge {
+    font-size: 0.82rem;
+    font-weight: 800;
+  }
+
+  .data-table tr td[data-label="Student"] .participant-name {
+    font-size: 0.96rem;
+    font-weight: 700;
+    color: var(--carnival-maroon);
+    text-align: right;
+  }
+
+  .data-table tr td[data-label="Action"] {
+    border-bottom: none;
+    padding-top: 10px;
+    padding-bottom: 2px;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .data-table tr td[data-label="Action"]::before {
+    display: none !important;
+  }
+
+  .data-table tr .action-btn-group {
+    display: flex;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .data-table tr .action-btn-group .btn-table-details,
+  .data-table tr .action-btn-group .btn-table-delete,
+  .data-table tr .action-btn-group .btn-table-action {
+    flex: 1;
+    min-height: 42px;
+    justify-content: center;
+    font-size: 0.86rem;
+    font-weight: 700;
+    border-radius: var(--radius-md);
+  }
+
+  .data-table tr.table-state-row {
+    display: block;
+    width: 100%;
+    background: #FFFFFF;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 24px 16px;
+    text-align: center;
+  }
+
+  .data-table tr.table-state-row td {
+    display: block;
+    text-align: center;
+    border: none;
+    padding: 0;
+  }
+
+  .data-table tr.table-state-row td::before {
+    display: none !important;
+  }
+
+  .filter-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .filter-card .btn-reset-filters {
+    width: 100%;
+    height: 42px;
+    justify-content: center;
   }
 }
 
