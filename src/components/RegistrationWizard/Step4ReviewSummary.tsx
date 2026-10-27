@@ -128,7 +128,7 @@ export const Step4ReviewSummary: React.FC = () => {
                       )}
                     </div>
                     <span className="px-2 py-0.5 rounded-md font-bold bg-[#380E17] text-[#E5C158] border border-[#D4AF37]/40">
-                      ₹5
+                      Included
                     </span>
                   </div>
                 );
@@ -156,13 +156,13 @@ export const Step4ReviewSummary: React.FC = () => {
           <div>
             <span className="text-[11px] font-bold uppercase tracking-wider text-amber-300 flex items-center gap-1">
               <Trophy className="w-3 h-3 text-amber-400" />
-              Authoritative Fee Breakdown
+              All-Access Pass Fee Policy
             </span>
             <h4 className="text-base sm:text-lg font-bold text-white mt-0.5">
-              ₹5 Per Selected Game
+              All-Access Carnival Pass (Flat ₹{totalFee})
             </h4>
             <p className="text-xs text-stone-300 mt-1 max-w-md">
-              Fee is calculated strictly per chosen activity ({selectedGameIds.length} games × ₹5). Team members are NOT charged additional fees.
+              One festival pass grants full entry to all {selectedGameIds.length} selected games and activities. Team squad members are NOT charged additional fees.
             </p>
           </div>
 

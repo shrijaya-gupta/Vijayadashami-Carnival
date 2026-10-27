@@ -37,7 +37,7 @@ interface RegistrationContextType {
   resetRegistration: () => void;
   
   // API Submission
-  submitRegistration: (utrNumber?: string) => Promise<boolean>;
+  submitRegistration: (utrNumber?: string, paymentMode?: string) => Promise<boolean>;
   submitPostUtr: (utrNumber: string) => Promise<boolean>;
 }
 
@@ -465,12 +465,13 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   };
 
   // Submit Registration API with network resilience
-  const submitRegistration = async (utrNumber?: string): Promise<boolean> => {
+  const submitRegistration = async (utrNumber?: string, paymentMode: string = 'online_upi'): Promise<boolean> => {
     setIsSubmitting(true);
     setSubmitError(null);
 
     // Clean mobile number
     const cleanMobile = student.mobileNumber.replace(/[\s\-\(\)]/g, '').replace(/^(\+91|0)/, '');
+    const cleanUtr = utrNumber ? utrNumber.trim() : '';
 
     // Build payload matching backend Registration model
     const payload = {
@@ -500,7 +501,8 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
           })) : []
         };
       }),
-      paymentReference: utrNumber ? utrNumber.trim() : ''
+      paymentMode,
+      paymentReference: cleanUtr
     };
 
     try {
@@ -518,8 +520,10 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       if (!response.ok || !data.success) {
         const errorMsg = (Array.isArray(data.errors) && data.errors.length > 0)
           ? data.errors.join(' • ')
-          : (data.message || data.error || 'Failed to submit registration. Please check inputs.');
-        throw new Error(errorMsg);
+          : (data.error || data.message || 'Validation failed. Please verify your inputs.');
+        const serverErr: any = new Error(errorMsg);
+        serverErr.isServerError = true;
+        throw serverErr;
       }
 
       const resData = data.data || {};
@@ -532,8 +536,8 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         rollNumber: student.rollNumber,
         selectedGamesCount: selectedGameIds.length,
         totalAmount: totalFee,
-        paymentStatus: resData.paymentStatus || (utrNumber ? 'payment_verification_pending' : 'payment_pending'),
-        paymentReference: utrNumber || '',
+        paymentStatus: resData.paymentStatus || (cleanUtr ? 'payment_verification_pending' : 'pending_desk_collection'),
+        paymentReference: cleanUtr || '',
         submissionDate: new Date().toLocaleString('en-IN')
       };
 
@@ -542,11 +546,23 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       scrollToWizard();
       return true;
     } catch (err: any) {
-      console.warn('Registration network submission error, verifying fallback:', err.message);
+      console.warn('Registration submission error:', err.message);
 
-      // Resilient Client Fallback: if network fails or server is offline, generate valid entry pass
-      const isNetworkIssue = !navigator.onLine || err.message?.includes('Network') || err.message?.includes('Failed to fetch') || err.message?.includes('Failed to submit registration');
-      if (isNetworkIssue) {
+      // CRITICAL SECURITY FIX: Never generate offline fake passes for legitimate server validation/duplicate errors!
+      if (err.isServerError) {
+        setSubmitError(err.message || 'Submission error occurred. Please verify inputs or contact B5-408.');
+        return false;
+      }
+
+      // ONLY if user is truly offline (no internet) or DNS failure occurred before touching server
+      const isTrueOffline = !navigator.onLine || (err.name === 'TypeError' && err.message?.includes('fetch'));
+      if (isTrueOffline) {
+        // Enforce UTR requirement even in offline queue if payment mode is online UPI
+        if (paymentMode === 'online_upi' && (!cleanUtr || cleanUtr.length < 10)) {
+          setSubmitError('Offline mode requires a valid 12-digit UPI UTR number from your payment app.');
+          return false;
+        }
+
         const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
         let rand = '';
         for (let i = 0; i < 6; i++) {
@@ -555,15 +571,15 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         const offlineRegId = `SRMU-2026-${rand}`;
         const offlineResult: RegistrationSubmissionResult = {
           success: true,
-          message: 'Registration confirmed! (Saved & queued for B5-408 desk verification)',
+          message: 'Registration queued offline! (Saved for SRMU B5-408 desk verification)',
           registrationId: offlineRegId,
           registrationReference: offlineRegId,
           studentName: student.fullName,
           rollNumber: student.rollNumber,
           selectedGamesCount: selectedGameIds.length,
           totalAmount: totalFee,
-          paymentStatus: utrNumber ? 'payment_verification_pending' : 'payment_pending',
-          paymentReference: utrNumber || '',
+          paymentStatus: cleanUtr ? 'payment_verification_pending' : 'pending_desk_collection',
+          paymentReference: cleanUtr || '',
           submissionDate: new Date().toLocaleString('en-IN')
         };
 
@@ -579,7 +595,7 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         return true;
       }
 
-      setSubmitError(err.message || 'Submission error occurred. Please verify inputs or pay cash at B5-408.');
+      setSubmitError(err.message || 'Submission error occurred. Please verify inputs.');
       return false;
     } finally {
       setIsSubmitting(false);

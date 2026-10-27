@@ -18,13 +18,41 @@ router.use((req, res, next) => {
 
 /**
  * GET /api/config
- * Returns public authoritative event configuration
+ * Returns public authoritative event configuration merged with live database settings
  */
-router.get('/', (req, res) => {
-  res.status(200).json({
-    success: true,
-    data: EVENT_CONFIG
-  });
+router.get('/', async (req, res) => {
+  try {
+    const liveConfig = await db.getEventConfig();
+    const merged = {
+      ...EVENT_CONFIG,
+      allAccessPassFee: liveConfig.pass_fee,
+      feePerGame: liveConfig.pass_fee,
+      registrationOpen: liveConfig.registration_open,
+      requireUtr: liveConfig.require_utr,
+      paymentMode: liveConfig.payment_mode,
+      payment: {
+        ...EVENT_CONFIG.payment,
+        upiId: liveConfig.upi_id,
+        merchantName: liveConfig.upi_name,
+        qrImageUrl: liveConfig.qr_image_url,
+        isConfigured: liveConfig.is_qr_active
+      },
+      whatsapp: {
+        ...EVENT_CONFIG.whatsapp,
+        inviteUrl: liveConfig.whatsapp_group_url
+      },
+      announcement: liveConfig.announcement
+    };
+    res.status(200).json({
+      success: true,
+      data: merged
+    });
+  } catch (err) {
+    res.status(200).json({
+      success: true,
+      data: EVENT_CONFIG
+    });
+  }
 });
 
 /**
@@ -45,38 +73,63 @@ router.get('/payment-qr', async (req, res) => {
         upi_id: 'guptashrijaya-1@oksbi',
         upi_name: 'Shrijaya Gupta (SRMU B5-408 Carnival Desk)',
         qr_image_url: '/assets/official-upi-qr.jpg',
-        is_qr_active: true
+        is_qr_active: true,
+        require_utr: true,
+        pass_fee: 10,
+        registration_open: true,
+        payment_mode: 'online_upi'
       }
     });
   }
 });
 
 /**
- * POST /api/config/payment-qr
- * Updates payment QR code image URL and UPI details (Admin action)
+ * POST /api/config/payment-qr (and alias /api/config/event-settings)
+ * Updates live event configuration, fee, UPI details, and UTR requirements in Supabase
  */
-router.post('/payment-qr', requireAdminAuth, verifyCsrf, async (req, res) => {
+const handleUpdateEventConfig = async (req, res) => {
   try {
-    const { upi_id, upi_name, qr_image_url, is_qr_active } = req.body || {};
+    const { 
+      upi_id, 
+      upi_name, 
+      qr_image_url, 
+      is_qr_active,
+      require_utr,
+      pass_fee,
+      registration_open,
+      payment_mode,
+      whatsapp_group_url,
+      announcement
+    } = req.body || {};
+
     const updated = await db.updateEventConfig({
-      upi_id: upi_id ? String(upi_id).trim() : 'guptashrijaya-1@oksbi',
-      upi_name: upi_name ? String(upi_name).trim() : 'Shrijaya Gupta (SRMU B5-408 Carnival Desk)',
-      qr_image_url: qr_image_url ? String(qr_image_url).trim() : '/assets/official-upi-qr.jpg',
-      is_qr_active: is_qr_active !== undefined ? Boolean(is_qr_active) : true
+      upi_id,
+      upi_name,
+      qr_image_url,
+      is_qr_active,
+      require_utr,
+      pass_fee,
+      registration_open,
+      payment_mode,
+      whatsapp_group_url,
+      announcement
     });
 
     res.status(200).json({
       success: true,
-      message: 'Payment QR configuration updated successfully!',
+      message: 'Event & payment configuration synchronized with database successfully!',
       data: updated
     });
   } catch (err) {
     res.status(500).json({
       success: false,
-      error: 'Failed to update payment QR configuration: ' + err.message
+      error: 'Failed to update database configuration: ' + err.message
     });
   }
-});
+};
+
+router.post('/payment-qr', requireAdminAuth, verifyCsrf, handleUpdateEventConfig);
+router.post('/event-settings', requireAdminAuth, verifyCsrf, handleUpdateEventConfig);
 
 /**
  * GET /api/config/scoreboard

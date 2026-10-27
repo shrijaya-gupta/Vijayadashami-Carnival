@@ -202,38 +202,116 @@ module.exports = {
     return memoryStore.registrations;
   },
 
-  // Event Config (Payment QR, UPI ID)
+  // Event Config (Payment QR, UPI ID, Fee, UTR policy, Registration status)
   async getEventConfig() {
+    let raw = null;
     if (supabase) {
       const { data, error } = await supabase
         .from('event_config')
         .select('*')
         .eq('id', 'payment_config')
         .maybeSingle();
-      if (!error && data) return data;
+      if (!error && data) raw = data;
     }
-    return memoryStore.eventConfig;
+    if (!raw) raw = memoryStore.eventConfig;
+
+    let extra = {};
+    if (raw && raw.announcement) {
+      try {
+        extra = JSON.parse(raw.announcement);
+      } catch (e) {
+        extra = { announcement: raw.announcement };
+      }
+    }
+
+    return {
+      id: 'payment_config',
+      upi_id: raw?.upi_id || 'guptashrijaya-1@oksbi',
+      upi_name: raw?.upi_name || 'Shrijaya Gupta (SRMU B5-408 Carnival Desk)',
+      qr_image_url: raw?.qr_image_url || '/assets/official-upi-qr.jpg',
+      is_qr_active: raw?.is_qr_active !== false,
+      require_utr: extra.require_utr !== false, // default true: strictly requires UTR
+      pass_fee: typeof extra.pass_fee === 'number' ? extra.pass_fee : (parseInt(extra.pass_fee, 10) || 10),
+      registration_open: extra.registration_open !== false, // default true
+      payment_mode: extra.payment_mode || 'online_upi', // 'online_upi' or 'both'
+      whatsapp_group_url: extra.whatsapp_group_url || 'https://chat.whatsapp.com/Ev1kiwPGzrDFvopit0B12l',
+      announcement: extra.announcement || 'Official registrations active. ₹10 flat fee for all carnival activities.',
+      updated_at: raw?.updated_at || new Date().toISOString()
+    };
   },
 
   async updateEventConfig(configData) {
-    const payload = {
-      ...configData,
+    const current = await this.getEventConfig();
+    const extra = {
+      require_utr: configData.require_utr !== undefined ? Boolean(configData.require_utr) : current.require_utr,
+      pass_fee: configData.pass_fee !== undefined ? Math.max(0, parseInt(configData.pass_fee, 10) || 10) : current.pass_fee,
+      registration_open: configData.registration_open !== undefined ? Boolean(configData.registration_open) : current.registration_open,
+      payment_mode: configData.payment_mode ? String(configData.payment_mode).trim() : current.payment_mode,
+      whatsapp_group_url: configData.whatsapp_group_url ? String(configData.whatsapp_group_url).trim() : current.whatsapp_group_url,
+      announcement: configData.announcement !== undefined ? String(configData.announcement).trim() : current.announcement
+    };
+
+    const upi_id = configData.upi_id ? String(configData.upi_id).trim() : current.upi_id;
+    const upi_name = configData.upi_name ? String(configData.upi_name).trim() : current.upi_name;
+    const qr_image_url = configData.qr_image_url !== undefined ? String(configData.qr_image_url).trim() : current.qr_image_url;
+    const is_qr_active = configData.is_qr_active !== undefined ? Boolean(configData.is_qr_active) : current.is_qr_active;
+
+    const dbPayload = {
       id: 'payment_config',
+      upi_id,
+      upi_name,
+      qr_image_url,
+      is_qr_active,
+      announcement: JSON.stringify(extra),
       updated_at: new Date().toISOString()
     };
 
     if (supabase) {
       const { data, error } = await supabase
         .from('event_config')
-        .upsert(payload)
+        .upsert(dbPayload)
         .select()
         .single();
-      if (error) throw error;
-      return data;
+      if (error) {
+        console.error('[SUPABASE CONFIG UPDATE ERROR]', error);
+        throw error;
+      }
     }
 
-    Object.assign(memoryStore.eventConfig, payload);
-    return memoryStore.eventConfig;
+    memoryStore.eventConfig = {
+      ...dbPayload,
+      ...extra
+    };
+
+    return {
+      id: 'payment_config',
+      upi_id,
+      upi_name,
+      qr_image_url,
+      is_qr_active,
+      ...extra,
+      updated_at: dbPayload.updated_at
+    };
+  },
+
+  async findRegistrationByUtr(utr) {
+    if (!utr || typeof utr !== 'string') return null;
+    const cleanUtr = utr.trim();
+    if (!cleanUtr || cleanUtr === 'CASH_AT_DESK') return null;
+
+    if (supabase) {
+      const { data, error } = await supabase
+        .from('registrations')
+        .select('*')
+        .eq('payment_reference', cleanUtr)
+        .maybeSingle();
+      if (!error && data) return data;
+    }
+
+    return memoryStore.registrations.find(r => 
+      (r.payment_reference && r.payment_reference.trim() === cleanUtr) ||
+      (r.paymentReference && r.paymentReference.trim() === cleanUtr)
+    ) || null;
   },
 
   // Game Scores / Leaderboard

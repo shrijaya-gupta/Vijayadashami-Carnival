@@ -20,9 +20,68 @@ function validateAndNormalizeMobile(rawMobile) {
 }
 
 /**
+ * Validates and normalizes UPI UTR / Transaction Reference
+ * Standard Indian UPI UTR is 12 numeric digits (e.g. 429810394821)
+ * Bank IMPS/NEFT/Ref numbers can be 10-22 alphanumeric characters
+ */
+function validateAndNormalizeUtr(rawUtr) {
+  if (typeof rawUtr !== 'string') {
+    return { isValid: false, reason: 'UPI Transaction Reference (UTR) is required.' };
+  }
+
+  const trimmed = rawUtr.trim();
+  if (!trimmed) {
+    return { isValid: false, reason: 'UPI Transaction Reference (UTR) cannot be empty.' };
+  }
+
+  // Remove common prefixes like "UTR:", "TxnID:", etc. and remove whitespace / hyphens
+  const cleaned = trimmed
+    .replace(/^(utr|txn|ref|txnid|refno|upi|rrn)[\s\:\-\.]*/i, '')
+    .replace(/[\s\-]/g, '');
+
+  if (!cleaned) {
+    return { isValid: false, reason: 'Please enter a valid UPI transaction reference number.' };
+  }
+
+  // Reject dummy, placeholder, or sequential strings
+  const dummyPatterns = [
+    /^0{6,}$/,                                        // All zeros
+    /^1{6,}$/,                                        // All ones
+    /^(\d)\1{7,}$/,                                   // 8+ identical repeated digits
+    /^(12345678|01234567|98765432|abcdef)/i,          // Trivial sequences
+    /^(test|dummy|demo|fake|na|none|null|nil|sample)/i // Text placeholders & test prefixes
+  ];
+
+  for (const pattern of dummyPatterns) {
+    if (pattern.test(cleaned)) {
+      return { 
+        isValid: false, 
+        reason: 'Please enter your genuine 12-digit UPI UTR from Google Pay, PhonePe, Paytm, or BHIM, not a placeholder.' 
+      };
+    }
+  }
+
+  // UPI UTR standard: exactly 12 numeric digits (or 10-22 alphanumeric banking reference)
+  const is12Digit = /^\d{12}$/.test(cleaned);
+  const isBankRef = /^[A-Za-z0-9]{10,22}$/.test(cleaned);
+
+  if (!is12Digit && !isBankRef) {
+    return {
+      isValid: false,
+      reason: 'UPI UTR must be exactly 12 numeric digits (e.g. 429810394821) or a valid 10–22 alphanumeric bank reference.'
+    };
+  }
+
+  return {
+    isValid: true,
+    normalized: cleaned
+  };
+}
+
+/**
  * Validates Registration payload strictly against allowed fields and schema rules
  */
-function validateRegistrationPayload(body) {
+function validateRegistrationPayload(body, options = {}) {
   const errors = [];
 
   if (!body || typeof body !== 'object' || Array.isArray(body)) {
@@ -137,10 +196,50 @@ function validateRegistrationPayload(body) {
     });
   }
 
+  // 3. Payment Mode & UTR Reference Validation
+  const paymentMode = (body.paymentMode && typeof body.paymentMode === 'string') 
+    ? body.paymentMode.trim().toLowerCase() 
+    : 'online_upi';
+
+  const requireUtr = options.requireUtr !== false; // default true: strictly requires UTR
+  let finalPaymentStatus = 'payment_pending';
+  let finalPaymentReference = null;
+
+  if (paymentMode === 'cash_desk' || paymentMode === 'cash') {
+    if (options.allowCash === false) {
+      errors.push('Cash payment at the carnival desk is currently disabled. Please submit registration with online UPI payment and valid UTR.');
+    } else {
+      finalPaymentStatus = 'pending_desk_collection';
+      finalPaymentReference = 'CASH_AT_DESK';
+    }
+  } else {
+    // Online UPI Payment
+    const rawRef = body.paymentReference;
+    if (!rawRef || typeof rawRef !== 'string' || !rawRef.trim()) {
+      if (requireUtr) {
+        errors.push('UPI Transaction Reference (UTR / Ref ID) is strictly required for online registration. Please scan the QR code and enter the 12-digit UTR from your payment app.');
+      } else {
+        finalPaymentStatus = 'payment_pending';
+        finalPaymentReference = null;
+      }
+    } else {
+      const utrResult = validateAndNormalizeUtr(rawRef);
+      if (!utrResult.isValid) {
+        errors.push(utrResult.reason);
+      } else {
+        finalPaymentStatus = 'payment_verification_pending';
+        finalPaymentReference = utrResult.normalized;
+      }
+    }
+  }
+
   // Sanitize and normalize payload if valid
   let sanitizedData = null;
   if (errors.length === 0) {
     const mobileNorm = validateAndNormalizeMobile(student.mobileNumber).normalized;
+    const configuredFee = typeof options.passFee === 'number' ? options.passFee : 10;
+    const finalFee = body.totalAmount ? Number(body.totalAmount) : (body.feeAmount ? Number(body.feeAmount) : configuredFee);
+
     sanitizedData = {
       student: {
         fullName: student.fullName.trim(),
@@ -175,16 +274,12 @@ function validateRegistrationPayload(body) {
 
         return entry;
       }),
-      feePerGame: 10,
-      feeAmount: body.feeAmount ? Number(body.feeAmount) : 10, // Flat ₹10 All-Access Pass (legacy selectedGames.length * 5)
-      totalAmount: body.totalAmount ? Number(body.totalAmount) : 10,
+      feePerGame: configuredFee,
+      feeAmount: finalFee,
+      totalAmount: finalFee,
       feeCurrency: 'INR',
-      paymentStatus: (body.paymentReference && typeof body.paymentReference === 'string' && body.paymentReference.trim())
-        ? 'payment_verification_pending'
-        : 'payment_pending',
-      paymentReference: (body.paymentReference && typeof body.paymentReference === 'string')
-        ? body.paymentReference.trim().slice(0, 100)
-        : null
+      paymentStatus: finalPaymentStatus,
+      paymentReference: finalPaymentReference
     };
   }
 
@@ -197,5 +292,6 @@ function validateRegistrationPayload(body) {
 
 module.exports = {
   validateRegistrationPayload,
-  validateAndNormalizeMobile
+  validateAndNormalizeMobile,
+  validateAndNormalizeUtr
 };

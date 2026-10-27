@@ -1,5 +1,6 @@
 const Registration = require('../models/Registration');
-const { validateRegistrationPayload } = require('../validators/registrationValidator');
+const db = require('../config/supabase');
+const { validateRegistrationPayload, validateAndNormalizeUtr } = require('../validators/registrationValidator');
 
 /**
  * Creates a new registration or returns an existing one if idempotency key matches
@@ -22,8 +23,24 @@ async function createRegistration(req, res, next) {
       }
     }
 
-    // 2. Server-side validation
-    const validation = validateRegistrationPayload(req.body);
+    // 2. Fetch Live Event & Payment Configuration from Supabase
+    const eventConfig = await db.getEventConfig();
+
+    if (eventConfig && eventConfig.registration_open === false) {
+      return res.status(403).json({
+        success: false,
+        error: 'Carnival registrations are currently closed by event organizers. Please visit the helpdesk at B5-408.',
+        message: 'Carnival registrations are currently closed by event organizers.'
+      });
+    }
+
+    // 3. Server-side validation with dynamic database rules
+    const validation = validateRegistrationPayload(req.body, {
+      requireUtr: eventConfig?.require_utr !== false,
+      allowCash: eventConfig?.payment_mode !== 'strict_online_upi',
+      passFee: eventConfig?.pass_fee || 10
+    });
+
     if (!validation.isValid) {
       return res.status(400).json({
         success: false,
@@ -34,6 +51,18 @@ async function createRegistration(req, res, next) {
     }
 
     const { sanitizedData } = validation;
+
+    // 4. Duplicate UTR check across all registrations (Supabase & memoryStore)
+    if (sanitizedData.paymentReference && sanitizedData.paymentReference !== 'CASH_AT_DESK') {
+      const duplicateUtr = await db.findRegistrationByUtr(sanitizedData.paymentReference);
+      if (duplicateUtr) {
+        return res.status(409).json({
+          success: false,
+          error: `This UPI UTR / Transaction Reference '${sanitizedData.paymentReference}' has already been submitted for another registration. If you already registered or paid, please check with the desk at B5-408.`,
+          message: `The transaction reference '${sanitizedData.paymentReference}' has already been submitted for registration '${duplicateUtr.registration_id}'. Duplicate UTR submission prevented.`
+        });
+      }
+    }
 
     // 3. Duplicate check for rapid double-submission (same student, same roll, same games within 5 mins)
     const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
@@ -133,10 +162,11 @@ async function submitPaymentReference(req, res, next) {
     const { registrationId } = req.params;
     const { paymentReference } = req.body || {};
 
-    if (!paymentReference || typeof paymentReference !== 'string' || !paymentReference.trim()) {
+    const utrCheck = validateAndNormalizeUtr(paymentReference);
+    if (!utrCheck.isValid) {
       return res.status(400).json({
         success: false,
-        error: 'A valid payment transaction reference or UTR number is required.'
+        error: utrCheck.reason
       });
     }
 
@@ -160,7 +190,16 @@ async function submitPaymentReference(req, res, next) {
       });
     }
 
-    doc.paymentReference = paymentReference.trim().slice(0, 100);
+    // Check duplicate UTR across other registrations
+    const duplicateUtr = await db.findRegistrationByUtr(utrCheck.normalized);
+    if (duplicateUtr && String(duplicateUtr.registration_id || '').toUpperCase() !== doc.registrationId) {
+      return res.status(409).json({
+        success: false,
+        error: `The UPI UTR '${utrCheck.normalized}' has already been recorded under another registration (${duplicateUtr.registration_id}). Duplicate submission rejected.`
+      });
+    }
+
+    doc.paymentReference = utrCheck.normalized;
     doc.paymentStatus = 'payment_verification_pending';
     await doc.save();
 

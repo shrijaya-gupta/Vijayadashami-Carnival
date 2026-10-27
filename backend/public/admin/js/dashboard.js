@@ -1502,6 +1502,12 @@ async function initPaymentQrConfig() {
   const upiIdInput = document.getElementById('inputQrUpiId');
   const upiNameInput = document.getElementById('inputQrUpiName');
   const qrUrlInput = document.getElementById('inputQrImageUrl');
+  const passFeeInput = document.getElementById('inputPassFee');
+  const requireUtrInput = document.getElementById('inputRequireUtr');
+  const regStatusInput = document.getElementById('inputRegStatus');
+  const paymentModeInput = document.getElementById('inputPaymentMode');
+  const whatsappUrlInput = document.getElementById('inputWhatsappUrl');
+  const announcementInput = document.getElementById('inputAnnouncementText');
   const badge = document.getElementById('qrStatusBadge');
   const thumbImg = document.getElementById('qrThumbnailImg');
   const thumbLink = document.getElementById('qrPreviewThumbLink');
@@ -1517,7 +1523,7 @@ async function initPaymentQrConfig() {
   qrUrlInput?.addEventListener('input', () => updateQrThumb(qrUrlInput.value));
 
   try {
-    const res = await fetch(`${API_BASE_URL}/api/config/payment-qr`);
+    const res = await fetch(`${API_BASE_URL}/api/config/payment-qr`, { cache: 'no-store' });
     if (res.ok) {
       const { data } = await res.json();
       if (data) {
@@ -1527,19 +1533,36 @@ async function initPaymentQrConfig() {
           qrUrlInput.value = data.qr_image_url || '';
           updateQrThumb(data.qr_image_url);
         }
+        if (passFeeInput && data.pass_fee != null) {
+          passFeeInput.value = data.pass_fee;
+        }
+        if (requireUtrInput) {
+          requireUtrInput.value = data.require_utr !== false ? 'true' : 'false';
+        }
+        if (regStatusInput) {
+          regStatusInput.value = data.registration_open !== false ? 'open' : 'closed';
+        }
+        if (paymentModeInput && data.payment_mode) {
+          paymentModeInput.value = data.payment_mode;
+        }
+        if (whatsappUrlInput && data.whatsapp_group_url) {
+          whatsappUrlInput.value = data.whatsapp_group_url;
+        }
+        if (announcementInput && data.announcement) {
+          announcementInput.value = data.announcement;
+        }
         if (badge) {
-          if (data.qr_image_url) {
-            badge.className = 'status-pill status-paid';
-            badge.textContent = 'Active QR Configured';
-          } else {
-            badge.className = 'status-pill status-unverified';
-            badge.textContent = 'Blank Placeholder Active';
-          }
+          badge.className = 'status-pill status-paid';
+          badge.textContent = 'Live Sync Active (Supabase)';
         }
       }
     }
   } catch (err) {
-    console.warn('Failed to fetch payment QR config:', err);
+    console.warn('Failed to fetch live database config:', err);
+    if (badge) {
+      badge.className = 'status-pill status-unverified';
+      badge.textContent = 'Offline / In-Memory';
+    }
   }
 
   form.addEventListener('submit', async (e) => {
@@ -1547,6 +1570,12 @@ async function initPaymentQrConfig() {
     const upi_id = upiIdInput ? upiIdInput.value.trim() : 'guptashrijaya-1@oksbi';
     const upi_name = upiNameInput ? upiNameInput.value.trim() : 'Shrijaya Gupta (SRMU B5-408 Carnival Desk)';
     const qr_image_url = qrUrlInput ? qrUrlInput.value.trim() : '/assets/official-upi-qr.jpg';
+    const pass_fee = passFeeInput ? Math.max(0, parseInt(passFeeInput.value, 10) || 10) : 10;
+    const require_utr = requireUtrInput ? requireUtrInput.value === 'true' : true;
+    const registration_open = regStatusInput ? regStatusInput.value === 'open' : true;
+    const payment_mode = paymentModeInput ? paymentModeInput.value : 'online_upi';
+    const whatsapp_group_url = whatsappUrlInput ? whatsappUrlInput.value.trim() : '';
+    const announcement = announcementInput ? announcementInput.value.trim() : '';
 
     try {
       const res = await fetch(`${API_BASE_URL}/api/config/payment-qr`, {
@@ -1560,26 +1589,38 @@ async function initPaymentQrConfig() {
           upi_id,
           upi_name,
           qr_image_url,
-          is_qr_active: Boolean(qr_image_url)
+          is_qr_active: Boolean(qr_image_url),
+          pass_fee,
+          require_utr,
+          registration_open,
+          payment_mode,
+          whatsapp_group_url,
+          announcement
         })
       });
 
       const json = await res.json();
       if (!res.ok || !json.success) {
-        throw new Error(json.error || json.message || 'Failed to update');
+        throw new Error(json.error || json.message || 'Failed to update database configuration');
       }
 
-      showToast('✓ UPI Payment QR configuration saved successfully!');
+      showToast('✓ Carnival settings & fee synchronized with Supabase database!');
       updateQrThumb(qr_image_url);
       if (badge) {
-        if (qr_image_url) {
-          badge.className = 'status-pill status-paid';
-          badge.textContent = 'Active QR Configured';
-        } else {
-          badge.className = 'status-pill status-unverified';
-          badge.textContent = 'Blank Placeholder Active';
-        }
+        badge.className = 'status-pill status-paid';
+        badge.textContent = 'Live Sync Active (Supabase)';
       }
+
+      // Notify any active student wizard tabs via BroadcastChannel & localStorage
+      try {
+        const syncChannel = new BroadcastChannel('srmu_carnival_sync');
+        syncChannel.postMessage({ type: 'CONFIG_UPDATED', pass_fee, require_utr, registration_open });
+        syncChannel.close();
+      } catch (e) {}
+      try {
+        localStorage.setItem('srmu_config_updated_at', String(Date.now()));
+      } catch (e) {}
+
     } catch (err) {
       showToast(`Error: ${err.message}`);
     }

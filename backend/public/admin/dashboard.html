@@ -733,7 +733,7 @@
             </div>
           </div>
 
-          <!-- UPI QR Code Management Card -->
+          <!-- Live Event, Registration & UPI Configuration Card -->
           <div class="payment-qr-setup-card">
             <div class="payment-qr-setup-header">
               <div class="payment-qr-setup-title-wrap">
@@ -747,31 +747,34 @@
                 </div>
                 <div>
                   <h4 class="payment-qr-setup-title">
-                    UPI Payment QR Code &amp; Registration Desk Setup
+                    Carnival Settings &amp; Payment Desk Configuration (Live Supabase Sync)
                   </h4>
                   <p class="payment-qr-setup-desc">
-                    Set your festival desk UPI QR Code so participants can scan and pay during online registration.
+                    Control live festival fee, strict UTR number requirement, registration status, payment QR code, and official WhatsApp invite in real-time.
                   </p>
                 </div>
               </div>
               <div class="payment-qr-header-actions">
-                <span id="qrStatusBadge" class="status-pill status-unverified">Loading QR Status...</span>
+                <span id="qrStatusBadge" class="status-pill status-unverified">Loading Database Config...</span>
               </div>
             </div>
 
             <form id="qrConfigForm" class="payment-qr-setup-form">
+              <!-- UPI ID -->
               <div class="form-group">
-                <label for="inputQrUpiId" class="form-label">UPI ID</label>
+                <label for="inputQrUpiId" class="form-label">Official Payee UPI ID</label>
                 <input type="text" id="inputQrUpiId" class="filter-input" placeholder="e.g. guptashrijaya-1@oksbi" value="guptashrijaya-1@oksbi">
               </div>
 
+              <!-- Payee Name -->
               <div class="form-group">
                 <label for="inputQrUpiName" class="form-label">Payee / Account Name</label>
                 <input type="text" id="inputQrUpiName" class="filter-input" placeholder="e.g. Shrijaya Gupta (SRMU B5-408 Carnival Desk)" value="Shrijaya Gupta (SRMU B5-408 Carnival Desk)">
               </div>
 
+              <!-- QR Code Link -->
               <div class="form-group">
-                <label for="inputQrImageUrl" class="form-label">QR Code Image Link</label>
+                <label for="inputQrImageUrl" class="form-label">UPI QR Code Image Link</label>
                 <div class="qr-url-input-wrap">
                   <input type="text" id="inputQrImageUrl" class="filter-input" placeholder="Paste image URL (blank = placeholder)" value="/assets/official-upi-qr.jpg">
                   <a id="qrPreviewThumbLink" href="/assets/official-upi-qr.jpg" target="_blank" rel="noopener noreferrer" class="qr-thumb-preview-btn" title="View Current QR Image">
@@ -781,6 +784,51 @@
                 </div>
               </div>
 
+              <!-- All-Access Pass Fee -->
+              <div class="form-group">
+                <label for="inputPassFee" class="form-label">All-Access Pass Fee (₹)</label>
+                <input type="number" id="inputPassFee" class="filter-input" min="0" max="1000" step="1" placeholder="10" value="10">
+              </div>
+
+              <!-- Strict UTR Requirement -->
+              <div class="form-group">
+                <label for="inputRequireUtr" class="form-label">UTR Number Requirement</label>
+                <select id="inputRequireUtr" class="filter-input">
+                  <option value="true" selected>Strictly Mandatory (12 Digits)</option>
+                  <option value="false">Optional (Allow Blank UTR)</option>
+                </select>
+              </div>
+
+              <!-- Registration Status -->
+              <div class="form-group">
+                <label for="inputRegStatus" class="form-label">Registration Gateway Status</label>
+                <select id="inputRegStatus" class="filter-input">
+                  <option value="open" selected>Open (Accepting Registrations)</option>
+                  <option value="closed">Closed (Paused by Organizers)</option>
+                </select>
+              </div>
+
+              <!-- Payment Mode -->
+              <div class="form-group">
+                <label for="inputPaymentMode" class="form-label">Allowed Payment Policy</label>
+                <select id="inputPaymentMode" class="filter-input">
+                  <option value="online_upi" selected>Online UPI Only (Strict UTR Verification)</option>
+                  <option value="both">Both Online UPI &amp; Cash Helpdesk Collection</option>
+                </select>
+              </div>
+
+              <!-- WhatsApp Community Link -->
+              <div class="form-group">
+                <label for="inputWhatsappUrl" class="form-label">Official WhatsApp Group Link</label>
+                <input type="url" id="inputWhatsappUrl" class="filter-input" placeholder="https://chat.whatsapp.com/..." value="https://chat.whatsapp.com/Ev1kiwPGzrDFvopit0B12l">
+              </div>
+
+              <!-- Announcement Banner -->
+              <div class="form-group" style="grid-column: 1 / -1;">
+                <label for="inputAnnouncementText" class="form-label">Festival Announcement &amp; Guidelines Banner</label>
+                <input type="text" id="inputAnnouncementText" class="filter-input" placeholder="e.g. Official registrations active. ₹10 flat fee for all carnival activities." value="Official registrations active. ₹10 flat fee for all carnival activities.">
+              </div>
+
               <div class="form-group qr-submit-group">
                 <button type="submit" id="btnSaveQrConfig" class="btn-primary btn-save-qr">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -788,7 +836,7 @@
                     <polyline points="17 21 17 13 7 13 7 21"></polyline>
                     <polyline points="7 3 7 8 15 8"></polyline>
                   </svg>
-                  <span>Save QR</span>
+                  <span>Save &amp; Sync to Database</span>
                 </button>
               </div>
             </form>

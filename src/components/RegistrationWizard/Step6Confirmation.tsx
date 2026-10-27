@@ -194,6 +194,14 @@ export const Step6Confirmation: React.FC = () => {
               <span className="text-stone-400 block">Venue & Time</span>
               <span className="font-bold text-white">B5-408 • 11:00 AM</span>
             </div>
+            {submissionResult.paymentReference && submissionResult.paymentReference !== 'CASH_AT_DESK' && (
+              <div className="col-span-2 pt-2 border-t border-white/10 flex items-center justify-between">
+                <span className="text-stone-400">UPI UTR Reference:</span>
+                <span className="font-mono font-bold text-emerald-300 bg-black/50 px-2.5 py-1 rounded-lg border border-emerald-500/30 tracking-wider">
+                  {submissionResult.paymentReference}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Entry Verification QR Code */}

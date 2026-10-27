@@ -6,7 +6,7 @@ import { GameGuidelinesModal } from '../GameGuidelinesModal';
 import { Check, Info, ArrowRight, AlertCircle, Trophy, Zap } from 'lucide-react';
 
 export const Step1GamesSelection: React.FC = () => {
-  const { selectedGameIds, gamesList, toggleGameSelection, nextStep, submitError } = useRegistration();
+  const { selectedGameIds, gamesList, toggleGameSelection, nextStep, submitError, totalFee } = useRegistration();
   const [selectedGameForModal, setSelectedGameForModal] = useState<Game | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -21,7 +21,7 @@ export const Step1GamesSelection: React.FC = () => {
             Step 1: Choose Your Carnival Games
           </h3>
           <p className="text-xs sm:text-sm text-stone-300 mt-1">
-            Select between 1 and 6 games to participate in. The entry fee is strictly ₹5 per selected game.
+            Select between 1 and 6 games to participate in. One All-Access Pass covers all your chosen activities.
           </p>
         </div>
 
@@ -33,7 +33,7 @@ export const Step1GamesSelection: React.FC = () => {
             className="self-start sm:self-auto px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white flex items-center gap-1.5 shadow-md shadow-emerald-950/40 border border-emerald-300 animate-in fade-in cursor-pointer whitespace-nowrap"
           >
             <Zap className="w-3.5 h-3.5 text-amber-300" />
-            <span>Continue with {selectedGameIds.length} Selected (₹{selectedGameIds.length * 5})</span>
+            <span>Continue with {selectedGameIds.length} Selected (Pass: ₹{totalFee})</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         )}
@@ -90,7 +90,7 @@ export const Step1GamesSelection: React.FC = () => {
               <div className="pt-3.5 mt-3 border-t border-white/10 flex items-center justify-between">
                 <span className="text-xs font-bold text-amber-300 flex items-center gap-1">
                   <Trophy className="w-3.5 h-3.5 text-amber-400" />
-                  ₹5 Online Entry
+                  Included in ₹{totalFee} Pass
                 </span>
 
                 <button
@@ -114,7 +114,7 @@ export const Step1GamesSelection: React.FC = () => {
       {/* Action Footer */}
       <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="text-xs font-medium text-stone-300">
-          Selected: <strong className="text-amber-300 font-bold">{selectedGameIds.length}</strong> of 6 games (₹{selectedGameIds.length * 5})
+          Selected: <strong className="text-amber-300 font-bold">{selectedGameIds.length}</strong> of 6 games • All-Access Pass: <strong className="text-amber-300 font-bold">₹{totalFee}</strong>
         </div>
 
         <button
