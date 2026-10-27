@@ -6,7 +6,8 @@ const API_BASE_URL = window.API_BASE_URL || (
   window.location.protocol === 'file:'
     ? 'http://localhost:5000'
     : (
-        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '3000'
+        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && 
+        (window.location.port === '3000' || window.location.port === '5500' || window.location.port === '8080')
           ? 'http://localhost:5000'
           : ''
       )

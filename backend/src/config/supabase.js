@@ -55,6 +55,16 @@ const memoryStore = {
   gameScores: []
 };
 
+// Lightweight cache to deduplicate simultaneous dashboard and metric queries
+let registrationsCache = null;
+let registrationsCacheTime = 0;
+const CACHE_TTL_MS = 2500; // 2.5 seconds cache
+
+function invalidateRegistrationsCache() {
+  registrationsCache = null;
+  registrationsCacheTime = 0;
+}
+
 // -----------------------------------------------------------------------------
 // Unified Database Repository Methods
 // -----------------------------------------------------------------------------
@@ -66,6 +76,7 @@ module.exports = {
 
   // Registrations
   async createRegistration(regData) {
+    invalidateRegistrationsCache();
     const payload = {
       registration_id: regData.registrationId || regData.registration_id,
       student: regData.student,
@@ -87,6 +98,8 @@ module.exports = {
         .select()
         .single();
       if (error) throw error;
+      // Keep memoryStore updated as hot backup
+      memoryStore.registrations.unshift(data || payload);
       return data;
     }
     const record = { ...payload, id: `reg-${Date.now()}` };
@@ -113,6 +126,7 @@ module.exports = {
   },
 
   async updateRegistrationStatus(regId, updateFields) {
+    invalidateRegistrationsCache();
     const cleanId = String(regId).trim().toUpperCase();
     const payload = {};
     if (updateFields.paymentStatus !== undefined || updateFields.payment_status !== undefined) {
@@ -137,6 +151,8 @@ module.exports = {
         .select()
         .single();
       if (error) throw error;
+      const memItem = memoryStore.registrations.find(r => r.registration_id === cleanId);
+      if (memItem) Object.assign(memItem, payload);
       return data;
     }
 
@@ -156,6 +172,7 @@ module.exports = {
   },
 
   async deleteRegistration(regId) {
+    invalidateRegistrationsCache();
     const cleanId = String(regId).trim().toUpperCase();
     if (supabase) {
       const { data, error } = await supabase
@@ -169,6 +186,8 @@ module.exports = {
       try {
         await supabase.from('certificates').delete().eq('registration_id', cleanId);
       } catch (e) {}
+      const memIdx = memoryStore.registrations.findIndex(r => r.registration_id === cleanId);
+      if (memIdx !== -1) memoryStore.registrations.splice(memIdx, 1);
       return data;
     }
     const idx = memoryStore.registrations.findIndex(r => r.registration_id === cleanId);
@@ -182,6 +201,11 @@ module.exports = {
   },
 
   async getAllRegistrations() {
+    const now = Date.now();
+    if (registrationsCache && (now - registrationsCacheTime) < CACHE_TTL_MS) {
+      return [...registrationsCache];
+    }
+
     if (supabase) {
       let allData = [];
       let from = 0;
@@ -198,8 +222,12 @@ module.exports = {
         if (data.length < step) break;
         from += step;
       }
+      registrationsCache = allData;
+      registrationsCacheTime = now;
       return allData;
     }
+    registrationsCache = memoryStore.registrations;
+    registrationsCacheTime = now;
     return memoryStore.registrations;
   },
 

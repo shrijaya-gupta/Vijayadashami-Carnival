@@ -345,12 +345,27 @@ function matchesFilter(item, filter = {}) {
     if (!item.selectedGames || !item.selectedGames.some(g => g.participationType === targetFormat)) return false;
   }
 
-  if (filter['student.rollNumber'] && item.student?.rollNumber !== filter['student.rollNumber']) return false;
+  if (filter['student.rollNumber'] && String(item.student?.rollNumber || '').trim().toLowerCase() !== String(filter['student.rollNumber']).trim().toLowerCase()) return false;
   if (filter.idempotencyKey && item.idempotencyKey !== filter.idempotencyKey) return false;
   if (filter['student.course'] && item.student?.course !== filter['student.course']) return false;
   if (filter['student.branch'] && item.student?.branch !== filter['student.branch']) return false;
   if (filter['student.academicYear'] && item.student?.academicYear !== filter['student.academicYear']) return false;
   if (filter.registrationId && item.registrationId !== filter.registrationId) return false;
+  if (filter._id && item._id !== filter._id && item.id !== filter._id) return false;
+  if (filter.id && item.id !== filter.id && item._id !== filter.id) return false;
+
+  // Handle createdAt date comparisons ($gte, $gt, $lte, $lt)
+  if (filter.createdAt) {
+    const itemTime = new Date(item.createdAt || 0).getTime();
+    if (filter.createdAt instanceof Date || typeof filter.createdAt === 'string') {
+      if (itemTime !== new Date(filter.createdAt).getTime()) return false;
+    } else if (typeof filter.createdAt === 'object') {
+      if (filter.createdAt.$gte && !(itemTime >= new Date(filter.createdAt.$gte).getTime())) return false;
+      if (filter.createdAt.$gt && !(itemTime > new Date(filter.createdAt.$gt).getTime())) return false;
+      if (filter.createdAt.$lte && !(itemTime <= new Date(filter.createdAt.$lte).getTime())) return false;
+      if (filter.createdAt.$lt && !(itemTime < new Date(filter.createdAt.$lt).getTime())) return false;
+    }
+  }
 
   if (Array.isArray(filter.$or)) {
     const matchesAny = filter.$or.some(clause => {

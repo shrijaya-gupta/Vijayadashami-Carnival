@@ -64,27 +64,40 @@ async function createRegistration(req, res, next) {
       }
     }
 
-    // 3. Duplicate check for rapid double-submission (same student, same roll, same games within 5 mins)
+    // 3. Duplicate check for rapid double-submission (same student, same games within 5 mins)
     const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
-    const recentDuplicate = await Registration.findOne({
-      'student.rollNumber': sanitizedData.student.rollNumber,
-      'student.course': sanitizedData.student.course,
-      createdAt: { $gte: fiveMinutesAgo }
-    });
+    const hasSpecificRoll = sanitizedData.student.rollNumber && !['N/A', 'NA', 'NONE', ''].includes(sanitizedData.student.rollNumber.toUpperCase());
+    
+    let duplicateQuery = null;
+    if (hasSpecificRoll) {
+      duplicateQuery = {
+        'student.rollNumber': sanitizedData.student.rollNumber,
+        'student.course': sanitizedData.student.course,
+        createdAt: { $gte: fiveMinutesAgo }
+      };
+    } else if (sanitizedData.student.mobileNumber) {
+      duplicateQuery = {
+        'student.mobileNumber': sanitizedData.student.mobileNumber,
+        createdAt: { $gte: fiveMinutesAgo }
+      };
+    }
 
-    if (recentDuplicate) {
-      // Check if selected game IDs are identical
-      const existingGameIds = recentDuplicate.selectedGames.map(g => g.gameId).sort().join(',');
-      const newGameIds = sanitizedData.selectedGames.map(g => g.gameId).sort().join(',');
+    if (duplicateQuery) {
+      const recentDuplicate = await Registration.findOne(duplicateQuery);
+      if (recentDuplicate) {
+        // Check if selected game IDs are identical
+        const existingGameIds = (recentDuplicate.selectedGames || []).map(g => g.gameId).sort().join(',');
+        const newGameIds = (sanitizedData.selectedGames || []).map(g => g.gameId).sort().join(',');
 
-      if (existingGameIds === newGameIds) {
-        // Return existing registration to prevent accidental duplicate entries
-        return res.status(200).json({
-          success: true,
-          message: 'Existing registration found for this student. Duplicate submission prevented.',
-          data: formatRegistrationResponse(recentDuplicate),
-          isDuplicateRetry: true
-        });
+        if (existingGameIds === newGameIds) {
+          // Return existing registration to prevent accidental duplicate entries
+          return res.status(200).json({
+            success: true,
+            message: 'Existing registration found for this student. Duplicate submission prevented.',
+            data: formatRegistrationResponse(recentDuplicate),
+            isDuplicateRetry: true
+          });
+        }
       }
     }
 

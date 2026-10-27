@@ -7,7 +7,8 @@ const API_BASE_URL = window.API_BASE_URL || (
   window.location.protocol === 'file:'
     ? 'http://localhost:5000'
     : (
-        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '3000'
+        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && 
+        (window.location.port === '3000' || window.location.port === '5500' || window.location.port === '8080')
           ? 'http://localhost:5000'
           : ''
       )
@@ -143,12 +144,28 @@ async function bootDashboardApp() {
   initScanner();
   initGamesManagement();
 
-  // Real-Time live auto-refresh every 15s for on-ground festival desk (silent background sync)
+  // Real-Time live auto-refresh every 10s for on-ground festival desk (silent background sync)
   setInterval(() => {
     if (document.visibilityState === 'visible') {
       refreshCurrentView(true);
     }
-  }, 15000);
+  }, 10000);
+
+  // Instant real-time listener: updates views immediately when a student registers in any tab
+  try {
+    if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+      const syncChannel = new BroadcastChannel('srmu_carnival_sync');
+      syncChannel.onmessage = (event) => {
+        if (event.data?.type === 'NEW_REGISTRATION') {
+          console.log('[REAL-TIME SYNC] New registration received:', event.data.registrationId);
+          refreshCurrentView(true);
+          if (typeof showToast === 'function') {
+            showToast(`⚡ New pass booked: ${event.data.registrationId} (${event.data.studentName || 'Student'})`);
+          }
+        }
+      };
+    }
+  } catch (e) {}
 }
 
 if (document.readyState === 'loading') {

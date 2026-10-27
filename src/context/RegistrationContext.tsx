@@ -541,6 +541,19 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         submissionDate: new Date().toLocaleString('en-IN')
       };
 
+      // Broadcast real-time event to open admin tabs
+      try {
+        if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+          const syncChannel = new BroadcastChannel('srmu_carnival_sync');
+          syncChannel.postMessage({
+            type: 'NEW_REGISTRATION',
+            registrationId: result.registrationId,
+            studentName: student.fullName
+          });
+          syncChannel.close();
+        }
+      } catch (e) {}
+
       setSubmissionResult(result);
       setActiveStep(6);
       scrollToWizard();
@@ -548,54 +561,12 @@ export const RegistrationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     } catch (err: any) {
       console.warn('Registration submission error:', err.message);
 
-      // CRITICAL SECURITY FIX: Never generate offline fake passes for legitimate server validation/duplicate errors!
       if (err.isServerError) {
         setSubmitError(err.message || 'Submission error occurred. Please verify inputs or contact B5-408.');
         return false;
       }
 
-      // ONLY if user is truly offline (no internet) or DNS failure occurred before touching server
-      const isTrueOffline = !navigator.onLine || (err.name === 'TypeError' && err.message?.includes('fetch'));
-      if (isTrueOffline) {
-        // Enforce UTR requirement even in offline queue if payment mode is online UPI
-        if (paymentMode === 'online_upi' && (!cleanUtr || cleanUtr.length < 10)) {
-          setSubmitError('Offline mode requires a valid 12-digit UPI UTR number from your payment app.');
-          return false;
-        }
-
-        const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
-        let rand = '';
-        for (let i = 0; i < 6; i++) {
-          rand += chars[Math.floor(Math.random() * chars.length)];
-        }
-        const offlineRegId = `SRMU-2026-${rand}`;
-        const offlineResult: RegistrationSubmissionResult = {
-          success: true,
-          message: 'Registration queued offline! (Saved for SRMU B5-408 desk verification)',
-          registrationId: offlineRegId,
-          registrationReference: offlineRegId,
-          studentName: student.fullName,
-          rollNumber: student.rollNumber,
-          selectedGamesCount: selectedGameIds.length,
-          totalAmount: totalFee,
-          paymentStatus: cleanUtr ? 'payment_verification_pending' : 'pending_desk_collection',
-          paymentReference: cleanUtr || '',
-          submissionDate: new Date().toLocaleString('en-IN')
-        };
-
-        try {
-          const queue = JSON.parse(localStorage.getItem('srmu_carnival_registrations') || '[]');
-          queue.push({ payload, result: offlineResult, timestamp: Date.now() });
-          localStorage.setItem('srmu_carnival_registrations', JSON.stringify(queue));
-        } catch (e) {}
-
-        setSubmissionResult(offlineResult);
-        setActiveStep(6);
-        scrollToWizard();
-        return true;
-      }
-
-      setSubmitError(err.message || 'Submission error occurred. Please verify inputs.');
+      setSubmitError('Unable to connect to the registration server. Please check your internet connection and click Submit Registration again.');
       return false;
     } finally {
       setIsSubmitting(false);

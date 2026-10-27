@@ -10,12 +10,12 @@ const router = express.Router();
  */
 const registrationLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: process.env.NODE_ENV === 'test' ? 500 : 25, // max 25 attempts per window
+  max: process.env.NODE_ENV === 'test' ? 1000 : 500, // max 500 attempts per window for campus WiFi
   standardHeaders: true,
   legacyHeaders: false,
   message: {
     success: false,
-    error: 'Too many registration requests from this connection. Please wait 15 minutes before trying again.'
+    error: 'Too many registration requests from this connection. Please wait a few minutes before trying again.'
   }
 });
 

@@ -1,5 +1,5 @@
 const express = require('express');
-const mongoose = require('mongoose');
+const db = require('../config/supabase');
 
 const router = express.Router();
 
@@ -8,20 +8,13 @@ const router = express.Router();
  * Returns server and database health status without leaking internal details
  */
 router.get('/', (req, res) => {
-  const readyState = mongoose.connection.readyState;
-  const dbStatusMap = {
-    0: 'disconnected',
-    1: 'connected',
-    2: 'connecting',
-    3: 'disconnecting'
-  };
+  const isSupabase = db.isSupabaseConfigured && Boolean(db.supabase);
+  const isHealthy = isSupabase || (db.memoryStore && Array.isArray(db.memoryStore.registrations));
 
-  const isDbHealthy = readyState === 1;
-
-  res.status(isDbHealthy ? 200 : 503).json({
-    status: isDbHealthy ? 'healthy' : 'degraded',
+  res.status(isHealthy ? 200 : 503).json({
+    status: isHealthy ? 'healthy' : 'degraded',
     service: 'Vijayadashami Carnival Registration API',
-    database: dbStatusMap[readyState] || 'unknown',
+    database: isSupabase ? 'connected (Supabase Cloud)' : 'connected (In-Memory Hot Store)',
     timestamp: new Date().toISOString()
   });
 });

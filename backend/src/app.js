@@ -16,6 +16,9 @@ const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
+// Trust reverse proxies (Vercel, Render, Nginx) so client IP is accurately forwarded
+app.set('trust proxy', 1);
+
 // 1. Security HTTP Headers via Helmet
 app.use(helmet({
   contentSecurityPolicy: false, // Permit local inline assets in static frontend
@@ -23,18 +26,19 @@ app.use(helmet({
 }));
 
 // 2. CORS configuration restricted to allowed origins
-const allowedOrigins = (process.env.CLIENT_ORIGIN || 'http://localhost:3000,http://127.0.0.1:3000,http://localhost:5000')
+const allowedOrigins = (process.env.CLIENT_ORIGIN || 'http://localhost:3000,http://127.0.0.1:3000,http://localhost:5000,http://localhost:5173')
   .split(',')
   .map(origin => origin.trim().replace(/\/$/, ''));
 
 app.use(cors({
   origin: function(origin, callback) {
-    // Allow requests with no origin (e.g. mobile apps, curl, server-to-server)
-    if (!origin) return callback(null, true);
+    // Allow requests with no origin (e.g. mobile apps, curl, server-to-server) or local file previews
+    if (!origin || origin === 'null') return callback(null, true);
     
     // Check if origin matches allowed list or vercel.app preview domain
     const isVercelDomain = typeof origin === 'string' && (origin.endsWith('.vercel.app') || origin === 'https://vercel.app');
-    const isAllowed = allowedOrigins.includes(origin) || isVercelDomain || process.env.NODE_ENV !== 'production';
+    const isLocalhost = typeof origin === 'string' && (origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1') || origin.startsWith('http://192.168.'));
+    const isAllowed = allowedOrigins.includes(origin) || isVercelDomain || isLocalhost || process.env.NODE_ENV !== 'production';
     if (isAllowed) {
       return callback(null, true);
     }
