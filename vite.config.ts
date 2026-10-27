@@ -4,7 +4,23 @@ import tailwindcss from 'tailwindcss';
 import autoprefixer from 'autoprefixer';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    {
+      name: 'admin-redirect',
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          const rawUrl = req.url ? req.url.split('?')[0].replace(/\/+$/, '') : '';
+          if (rawUrl === '/admin') {
+            res.writeHead(302, { Location: '/admin/login.html' });
+            res.end();
+            return;
+          }
+          next();
+        });
+      }
+    }
+  ],
   css: {
     postcss: {
       plugins: [

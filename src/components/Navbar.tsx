@@ -2,10 +2,8 @@ import React, { useState } from 'react';
 import { 
   Menu, 
   X, 
-  ShieldCheck, 
   Gamepad2, 
   UserPlus, 
-  ExternalLink,
   Flame,
   Trophy
 } from 'lucide-react';
@@ -168,19 +166,6 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({ activeTab, setActiveT
 
         {/* Action Controls */}
         <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
-          {/* Admin Desk link (Desktop/Laptop only; on mobile it is inside the 3-line menu) */}
-          <a
-            href="/admin/login.html"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden md:flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#2E0B16] hover:bg-[#3D0A17] text-amber-200 border border-[#D4AF37]/35 hover:border-[#D4AF37]/70 transition-all whitespace-nowrap shadow-xs shrink-0"
-            title="Organizer Admin Desk"
-          >
-            <ShieldCheck className="w-3.5 h-3.5 text-[#E5C158] shrink-0" />
-            <span>Admin Desk</span>
-            <ExternalLink className="w-3 h-3 text-stone-400 shrink-0" />
-          </a>
-
           {/* Mobile menu trigger */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -241,19 +226,6 @@ export const Navbar: React.FC<NavbarProps> = React.memo(({ activeTab, setActiveT
             <Trophy className="w-4 h-4 text-[#E5C158]" />
             <span>Live Leaderboard</span>
           </button>
-
-          <a
-            href="/admin/login.html"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-[#2E0B16] text-amber-200 border border-[#D4AF37]/30"
-          >
-            <span className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-[#E5C158]" />
-              Organizer Admin Desk
-            </span>
-            <ExternalLink className="w-3.5 h-3.5 text-stone-400" />
-          </a>
         </div>
       )}
     </header>

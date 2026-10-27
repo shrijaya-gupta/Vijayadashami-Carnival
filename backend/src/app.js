@@ -66,6 +66,11 @@ app.get('/verify-certificate/:token', (req, res) => {
   res.redirect(`/?token=${encodeURIComponent(token)}`);
 });
 
+// Direct Organizer Admin Desk Redirect: /admin -> /admin/login.html
+app.get(['/admin', '/admin/'], (req, res) => {
+  res.redirect('/admin/login.html');
+});
+
 // 6. Serve static frontend files (checks dist, monorepo root, backend/public, or local directory)
 const candidateStaticPaths = [
   path.resolve(__dirname, '../../dist'),       // Production Vite build output

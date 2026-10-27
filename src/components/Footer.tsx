@@ -2,7 +2,6 @@ import React from 'react';
 import { 
   MapPin, 
   Calendar, 
-  ShieldCheck, 
   Trophy, 
   ArrowUp, 
   ExternalLink, 
@@ -189,7 +188,7 @@ export const Footer: React.FC<FooterProps> = ({ onRegisterClick, onOpenScoreboar
             </div>
           </div>
 
-          {/* Column 3: Quick Navigation & Admin Desk */}
+          {/* Column 3: Quick Navigation */}
           <div className="space-y-4">
             <h4 className="text-xs font-bold uppercase tracking-wider text-amber-300 flex items-center gap-2">
               <Gamepad2 className="w-4 h-4 text-amber-400" />
@@ -226,25 +225,6 @@ export const Footer: React.FC<FooterProps> = ({ onRegisterClick, onOpenScoreboar
                   <span className="text-xs text-amber-400 font-bold">&rarr;</span>
                 </button>
               )}
-            </div>
-
-            {/* Organizer Admin Desk Portal */}
-            <div className="pt-1">
-              <a 
-                href="/admin/login.html" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="w-full p-2.5 rounded-xl bg-[#2A0610] hover:bg-[#380816] border border-[#D4AF37]/40 text-amber-200 text-xs font-semibold transition-all flex items-center justify-between shadow-xs cursor-pointer group"
-              >
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
-                  <span>Organizer Admin Desk</span>
-                </div>
-                <ExternalLink className="w-3.5 h-3.5 text-amber-400/70" />
-              </a>
-              <span className="text-[10px] text-stone-400 block mt-1.5 pl-1">
-                Desk verification &amp; participant management portal
-              </span>
             </div>
           </div>
 

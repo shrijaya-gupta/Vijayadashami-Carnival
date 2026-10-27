@@ -24,6 +24,14 @@ const CarnivalApp: React.FC = () => {
   });
   const { selectedGameIds, toggleGameSelection, goToStep, activeStep } = useRegistration();
 
+  // Direct URL navigation: when /admin or /admin/ is entered in URL, route to Organizer Desk
+  useEffect(() => {
+    const pathname = window.location.pathname.toLowerCase().replace(/\/+$/, '');
+    if (pathname === '/admin') {
+      window.location.replace('/admin/login.html');
+    }
+  }, []);
+
   const handleRegisterClick = () => {
     setActiveTab('home');
     goToStep(2);
